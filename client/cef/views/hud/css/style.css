@@ -1,0 +1,110 @@
+body {
+    -webkit-user-select: none;
+    /* Safari 3.1+ */
+    -moz-user-select: none;
+    /* Firefox 2+ */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Standard syntax */
+    overflow: hidden;
+}
+.interaction_key {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    transition: all 1ms linear;
+
+    transform: translate(-50%, -50%) scale(0);
+}
+.interaction_key.show {
+
+    position: absolute;
+    animation: ShrinkIn 1000ms;
+    animation-iteration-count: 1;
+
+    transform: translate(-50%, -50%) scale(1);
+    transition: all 1ms linear;
+}
+
+.interaction_key.error {
+    position: absolute;
+    animation: shake 0.2s;
+    animation-iteration-count: 1;
+    transition: all 1ms linear;
+}
+.interaction_key.success {
+    position: absolute;
+    animation: ShrinkOut 1000ms;
+    animation-iteration-count: 1;
+
+    transform: translate(-50%, -50%) scale(0);
+}
+@keyframes shake {
+    0% {
+        transform: translate(-53%, -50%);
+    }
+    50% {
+        transform: translate(-47%, -50%);
+    }
+    100% {
+        transform: translate(-50%, -50%);
+    }
+}
+@keyframes ShrinkOut {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+
+
+@keyframes ShrinkIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0.1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    75% {
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+
+
+.interaction_info {
+    position: absolute;
+    transform: translate(-100%, -50%) scale(0.04,1) !important;
+    font-family: Arial;
+    color: #FFF;
+    text-align: left;
+    font-size: 1.7vh;
+    text-shadow: 0px 0px 15px #000;
+    transition: all 200ms linear;
+}
+.interaction_info.show {
+    position: absolute;
+    transform: translate(0%, -50%) scale(1,1) !important;
+    transition: all 1000ms linear;
+    opacity:1;
+}
+
+
+.interaction_info.fadeleft {
+    position: absolute;
+    opacity:0;
+    transform: translate(-100%, -50%) scale(0.04,1) !important;
+    transition: all 200ms linear;
+}
