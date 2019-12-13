@@ -6,5 +6,5 @@ mp.events.add("playerReady", player => {
 
 
 
-	player.call("intro:start");
+	player.call("login:start");
 });

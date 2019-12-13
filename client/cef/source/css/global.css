@@ -1,69 +1,104 @@
-:root
-{
-    --color-bg-trans:           rgba(38, 38, 38, .2);
-    --color-bg-trans-4:         rgba(38, 38, 38, .4);
-    --color-bg-trans-6:         rgba(38, 38, 38, .6);
-    --color-bg-trans-8:         rgba(38, 38, 38, .8);
-    --color-highlight:          #dce2ef;
-    --color-highlight-trans:    rgba(220, 226, 239, .6);
+:root {
+    --color-bg-trans: rgba(38, 38, 38, .2);
+    --color-bg-trans-4: rgba(38, 38, 38, .4);
+    --color-bg-trans-6: rgba(38, 38, 38, .6);
+    --color-bg-trans-8: rgba(38, 38, 38, .8);
+    --color-highlight: #dce2ef;
+    --color-highlight-trans: rgba(220, 226, 239, .6);
+    --color-inv-bg: rgba(122, 122, 122, .6);
+    --color-slot-bg: rgba(18, 18, 18, .7);
+    --equip-dot: rgba(82, 82, 82, .5);
+    --color-header: rgba(100, 100, 100, .7);
+    --color-orange: rgba(235, 112, 28, 0.8);
+    --color-font-white: rgba(255, 255, 255, 1);
 
-    --color-inv-bg:             rgba(122, 122, 122, .6);
-    --color-slot-bg:            rgba(18, 18, 18, .7);
 
-    --equip-dot:                rgba(82, 82, 82, .5);
 
-    --color-header:             rgba(100, 100, 100, .7);
+    --color-mainframe: rgba(242, 242, 242, 1);
+    --color-mainframe-trans-8: rgba(242, 242, 242, 0.8);
+    --color-text: rgba(100, 100, 100, 1);
 
-    --color-orange:             rgba(235, 112, 28,0.8);
-    --color-font-white:             rgba(255, 255, 255,1);
+
+    --color-font-bright:rgba(220,220,220,0.7);
+
+    --color-neutral:rgba(50,50,50,1);
+    --color-neutral-trans-8:rgba(50,50,50,0.8);
+    --color-neutral-trans-7:rgba(50,50,50,0.7);
+    --color-neutral-trans-6:rgba(50,50,50,0.6);
+    --color-neutral-trans-4:rgba(50,50,50,0.4);
+    --color-neutral-trans-2:rgba(50,50,50,0.2);
+
+
+    --color-neutral2:rgba(30,30,30,1);
+    --color-neutral2-trans-8:rgba(30,30,30,0.8);
+    --color-neutral2-trans-7:rgba(30,30,30,0.7);
+    --color-neutral2-trans-6:rgba(30,30,30,0.6);
+    --color-neutral2-trans-4:rgba(30,30,30,0.4);
+    --color-neutral2-trans-2:rgba(30,30,30,0.2);
+
+
+
+    --color-accent :rgba(255, 96, 0,1);
+    --color-accent-trans-1 :rgba(255, 96, 0,0.1);
+    --color-accent-trans-2 :rgba(255, 96, 0,0.2);
+    --color-accent-trans-4 :rgba(255, 96, 0,0.4);
+    --color-accent-trans-6 :rgba(255, 96, 0,0.6);
+    --color-accent-trans-8 :rgba(255, 96, 0,0.8);
+
+    --color-success :rgba(23, 117, 80,1);
+    --color-success-trans-2 :rgba(23, 117, 80,0.2);
+    --color-success-trans-4 :rgba(23, 117, 80,0.4);
+    --color-success-trans-6 :rgba(23, 117, 80,0.6);
+    --color-success-trans-8 :rgba(23, 117, 80,0.8);
+
+
+    --color-fail :rgba(117, 23, 23,1);
+    --color-fail-trans-2 :rgba(117, 23, 23,0.2);
+    --color-fail-trans-4 :rgba(117, 23, 23,0.4);
+    --color-fail-trans-6 :rgba(117, 23, 23,0.6);
+    --color-fail-trans-8 :rgba(117, 23, 23,0.8);
+
+
 
     /*Used in Character Creator*/
-    --gradient-headline-selected:      linear-gradient(to bottom, #ffffff, #a6aebb);
-    --gradient-headline-normal:        linear-gradient(to bottom, #464e63, #353c4e);
-    --font-color-dark:                 rgb(37, 43, 58);
-    --font-color-light:                rgb(211, 211, 211);
-    --color-outline-normal:            rgba(200, 209, 214,0.4);
-    --color-background-selected-dark:       rgba(42, 43, 47,0.6);
-    --color-background-selected-light:       rgba(93, 93, 95,0.6);
-    --color-headline: rgba(200,200,200,0.9);
-    --color-headline-trans-2: rgba(200,200,200,0.2);
-    --color-headline-trans-4: rgba(200,200,200,0.4);
-
-    --accent-trans:   rgba(40, 113, 62,1);
-    --accent-trans-8:   rgba(40, 113, 62,0.8);
-    --accent-trans-6:   rgba(40, 113, 62,0.6);
-    --accent-light-trans:   rgba(45, 234, 103,1);
-    --accent-light-trans-8:   rgba(45, 234, 103,0.8);
-    --accent-light-trans-6:   rgba(45, 234, 103,0.6);
-
+    --gradient-headline-selected: linear-gradient(to bottom, #ffffff, #a6aebb);
+    --gradient-headline-normal: linear-gradient(to bottom, #464e63, #353c4e);
+    --font-color-dark: rgb(37, 43, 58);
+    --font-color-light: rgb(211, 211, 211);
+    --color-outline-normal: rgba(200, 209, 214, 0.4);
+    --color-background-selected-dark: rgba(42, 43, 47, 0.6);
+    --color-background-selected-light: rgba(93, 93, 95, 0.6);
+    --color-headline: rgba(200, 200, 200, 0.9);
+    --color-headline-trans-2: rgba(200, 200, 200, 0.2);
+    --color-headline-trans-4: rgba(200, 200, 200, 0.4);
+    --accent-trans: rgba(40, 113, 62, 1);
+    --accent-trans-8: rgba(40, 113, 62, 0.8);
+    --accent-trans-6: rgba(40, 113, 62, 0.6);
+    --accent-light-trans: rgba(45, 234, 103, 1);
+    --accent-light-trans-8: rgba(45, 234, 103, 0.8);
+    --accent-light-trans-6: rgba(45, 234, 103, 0.6);
     font-family: Lato;
 }
-
 @font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto-Regular.ttf') format('truetype');
     font-weight: normal;
 }
-
 @font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto-Bold.ttf') format('truetype');
     font-weight: bold;
 }
-
-
 @font-face {
     font-family: Lato;
     src: url("../fonts/Lato-Regular.ttf") format('truetype');
     font-weight: normal;
 }
-
 @font-face {
     font-family: Lato;
     src: url("../fonts/Lato-Bold.ttf") format('truetype');
     font-weight: bold;
 }
-
 .pattern {
     position: absolute;
     top: 0;
@@ -73,20 +108,17 @@
     background: url(../img/pattern.png) repeat;
     background-size: 120px 120px;
     opacity: 0.8;
-    z-index:1;
+    z-index: 1;
 }
 .front {
-    z-index:20;
+    z-index: 20;
 }
-
 .dark-shadow {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1), 1px -1px 1px rgba(0, 0, 0, 0.1), -1px 1px 1px rgba(0, 0, 0, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.1);
 }
 .white-shadow {
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), 1px -1px 1px rgba(255, 255, 255, 0.1), -1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(255, 255, 255, 0.1);
 }
-
-
 .header {
     font-family: Lato;
     padding-top: 5px;
@@ -103,44 +135,213 @@
     border-radius: 0px;
     opacity: 0.9;
     text-transform: uppercase;
-    z-index:2;
-    height:20px;
+    z-index: 2;
+    height: 20px;
 }
-.header p
-{
+.header p {
     line-height: 30px;
     margin-left: 5px;
     color: var(--color-highlight);
 }
+body {
+    font-family: Roboto !important;
 
-
+}
 /*
  * UTILS
  */
-.none
-{
+
+.none {
     display: none;
 }
-
-.no-select{
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently */
+.no-select {
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently */
 }
-.text-shadow{
-
-    text-shadow:  1px  1px 3px rgba(0,0,0,0.1),
-                  1px -1px 3px rgba(0,0,0,0.1),
-                 -1px  1px 3px rgba(0,0,0,0.1),
-                 -1px -1px 3px rgba(0,0,0,0.1);
+.text-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1), 1px -1px 3px rgba(0, 0, 0, 0.1), -1px 1px 3px rgba(0, 0, 0, 0.1), -1px -1px 3px rgba(0, 0, 0, 0.1);
 }
+
+input {
+    outline: none;
+}
+.window {
+    position: absolute;
+    background: rgba(0,0,0,0.7);
+    width:var(--width) ;
+    height:calc((var(--width) / 4 * 3));
+    padding:10px;
+    border-radius:5px;
+    box-shadow: 0px 0px 37px -5px rgba(0,0,0,0.75);
+
+    padding-top:40px;
+}
+.window>.head{
+    position: absolute;
+    top:0;
+    left:0;
+    line-height:30px;
+    height:30px;
+    font-size:14px;
+    border-top-right-radius:5px;
+    border-top-left-radius:5px;
+    width:100%;
+    background: var( --color-neutral2-trans-6);
+    color:var(--color-font-bright);
+
+    box-shadow: 0px 2px 0px 0px var( --color-neutral-trans-4);
+    font-weight:400;
+    letter-spacing: 0.05em;
+}
+
+.window>.head:first-letter{
+    margin-left:10px;
+}
+
+.input {
+    height: 35px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 0px solid transparent;
+    box-shadow: inset 0px 0px 36px -15px rgba(64, 64, 64, 0.75);
+    color: rgba(255, 255, 255, 0.7);
+    font-size:14px;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+    border-style: solid;
+    box-sizing: border-box;
+    border-radius: 1px;
+    padding-left:10px;
+    padding-right: 10px;
+    text-align: center;
+
+
+    border-bottom: 2px solid transparent;
+}
+.input.green {
+    text-shadow:0px 0px 1px var( --color-success);
+    border-bottom: 2px solid var(--color-success);
+}
+.input.green:focus {
+    border-bottom: 2px solid var(--color-success);
+    box-shadow: inset 0px 0px 36px -5px var(--color-success-trans-8);
+}
+.input.red {
+    text-shadow:0px 0px 1px var(--color-fail);
+    border-bottom: 2px solid var(--color-fail);
+}
+.input.red:focus {
+    border-bottom: 2px solid var(--color-fail);
+    box-shadow: inset 0px 0px 36px -5px var(--color-fail-trans-8);
+}
+
+.input:focus {
+    border-bottom: 2px solid var(--color-accent-trans-2);
+    box-shadow: inset 0px 0px 36px -18px var(--color-accent);
+}
+input[type="range"] {
+
+    display: block;
+    -webkit-appearance: none;
+
+    /*background-color: #bdc3c7;*/
+    background-color: var(--color-accent-trans-2);
+    height: 2px;
+    border-radius: 1px;
+    margin: 0 auto;
+    outline: 0;
+
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    border-radius: 1%;
+    cursor: pointer;
+    transition: .3s ease-in-out;
+    border:10px solid rgba(0,0,0,0);
+    border-top:10px solid var(--color-accent-trans-6);
+    transform: scale(1,1.5);
+    border-top-left-radius:5px;
+    margin-top:0px;
+
+}
+
+
+​ input[type="range"]::-webkit-slider-thumb:hover {
+    border: 2px solid #e74c3c;
+}
+input[type="range"]::-webkit-slider-thumb:active{
+    transform: scale(1.1,1.6);
+}
+input[type="range"]::-webkit-slider-runnable-track {
+
+
+}
+
+
+.button {
+    display:block;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:5px;
+    padding-bottom:5px;
+    background: var(--color-neutral-trans-8);
+    text-align: center;
+    font-size:14px;
+
+    cursor:pointer;
+    color:var(--color-font-bright);
+
+    border-radius:2px;
+
+
+    border-bottom:2px solid var(--color-neutral2-trans-6);
+
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+}
+
+
+
+.button.green {
+    background: var(--color-success-trans-6);
+    border-bottom:2px solid var(--color-success-trans-6);
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+}
+.button.red {
+    background: var(--color-fail-trans-6);
+    border-bottom:2px solid var(--color-fail-trans-6);
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+}
+
+
+.button:hover{
+    margin-top:1px;
+    border-top:1px solid transparent;
+    border-bottom:0px solid transparent;
+}
+
+
+.label{
+
+    color:var(--color-font-bright);
+
+}
+
 
 /*
 * Scrollbar
 */
+
 ::-webkit-scrollbar {
     width: 5px;
     display: block;

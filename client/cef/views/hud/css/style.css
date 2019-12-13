@@ -13,19 +13,15 @@ body {
     position: absolute;
     transform: translate(-50%, -50%);
     transition: all 1ms linear;
-
     transform: translate(-50%, -50%) scale(0);
 }
 .interaction_key.show {
-
     position: absolute;
     animation: ShrinkIn 1000ms;
     animation-iteration-count: 1;
-
     transform: translate(-50%, -50%) scale(1);
     transition: all 1ms linear;
 }
-
 .interaction_key.error {
     position: absolute;
     animation: shake 0.2s;
@@ -36,7 +32,6 @@ body {
     position: absolute;
     animation: ShrinkOut 1000ms;
     animation-iteration-count: 1;
-
     transform: translate(-50%, -50%) scale(0);
 }
 @keyframes shake {
@@ -64,8 +59,6 @@ body {
         transform: translate(-50%, -50%) scale(0);
     }
 }
-
-
 @keyframes ShrinkIn {
     0% {
         transform: translate(-50%, -50%) scale(0.1);
@@ -80,14 +73,9 @@ body {
         transform: translate(-50%, -50%) scale(1);
     }
 }
-
-
-
-
 .interaction_info {
     position: absolute;
-    transform: translate(-100%, -50%) scale(0.04,1) !important;
-    font-family: Arial;
+    transform: translate(-100%, -50%) scale(0.04, 1) !important;
     color: #FFF;
     text-align: left;
     font-size: 1.7vh;
@@ -96,15 +84,88 @@ body {
 }
 .interaction_info.show {
     position: absolute;
-    transform: translate(0%, -50%) scale(1,1) !important;
+    transform: translate(0%, -50%) scale(1, 1) !important;
     transition: all 1000ms linear;
-    opacity:1;
+    opacity: 1;
+}
+.interaction_info.fadeleft {
+    position: absolute;
+    opacity: 0;
+    transform: translate(-100%, -50%) scale(0.04, 1) !important;
+    transition: all 200ms linear;
 }
 
 
-.interaction_info.fadeleft {
+#player_hud {
+
     position: absolute;
-    opacity:0;
-    transform: translate(-100%, -50%) scale(0.04,1) !important;
-    transition: all 200ms linear;
+    bottom:0;
+    left:0;
+    opacity:0.8;
+
+}
+#player_hud >.cash {
+    position: absolute;
+    top:2vh;
+    width:400px;
+    padding-left:35px;
+    line-height:25px;
+    font-weight:400;
+    font-size:25px;
+    color:#FFF;
+    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+}
+#player_hud >.cash::first-letter{
+    padding-right:3px;
+    font-size:20px;
+}
+#player_hud >.cash::before {
+    content:" ";
+    background-image: url(wallet.svg);
+    top:-2px;
+    left:0;
+    position: absolute;
+    width:25px;
+    height:25px;
+    background-position: center;
+}
+#player_hud >.playtime {
+    position: absolute;
+    top:4vh;
+    width:400px;
+    padding-left:35px;
+    line-height:25px;
+    font-weight:400;
+    font-size:25px;
+    color:#FFF;
+    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+}
+#player_hud >.playtime::before {
+    content:" ";
+    background-image: url(wallet.svg);
+    top:-2px;
+    left:0;
+    position: absolute;
+    width:25px;
+    height:25px;
+    background-position: center;
+}
+#player_hud >.world {
+    position: absolute;
+    top:15vh;
+}
+#player_hud >.world>.time {
+    font-family: Roboto;
+    font-size:25px;
+    font-weight:400;
+    color:#FFF;
+    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+}
+#player_hud >.world>.date {
+    font-family: Roboto;
+    font-size:12px;
+    font-weight:400;
+    color:rgba(200,200,200,1);
+
+    text-shadow:0px 0px 5px rgba(0,0,0,0.4);
 }

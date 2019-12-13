@@ -5,3 +5,4 @@ npm i fs --save
 npm i async --save
 npm i mysql --save
 npm i uglifyify --save
+pause

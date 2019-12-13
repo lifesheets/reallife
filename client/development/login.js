@@ -15,6 +15,11 @@ mp.game.ui.displayRadar(false);
 //mp.game.graphics.transitionFromBlurred(1);
 
 
+mp.events.add('login:start', () => {
+	console.log("Login start");
+
+
+});
 mp.events.add('intro:start', () => {
 	console.log("start intro");
 	mp.players.local.position = new mp.Vector3(1240.9813232421875, -2998.3310546875, 12.331292152404785);
