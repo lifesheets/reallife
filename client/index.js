@@ -480,11 +480,12 @@ mp.events.add("Character:Edit", (setClothing = false) => {
     if (setClothing) {
         mp.players.local.model = mp.game.joaat('mp_m_freemode_01');
         mp.players.local.setDefaultComponentVariation();
-        mp.players.local.setComponentVariation(3, 15, 0, 2);
-        mp.players.local.setComponentVariation(4, 102, 0, 2);
-        mp.players.local.setComponentVariation(6, 34, 0, 2);
-        mp.players.local.setComponentVariation(8, 15, 2, 2);
-        mp.players.local.setComponentVariation(11, 69, 0, 5);
+        mp.players.local.setComponentVariation(4, 21, 0, 0);
+        mp.players.local.setComponentVariation(11, 15, 0, 0);
+        mp.players.local.setComponentVariation(3, 15, 0,0);
+       // mp.players.local.setComponentVariation(6, 34, 0, 2);
+       // mp.players.local.setComponentVariation(8, 15, 2, 2);
+        //mp.players.local.setComponentVariation(11, 69, 0, 5);
         // mp.players.local.setComponentVariation(5, 40, 0, 2);
         mp.players.local.setHeadBlendData(
             // shape
@@ -509,9 +510,9 @@ mp.events.add("render", () => {
 	//CEFHud.call("drawInteraction", 70, "Tür aufhebeln", 0.5, 0.8, 1000, 1)
 	let row = 0;
 	Object.keys(keyQueue).forEach((key) => {
-		let req = keyQueue[key];
+		let req = keyQueue[key.toString()];
 		console.log(req);
-		if (req != false) {
+		if (req !== undefined) {
 			row += 1;
 			let x = req.x || 0.5;
 			let y = req.y || 1.0 - (0.2 * row);
@@ -521,22 +522,21 @@ mp.events.add("render", () => {
 		}
 	})
 });
-mp.events.add("interaction:receive", (key) => {
+mp.events.add("cef:interaction:receive", (key) => {
 	//console.log(keyQueue[key]);
-	if (keyQueue[key]) {
+	if (keyQueue[key.toString()]) {
 		console.log("interaction:receive", key);
-		keyQueue[key] = false;
-		delete keyQueue[key];
+		keyQueue[key.toString()] = undefined;
 	}
-	console.log(keyQueue[key]);
+	console.log(keyQueue[key.toString()]);
 });
-mp.events.add("interaction:request", (key, string, duration, x = 0, y = 0) => {
+mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0) => {
 	if (!keyQueue[key]) {
 
 		CEFHud.call("killInteraction", key)
 
 		console.log(key, string, duration, x, y);
-		keyQueue[key] = {
+		keyQueue[key.toString()] = {
 			key: key,
 			string: string,
 			duration: duration,
@@ -546,10 +546,26 @@ mp.events.add("interaction:request", (key, string, duration, x = 0, y = 0) => {
 	}
 });
 mp.keys.bind(0x71, false, function() {
-	mp.events.call("interaction:request", 70, "Tasche durchsuchen", 2000)
+	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
 },{"./browser.js":3}],6:[function(require,module,exports){
 "use strict";
+
+
+
+/*
+
+
+
+*/
+
+
+
+
+
+
+
+
 var Bones = require("./libs/skeleton.js")
 console.log = function(...a) {
 	a = a.map(function(e) {
@@ -586,6 +602,7 @@ mp.gameplayCam.setAffectsAiming(true);
 require("./character_creator.js")
 require("./login.js")
 require("./hud.js")
+require("./vehicles.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -595,7 +612,7 @@ mp.events.add("Notifications:New", (notification_data) => {
 
 
 
-},{"./browser.js":3,"./character_creator.js":4,"./hud.js":5,"./libs/attachments.js":7,"./libs/skeleton.js":8,"./libs/weapon_attachments.js":10,"./login.js":11,"./natives.js":13,"./utils.js":15,"./vector.js":16}],7:[function(require,module,exports){
+},{"./browser.js":3,"./character_creator.js":4,"./hud.js":5,"./libs/attachments.js":7,"./libs/skeleton.js":8,"./libs/weapon_attachments.js":10,"./login.js":11,"./natives.js":13,"./utils.js":15,"./vector.js":16,"./vehicles.js":17}],7:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -10235,88 +10252,90 @@ require("./character_creator.js");
 //mp.defaultCam.pointAtCoord(485.366455078125, -1569.3214111328125, 203.82797241210938);
 //mp.defaultCam.setActive(true);
 //mp.game.cam.renderScriptCams(true, false, 0, true, false);
-mp.game.ui.displayHud(false);
-mp.game.ui.displayRadar(false);
 //mp.game.graphics.transitionToBlurred(1);
 //mp.game.graphics.transitionFromBlurred(1);
-
-
-
-
-mp.events.add('Account:Login', (username,password) => {
-	console.log(username,password)
-
+let time = 0;
+mp.keys.bind(0x72, false, function() {
+	mp.game.time.setClockTime(time, 0, 0);
+	if (time == 12) {
+		time = 0;
+	} else {
+		time = 12;
+	}
 });
-mp.events.add('login:start', () => {
-	console.log("Login start");
+mp.gui.chat.activate(false);
+mp.gui.chat.show(true);
+mp.game.ui.displayHud(false);
+mp.game.ui.displayRadar(false);
+mp.events.add('cef:account:login', (username, password) => {
+	console.log(username, password)
 
+
+	mp.events.callRemote("client:account:login",username,password);
+});
+
+
+
+
+mp.events.add('server:account:init', () => {
+	console.log("Login start");
 	// cam pos 73.37151336669922, -3461.402587890625, 34.95772933959961
 	// cam to pos 109.21778869628906, -3332.524169921875, 31.724140167236328
-
 	mp.players.local.position = new mp.Vector3(73.37151336669922, -3461.402587890625, 32.95772933959961);
-
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
-
 	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(73.37151336669922, -3461.402587890625, 34.95772933959961), new mp.Vector3(), 60);
 	mp.defaultCam.pointAtCoord(109.21778869628906, -3332.524169921875, 31.724140167236328);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
-
-
-
 	CEFInterface.load("login/index.html");
 	CEFInterface.cursor(true);
-	let time = 0;
-	mp.keys.bind(0x72, false, function() {
-		mp.game.time.setClockTime(time,0,0);
-		if (time == 12) {
-			time = 0;
-		} else {
-			time = 12;
-		}
-	});
-
-
-
 });
-mp.events.add('intro:start', () => {
+mp.events.add('server:intro:start', () => {
 	console.log("start intro");
-	mp.players.local.position = new mp.Vector3(1240.9813232421875, -2998.3310546875, 12.331292152404785);
-
+	mp.players.local.position = new mp.Vector3(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
-	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(1242.775,-2998.0186,12.8503), new mp.Vector3(), 60);
-	mp.defaultCam.pointAtCoord(1240.9813232421875, -2998.3310546875, 12.331292152404785);
+	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(-133.93670654296875, -2376.887939453125, 15.57387962341309), new mp.Vector3(), 60);
+	mp.defaultCam.pointAtCoord(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
 	mp.game.graphics.transitionFromBlurred(1);
-
-
-
 	CEFInterface.load("character_creator/index.html");
 	CEFInterface.cursor(true);
-
-
-	mp.events.call("Character:Edit",true);
-	mp.players.local.setHeading(-90);
-
+	mp.events.call("Character:Edit", true);
+	mp.players.local.setHeading(0);
 });
 },{"./browser.js":3,"./character_creator.js":4,"./maps/container.js":12,"./natives.js":13}],12:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
 
-new obj("xm_prop_x17_bag_01a", {"x":1242.9661,"y":-2998.1304,"z":11.3241}, {"x":0,"y":0,"z":-91.2002}, 0);
-  new obj("prop_container_ld",{"x":1241.9152,"y":-2994.5703,"z":11.1329},{"x":0,"y":0,"z":179.8499});
-  new obj("prop_container_door_mb_r",{"x":1240.63,"y":-2988.5017,"z":12.5277},{"x":0,"y":0,"z":-159.7055});
-  new obj("prop_container_door_mb_l",{"x":1243.2344,"y":-2988.4998,"z":12.5357},{"x":0,"y":0,"z":-182.5993});
-  new obj("prop_homeless_matress_02",{"x":1241.2659,"y":-2999.8118,"z":11.3037},{"x":0,"y":0.7,"z":-270.0222});
-  new obj("prop_rub_matress_03",{"x":1242.4857,"y":-2999.4316,"z":11.3683},{"x":0,"y":0,"z":85});
-  new obj("prop_boxpile_04a",{"x":1242.3789,"y":-2991.9573,"z":12.0629},{"x":0,"y":0,"z":-90});
-  new obj("ng_proc_box_02b",{"x":1242.6628,"y":-2993.3904,"z":11.3024},{"x":0,"y":0,"z":-102.4506});
-  new obj("prop_coolbox_01",{"x":1242.9082,"y":-2994.2805,"z":11.297},{"x":0,"y":0,"z":0});
-  new obj("prop_boxpile_10a",{"x":1241.172,"y":-2996.4475,"z":12.1923},{"x":0,"y":0,"z":-90});
+
+
+  new obj("prop_container_ld",{"x":-138.7014,"y":-2377.79,"z":13.969},{"x":0,"y":0,"z":269.8506});
+  new obj("prop_boxpile_10b",{"x":-141.9765,"y":-2377.0015,"z":15.0264},{"x":0,"y":-0.4,"z":0});
+  new obj("prop_boxpile_03a",{"x":-138.764,"y":-2378.261,"z":14.1575},{"x":0,"y":0,"z":0});
+  new obj("prop_homeless_matress_02",{"x":-137.2492,"y":-2378.4546,"z":14.1493},{"x":0,"y":0,"z":-180.1432});
+  new obj("prop_rub_matress_03",{"x":-135.6964,"y":-2378.4873,"z":14.1829},{"x":0,"y":0,"z":0});
+  new obj("xm_prop_x17_bag_01a",{"x":-137.4462,"y":-2377.6685,"z":14.1563},{"x":0,"y":0,"z":-17.2});
+  new obj("prop_crate_float_1",{"x":-133.17,"y":-2378.5881,"z":14.1542},{"x":0,"y":0,"z":-185.8754});
+  new obj("prop_cs_lester_crate",{"x":-134.5168,"y":-2378.8179,"z":14.249},{"x":0,"y":0,"z":0});
+  new obj("v_serv_abox_04",{"x":-133.058,"y":-2376.856,"z":14.1657},{"x":0,"y":0,"z":10.3229});
+  new obj("v_serv_abox_04",{"x":-133.4986,"y":-2376.8713,"z":14.1657},{"x":0,"y":-0.05,"z":67.5483});
+  new obj("v_serv_abox_04",{"x":-133.2375,"y":-2376.8496,"z":14.4318},{"x":0,"y":-0.05,"z":91.2983});
+  new obj("prop_container_door_mb_l",{"x":-144.7654,"y":-2376.4741,"z":15.3705},{"x":0,"y":0,"z":-90.8531});
+  new obj("prop_container_door_mb_r",{"x":-144.7826,"y":-2379.0774,"z":15.3709},{"x":0,"y":0,"z":-78.1748});
+
+
+
+
+
+
+
+
+
+
 
 },{"../objects.js":14}],13:[function(require,module,exports){
 var natives = {};
@@ -10571,4 +10590,88 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
+},{}],17:[function(require,module,exports){
+
+
+
+var seats = {
+    0: "seat_pside_f", // passanger side front
+    1: "seat_dside_r", // driver side rear
+    2: "seat_pside_r", // passanger side rear
+    3: "seat_dside_r1", // driver side rear1
+    4: "seat_pside_r1", // passanger side rear1
+    5: "seat_dside_r2", // driver side rear2
+    6: "seat_pside_r2", // passanger side rear2
+    7: "seat_dside_r3", // driver side rear3
+    8: "seat_pside_r3", // passanger side rear3
+    9: "seat_dside_r4", // driver side rear4
+    10: "seat_pside_r4", // passanger side rear4
+    11: "seat_dside_r5", // driver side rear5
+    12: "seat_pside_r5", // passanger side rear5
+    13: "seat_dside_r6", // driver side rear6
+    14: "seat_pside_r6", // passanger side rear6
+    15: "seat_dside_r7", // driver side rear7
+    16: "seat_pside_r7", // passanger side rear7
+}
+mp.game.controls.useDefaultVehicleEntering = false;
+mp.keys.bind(0x47, false, () => {
+    if (mp.players.local.vehicle === null) {
+        if (mp.gui.cursor.visible) return;
+        let pos = mp.players.local.position;
+        let targetVeh = {
+            veh: null,
+            dist: 900
+        }
+        // get closest veh + police cars
+        mp.vehicles.forEachInStreamRange((veh) => {
+            let vp = veh.position;
+            let dist = mp.game.system.vdist2(pos.x, pos.y, pos.z, vp.x, vp.y, vp.z);
+            if (dist < targetVeh.dist) {
+                targetVeh.dist = dist;
+                targetVeh.veh = veh;
+            }
+        });
+        let veh = targetVeh.veh;
+        if (veh !== null) {
+            if (veh.isAnySeatEmpty()) {
+                let toEnter = {
+                    seat: 0,
+                    dist: 99999,
+                    pos: new mp.Vector3(0, 0, 0)
+                }
+                let insideSeatsFree = false;
+                let ground;
+                let seats_count = mp.game.vehicle.getVehicleSeats(veh);
+                for (var i = 0; i <= seats_count; i++) {
+                    if (veh.isSeatFree(i)) {
+                        if (i <= 2) {
+                            insideSeatsFree = true;
+                        }
+                        let seat = seats[i];
+                        let seat_pos = veh.getWorldPositionOfBone(veh.getBoneIndexByName(seat))
+                        let ground_pos = mp.game.gameplay.getGroundZFor3dCoord(seat_pos.x, seat_pos.y, seat_pos.z, 0, false);
+                        let seat_dist = mp.game.system.vdist2(pos.x, pos.y, pos.z, seat_pos.x, seat_pos.y, seat_pos.z);
+                        if ((i > 2) && (insideSeatsFree == true)) {} else {
+                            if (veh.model == 1917016601 && i > 0) {
+                                if ((toEnter.dist > 30)) {
+                                    toEnter.dist = 30;
+                                    toEnter.seat = i;
+                                }
+                            }
+                            if ((seat_dist < toEnter.dist)) {
+                                toEnter.dist = seat_dist;
+                                toEnter.seat = i;
+                            }
+                        }
+                    }
+                }
+                if ((veh.model == 1475773103) && (toEnter.seat > 0)) { // if rumpo3
+                    mp.players.local.taskEnterVehicle(veh.handle, 5000, toEnter.seat, 2.0, 16, 0);
+                } else {
+                    mp.players.local.taskEnterVehicle(veh.handle, 5000, toEnter.seat, 2.0, 1, 0);
+                }
+            }
+        }
+    }
+});
 },{}]},{},[6]);

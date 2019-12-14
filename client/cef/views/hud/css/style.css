@@ -13,11 +13,13 @@ body {
     position: absolute;
     transform: translate(-50%, -50%);
     transition: all 1ms linear;
-    transform: translate(-50%, -50%) scale(0);
-}
+    transform: translate(-50%, -50%) scale(1);
+
+    z-index:2;
+    }
 .interaction_key.show {
     position: absolute;
-    animation: ShrinkIn 1000ms;
+    animation: ShrinkIn 400ms;
     animation-iteration-count: 1;
     transform: translate(-50%, -50%) scale(1);
     transition: all 1ms linear;
@@ -30,7 +32,7 @@ body {
 }
 .interaction_key.success {
     position: absolute;
-    animation: ShrinkOut 1000ms;
+    animation: ShrinkOut 500ms;
     animation-iteration-count: 1;
     transform: translate(-50%, -50%) scale(0);
 }
@@ -63,7 +65,7 @@ body {
     0% {
         transform: translate(-50%, -50%) scale(0.1);
     }
-    50% {
+    40% {
         transform: translate(-50%, -50%) scale(1);
     }
     75% {
@@ -75,23 +77,24 @@ body {
 }
 .interaction_info {
     position: absolute;
-    transform: translate(-100%, -50%) scale(0.04, 1) !important;
+    transform: translate(-75%, -50%) scale(0.04, 1) !important;
     color: #FFF;
     text-align: left;
     font-size: 1.7vh;
     text-shadow: 0px 0px 15px #000;
     transition: all 200ms linear;
+    z-index:0;
 }
 .interaction_info.show {
     position: absolute;
     transform: translate(0%, -50%) scale(1, 1) !important;
-    transition: all 1000ms linear;
+    transition: all 200ms linear;
     opacity: 1;
 }
 .interaction_info.fadeleft {
     position: absolute;
     opacity: 0;
-    transform: translate(-100%, -50%) scale(0.04, 1) !important;
+    transform: translate(-75%, -50%) scale(0.04, 1) !important;
     transition: all 200ms linear;
 }
 

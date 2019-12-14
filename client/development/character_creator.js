@@ -147,11 +147,12 @@ mp.events.add("Character:Edit", (setClothing = false) => {
     if (setClothing) {
         mp.players.local.model = mp.game.joaat('mp_m_freemode_01');
         mp.players.local.setDefaultComponentVariation();
-        mp.players.local.setComponentVariation(3, 15, 0, 2);
-        mp.players.local.setComponentVariation(4, 102, 0, 2);
-        mp.players.local.setComponentVariation(6, 34, 0, 2);
-        mp.players.local.setComponentVariation(8, 15, 2, 2);
-        mp.players.local.setComponentVariation(11, 69, 0, 5);
+        mp.players.local.setComponentVariation(4, 21, 0, 0);
+        mp.players.local.setComponentVariation(11, 15, 0, 0);
+        mp.players.local.setComponentVariation(3, 15, 0,0);
+       // mp.players.local.setComponentVariation(6, 34, 0, 2);
+       // mp.players.local.setComponentVariation(8, 15, 2, 2);
+        //mp.players.local.setComponentVariation(11, 69, 0, 5);
         // mp.players.local.setComponentVariation(5, 40, 0, 2);
         mp.players.local.setHeadBlendData(
             // shape

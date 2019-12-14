@@ -9,70 +9,57 @@ require("./character_creator.js");
 //mp.defaultCam.pointAtCoord(485.366455078125, -1569.3214111328125, 203.82797241210938);
 //mp.defaultCam.setActive(true);
 //mp.game.cam.renderScriptCams(true, false, 0, true, false);
-mp.game.ui.displayHud(false);
-mp.game.ui.displayRadar(false);
 //mp.game.graphics.transitionToBlurred(1);
 //mp.game.graphics.transitionFromBlurred(1);
-
-
-
-
-mp.events.add('Account:Login', (username,password) => {
-	console.log(username,password)
-
+let time = 0;
+mp.keys.bind(0x72, false, function() {
+	mp.game.time.setClockTime(time, 0, 0);
+	if (time == 12) {
+		time = 0;
+	} else {
+		time = 12;
+	}
 });
-mp.events.add('login:start', () => {
-	console.log("Login start");
+mp.gui.chat.activate(false);
+mp.gui.chat.show(true);
+mp.game.ui.displayHud(false);
+mp.game.ui.displayRadar(false);
+mp.events.add('cef:account:login', (username, password) => {
+	console.log(username, password)
 
+
+	mp.events.callRemote("client:account:login",username,password);
+});
+
+
+
+
+mp.events.add('server:account:init', () => {
+	console.log("Login start");
 	// cam pos 73.37151336669922, -3461.402587890625, 34.95772933959961
 	// cam to pos 109.21778869628906, -3332.524169921875, 31.724140167236328
-
 	mp.players.local.position = new mp.Vector3(73.37151336669922, -3461.402587890625, 32.95772933959961);
-
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
-
 	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(73.37151336669922, -3461.402587890625, 34.95772933959961), new mp.Vector3(), 60);
 	mp.defaultCam.pointAtCoord(109.21778869628906, -3332.524169921875, 31.724140167236328);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
-
-
-
 	CEFInterface.load("login/index.html");
 	CEFInterface.cursor(true);
-	let time = 0;
-	mp.keys.bind(0x72, false, function() {
-		mp.game.time.setClockTime(time,0,0);
-		if (time == 12) {
-			time = 0;
-		} else {
-			time = 12;
-		}
-	});
-
-
-
 });
-mp.events.add('intro:start', () => {
+mp.events.add('server:intro:start', () => {
 	console.log("start intro");
-	mp.players.local.position = new mp.Vector3(1240.9813232421875, -2998.3310546875, 12.331292152404785);
-
+	mp.players.local.position = new mp.Vector3(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
-	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(1242.775,-2998.0186,12.8503), new mp.Vector3(), 60);
-	mp.defaultCam.pointAtCoord(1240.9813232421875, -2998.3310546875, 12.331292152404785);
+	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(-133.93670654296875, -2376.887939453125, 15.57387962341309), new mp.Vector3(), 60);
+	mp.defaultCam.pointAtCoord(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
 	mp.game.graphics.transitionFromBlurred(1);
-
-
-
 	CEFInterface.load("character_creator/index.html");
 	CEFInterface.cursor(true);
-
-
-	mp.events.call("Character:Edit",true);
-	mp.players.local.setHeading(-90);
-
+	mp.events.call("Character:Edit", true);
+	mp.players.local.setHeading(0);
 });

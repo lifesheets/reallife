@@ -10,9 +10,9 @@ mp.events.add("render", () => {
 	//CEFHud.call("drawInteraction", 70, "Tür aufhebeln", 0.5, 0.8, 1000, 1)
 	let row = 0;
 	Object.keys(keyQueue).forEach((key) => {
-		let req = keyQueue[key];
+		let req = keyQueue[key.toString()];
 		console.log(req);
-		if (req != false) {
+		if (req !== undefined) {
 			row += 1;
 			let x = req.x || 0.5;
 			let y = req.y || 1.0 - (0.2 * row);
@@ -22,22 +22,21 @@ mp.events.add("render", () => {
 		}
 	})
 });
-mp.events.add("interaction:receive", (key) => {
+mp.events.add("cef:interaction:receive", (key) => {
 	//console.log(keyQueue[key]);
-	if (keyQueue[key]) {
+	if (keyQueue[key.toString()]) {
 		console.log("interaction:receive", key);
-		keyQueue[key] = false;
-		delete keyQueue[key];
+		keyQueue[key.toString()] = undefined;
 	}
-	console.log(keyQueue[key]);
+	console.log(keyQueue[key.toString()]);
 });
-mp.events.add("interaction:request", (key, string, duration, x = 0, y = 0) => {
+mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0) => {
 	if (!keyQueue[key]) {
 
 		CEFHud.call("killInteraction", key)
 
 		console.log(key, string, duration, x, y);
-		keyQueue[key] = {
+		keyQueue[key.toString()] = {
 			key: key,
 			string: string,
 			duration: duration,
@@ -47,5 +46,5 @@ mp.events.add("interaction:request", (key, string, duration, x = 0, y = 0) => {
 	}
 });
 mp.keys.bind(0x71, false, function() {
-	mp.events.call("interaction:request", 70, "Tasche durchsuchen", 2000)
+	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });

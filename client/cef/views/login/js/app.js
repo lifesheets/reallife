@@ -40,7 +40,7 @@ var Account = new class {
             if ($("#join_password").hasClass("wrong") == false) {
                 console.log("username", this.username);
                 console.log("password", this.password);
-                mp.trigger("Account:Login", this.username, this.password);
+                mp.trigger("cef:account:login", this.username, this.password);
             } else {
                 this.alert({
                     title: "Password",

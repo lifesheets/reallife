@@ -15,8 +15,10 @@ const circle_background = "rgba(242,242,242,1)";
 const circle_text = "rgba(100,100,100,1)";
 var last_call = 0;
 var triggered = [];
+var done = [];
 
 function drawInteraction(key, string, x, y, neededTime = 3000, scale = 1) {
+    console.log("drawInteraction", key, string);
     requestAnimationFrame(function() {
         if (!triggered[key]) {
             triggered[key] = false;
@@ -31,6 +33,7 @@ function drawInteraction(key, string, x, y, neededTime = 3000, scale = 1) {
                 text: string
             }
         }
+        if (done[key]) return;
         let progress = 0;
         let radius = scale * 45;
         let radius_line = scale * 41;
@@ -38,17 +41,24 @@ function drawInteraction(key, string, x, y, neededTime = 3000, scale = 1) {
         let selector = `interaction_${key}`;
         if (interactions[key].obj == undefined) {
             if (!$("#interaction_" + key).length) {
-                $("#interaction_area").append(`<canvas id="${selector}" width="${aspects.width}" height="${aspects.height}" class="interaction_key" style="top:${x}px; left:${y}px"> </canvas>`);
+                console.log("create");
+                $("#interaction_area").append(`<canvas id="${selector}" width="${aspects.width}" height="${aspects.height}" class="interaction_key show" style="top:${x}px; left:${y}px"> </canvas>`);
                 let canvasLocal = document.getElementById(selector)
                 let cContext = document.getElementById(selector).getContext('2d');
                 interactions[key].context = cContext;
                 interactions[key].obj = selector;
                 $("#interaction_area").append(`<span id="${selector}_text" class="interaction_info" style="top:${x}px; left:${y}px">${interactions[key].text}</span>`);
+                setTimeout(() => {
+                    $("#interaction_" + key + "_text").addClass("show");
+                }, 10);
             }
         }
         if (interactions[key].obj != undefined) {
             if ((interactions[key].press_start == 0) && (keys[key]) && (triggered[key] == false)) {
                 interactions[key].press_start = Date.now();
+                if ($("#interaction_" + key).hasClass("show")) {
+                    $("#interaction_" + key).removeClass("show");
+                }
                 if ($("#interaction_" + key).hasClass("error")) {
                     $("#interaction_" + key).removeClass("error");
                 }
@@ -78,7 +88,7 @@ function drawInteraction(key, string, x, y, neededTime = 3000, scale = 1) {
             let centerY = aspects.height / 2;
             context.clearRect(0, 0, aspects.width, aspects.height);
             context.imageSmoothingEnabled = true;
-            if ((progress > 0) && (interactions[key].press_start > 0)) {
+            if ((progress > 0) && (interactions[key].press_start > 0) && (neededTime > 1)) {
                 context.beginPath();
                 context.globalAlpha = 1;
                 let start = 90 * (Math.PI / 180);
@@ -110,8 +120,7 @@ function drawInteraction(key, string, x, y, neededTime = 3000, scale = 1) {
                 console.log("call troggered");
                 triggered[key] = true;
                 if (!$("#interaction_" + key).hasClass("success")) {
-                    $("#interaction_" + key + "_text").addClass("fadeleft");
-                    $("#interaction_" + key).addClass("success");
+                    clearInteraction(key);
                 }
             }
         }
@@ -133,11 +142,16 @@ function killInteraction(key) {
 
 function clearInteraction(key) {
     if (interactions[key]) {
-        let context = interactions[key].context;
+        $("#interaction_" + key + "_text").addClass("fadeleft");
+        $("#interaction_" + key).addClass("success");
+        done[key] = true;
         triggered[key] = false;
-        $("#interaction_" + key).remove();
-        $("#interaction_" + key + "_text").remove();
         interactions[key] = false
+        mp.trigger("cef:interaction:receive", key);
+        setTimeout(() => {
+            $("#interaction_" + key).remove();
+            $("#interaction_" + key + "_text").remove();
+        }, 700);
     }
 }
 //clearInteraction(65)
