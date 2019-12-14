@@ -326,7 +326,6 @@ class CEFBrowser {
 }
 module.exports = {
     interface:new CEFBrowser("empty.html"),
-    storage:new CEFBrowser("empty.html"),
     hud:new CEFBrowser("empty.html"),
     notification:new CEFBrowser("empty.html"),
     class:CEFBrowser
@@ -10242,8 +10241,42 @@ mp.game.ui.displayRadar(false);
 //mp.game.graphics.transitionFromBlurred(1);
 
 
+
+
+mp.events.add('Account:Login', (username,password) => {
+	console.log(username,password)
+
+});
 mp.events.add('login:start', () => {
 	console.log("Login start");
+
+	// cam pos 73.37151336669922, -3461.402587890625, 34.95772933959961
+	// cam to pos 109.21778869628906, -3332.524169921875, 31.724140167236328
+
+	mp.players.local.position = new mp.Vector3(73.37151336669922, -3461.402587890625, 32.95772933959961);
+
+	mp.players.local.setAlpha(255);
+	mp.players.local.freezePosition(true);
+
+	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(73.37151336669922, -3461.402587890625, 34.95772933959961), new mp.Vector3(), 60);
+	mp.defaultCam.pointAtCoord(109.21778869628906, -3332.524169921875, 31.724140167236328);
+	mp.defaultCam.setActive(true);
+	mp.game.cam.renderScriptCams(true, false, 0, true, false);
+
+
+
+	CEFInterface.load("login/index.html");
+	CEFInterface.cursor(true);
+	let time = 0;
+	mp.keys.bind(0x72, false, function() {
+		mp.game.time.setClockTime(time,0,0);
+		if (time == 12) {
+			time = 0;
+		} else {
+			time = 12;
+		}
+	});
+
 
 
 });

@@ -38,12 +38,24 @@
 
 
 
-    --color-accent :rgba(255, 96, 0,1);
+  /*  --color-accent :rgba(255, 96, 0,1);
     --color-accent-trans-1 :rgba(255, 96, 0,0.1);
     --color-accent-trans-2 :rgba(255, 96, 0,0.2);
     --color-accent-trans-4 :rgba(255, 96, 0,0.4);
     --color-accent-trans-6 :rgba(255, 96, 0,0.6);
-    --color-accent-trans-8 :rgba(255, 96, 0,0.8);
+    --color-accent-trans-8 :rgba(255, 96, 0,0.8);*/
+
+    --color-accent :rgba(136, 48, 255,1);
+    --color-accent-trans-1 :rgba(136, 48, 255,0.1);
+    --color-accent-trans-2 :rgba(136, 48, 255,0.2);
+    --color-accent-trans-4 :rgba(136, 48, 255,0.4);
+    --color-accent-trans-6 :rgba(136, 48, 255,0.6);
+    --color-accent-trans-8 :rgba(136, 48, 255,0.8);
+
+
+
+
+
 
     --color-success :rgba(23, 117, 80,1);
     --color-success-trans-2 :rgba(23, 117, 80,0.2);
@@ -178,18 +190,21 @@ input {
 .window {
     position: absolute;
     background: rgba(0,0,0,0.7);
+   /* background: rgba(27, 27, 27, 0.79);*/
     width:var(--width) ;
     height:calc((var(--width) / 4 * 3));
     padding:10px;
     border-radius:5px;
     box-shadow: 0px 0px 37px -5px rgba(0,0,0,0.75);
-
+    transform:translate(-50%,-50%);
     padding-top:40px;
+
 }
 .window>.head{
     position: absolute;
     top:0;
     left:0;
+    padding-top:2px;
     line-height:30px;
     height:30px;
     font-size:14px;
@@ -202,17 +217,21 @@ input {
     box-shadow: 0px 2px 0px 0px var( --color-neutral-trans-4);
     font-weight:400;
     letter-spacing: 0.05em;
+    cursor:pointer;
+    text-align:center;
 }
-
+/*
 .window>.head:first-letter{
     margin-left:10px;
 }
-
+*/
 .input {
     height: 35px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color:rgba(0, 0, 0, 0.5);
+    /*background-color: rgba(60, 60, 60, 0.4);*/
     border: 0px solid transparent;
-    box-shadow: inset 0px 0px 36px -15px rgba(64, 64, 64, 0.75);
+    box-shadow:inset 0px 0px 20px 7px rgba(64, 64, 64, 0);
+   /* box-shadow: inset 0px 0px 36px -15px rgba(64, 64, 64, 0.75);*/
     color: rgba(255, 255, 255, 0.7);
     font-size:14px;
     transition-property: all;
@@ -225,29 +244,16 @@ input {
     padding-right: 10px;
     text-align: center;
 
-
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid var(--color-accent-trans-4);
+    /*border-bottom: 2px solid rgba(30, 30, 30, 0.3);*/
 }
 .input.green {
     text-shadow:0px 0px 1px var( --color-success);
     border-bottom: 2px solid var(--color-success);
 }
-.input.green:focus {
-    border-bottom: 2px solid var(--color-success);
-    box-shadow: inset 0px 0px 36px -5px var(--color-success-trans-8);
-}
 .input.red {
     text-shadow:0px 0px 1px var(--color-fail);
     border-bottom: 2px solid var(--color-fail);
-}
-.input.red:focus {
-    border-bottom: 2px solid var(--color-fail);
-    box-shadow: inset 0px 0px 36px -5px var(--color-fail-trans-8);
-}
-
-.input:focus {
-    border-bottom: 2px solid var(--color-accent-trans-2);
-    box-shadow: inset 0px 0px 36px -18px var(--color-accent);
 }
 input[type="range"] {
 
@@ -293,8 +299,8 @@ input[type="range"]::-webkit-slider-runnable-track {
     display:block;
     padding-left:15px;
     padding-right:15px;
-    padding-top:5px;
-    padding-bottom:5px;
+    padding-top:7px;
+    padding-bottom:6px;
     background: var(--color-neutral-trans-8);
     text-align: center;
     font-size:14px;
@@ -302,7 +308,7 @@ input[type="range"]::-webkit-slider-runnable-track {
     cursor:pointer;
     color:var(--color-font-bright);
 
-    border-radius:2px;
+    border-radius:3px;
 
 
     border-bottom:2px solid var(--color-neutral2-trans-6);
@@ -310,31 +316,48 @@ input[type="range"]::-webkit-slider-runnable-track {
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
 }
 
+.button.small {
+    padding-left:7px;
+    padding-right:7px;
+    padding-top:5px;
+    padding-bottom:4px;
+    text-align: center;
+    font-size:10px;
+}
 
-
+.button.accent {
+    background: var(--color-accent-trans-6);
+    border-bottom:2px solid var(--color-accent-trans-4);
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+}
+.button.outline {
+    border-bottom:2px solid rgba(0,0,0,0.3);
+}
 .button.green {
-    background: var(--color-success-trans-6);
+    background: var(--color-success-trans-8);
     border-bottom:2px solid var(--color-success-trans-6);
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
 }
 .button.red {
-    background: var(--color-fail-trans-6);
+    background: var(--color-fail-trans-8);
     border-bottom:2px solid var(--color-fail-trans-6);
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
 }
 
 
 .button:hover{
-    margin-top:1px;
-    border-top:1px solid transparent;
-    border-bottom:0px solid transparent;
+    margin-top:0px;
+    border-top:0px solid transparent !important;
+    transform:translate(0px,1px) !important;
+    border-bottom:2px solid transparent !important;
+}
+.label{
+    color:var(--color-font-bright);
 }
 
+input[type="checkbox"] {
 
-.label{
-
-    color:var(--color-font-bright);
-
+    color:#FFF;
 }
 
 

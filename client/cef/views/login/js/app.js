@@ -10,6 +10,7 @@ var Account = new class {
         this.username = "";
         this.password = "";
         this.salt = "";
+        this.isBlocked = false;
     }
     generateSalt() {
         var text = "";
@@ -24,30 +25,32 @@ var Account = new class {
         }
     }
     login() {
-        console.log("login");
-        let vals = this.getFieldValues();
-        this.username = vals.username;
-        this.password = vals.password;
-        if (this.password.length < 3) {
-            if ($("#join_password").hasClass("wrong") == false) {
-                $("#join_password").addClass("wrong");
+        if (this.isBlocked == false) {
+            console.log("login");
+            let vals = this.getFieldValues();
+            this.username = vals.username;
+            this.password = vals.password;
+            if (this.password.length < 3) {
+                if ($("#join_password").hasClass("wrong") == false) {
+                    $("#join_password").addClass("wrong");
+                }
+            } else {
+                $("#join_password").removeClass("wrong");
             }
-        } else {
-            $("#join_password").removeClass("wrong");
-        }
-        if ($("#join_password").hasClass("wrong") == false) {
-            console.log("username", this.username);
-            console.log("password", this.password);
-            mp.trigger("Account:Login", this.username, this.password);
-        } else {
-            this.alert({
-                title: "Password",
-                titleSize: "16px",
-                message: "Please check your password (Min. length 4)   ",
-                messageColor: 'rgba(0,0,0,.8)',
-                position: "bottomCenter",
-                close: false
-            })
+            if ($("#join_password").hasClass("wrong") == false) {
+                console.log("username", this.username);
+                console.log("password", this.password);
+                mp.trigger("Account:Login", this.username, this.password);
+            } else {
+                this.alert({
+                    title: "Password",
+                    titleSize: "16px",
+                    message: "Please check your password (Min. length 4)   ",
+                    messageColor: 'rgba(0,0,0,.8)',
+                    position: "bottomCenter",
+                    close: false
+                })
+            }
         }
     }
     register() {
@@ -73,11 +76,14 @@ var Account = new class {
                 message: "Please check your password (Min. length 4)   ",
                 messageColor: 'rgba(0,0,0,.8)',
                 position: "bottomCenter",
+                color: 'rgba(212,212,212, 0.8)',
+                progressBarColor: 'rgba(136, 48, 255, 0.6)',
                 close: false
             })
         }
     }
     alert(text) {
+        this.isBlocked = false;
         /* notify({
              title: "Save",
              titleSize: "16px",
@@ -114,10 +120,8 @@ function cef_toggleregister() {
     if (!$("#login").hasClass("hide")) {
         $("#login").addClass("hide");
         $("#register").addClass("show");
-
     }
 }
-
 
 function alert_login(text) {
     Account.alert(text)
