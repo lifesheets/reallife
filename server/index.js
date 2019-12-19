@@ -1,6 +1,11 @@
-require("./account/index.js")
-var mysql = require("./libs/mysql.js");
 
+//var mysql = require("./libs/mysql.js");
+require("./libs/attachments.js")
+require("./logic/index.js")
+require("./account/index.js")
+require("./models/index.js")
+require("./world/index.js")
+var interaction = require("./interaction/index.js")
 
 
 mp.events.add("playerReady", player => {

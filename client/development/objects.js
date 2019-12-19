@@ -1,6 +1,6 @@
 
 class objCreator {
-    constructor(model, position, rotation, dim) {
+    constructor(model, position, rotation, dim = 0) {
         let self = this;
         this.obj = undefined;
         this.model = model;
@@ -47,4 +47,16 @@ class objCreator {
         this.obj.destroy();
     }
 }
+var clientSideObjects = [];
+mp.events.add("server:objects:create", function(identifier,model,x,y,z,rx,ry,rz) {
+    clientSideObjects[identifier] = new objCreator(model,{"x":x,"y":y,"z":z},{"x":rx,"y":ry,"z":rz},mp.players.local.dimension);
+});
+mp.events.add("server:objects:delete", function(identifier) {
+    if (!clientSideObjects[identifier]) return;
+
+    console.log("delete",identifier)
+    clientSideObjects[identifier].delete();
+});
+
+
 module.exports = objCreator;

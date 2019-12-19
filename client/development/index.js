@@ -8,13 +8,6 @@
 
 */
 
-
-
-
-
-
-
-
 var Bones = require("./libs/skeleton.js")
 console.log = function(...a) {
 	a = a.map(function(e) {
@@ -52,6 +45,7 @@ require("./character_creator.js")
 require("./login.js")
 require("./hud.js")
 require("./vehicles.js")
+require("./animations.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {

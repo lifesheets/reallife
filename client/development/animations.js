@@ -1,10 +1,10 @@
-mp.events.add("Sync:StopAnimSync", (tID, dict, name) => {
+mp.events.add("client:sync:stopanimsync", (tID, dict, name) => {
 	var player = mp.players.atRemoteId(tID);
 	if (player) {
 		player.stopAnimTask(dict, name, 1);
 	}
 });
-mp.events.add("Sync:PrepareAnim", (anims) => {
+mp.events.add("client:sync:prepareanim", (anims) => {
 	anims.forEach(function(anim) {
 		console.log(JSON.stringify(anim));
 		if (mp.game.streaming.doesAnimDictExist(anims.dict)) {
@@ -16,7 +16,7 @@ mp.events.add("Sync:PrepareAnim", (anims) => {
 		}
 	})
 });
-mp.events.add("Sync:PlayAnimation", (tID, dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout) => {
+mp.events.add("client:sync:playanimation", (tID, dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout) => {
 	var player = mp.players.atRemoteId(tID);
 	if (player) {
 		if (mp.game.streaming.doesAnimDictExist(dict)) {

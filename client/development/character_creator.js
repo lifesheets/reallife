@@ -129,8 +129,8 @@ mp.events.add("Character:Save", (data) => {
     //mp.game.cam.doScreenFadeOut(500);
     mp.game.cam.renderScriptCams(false, false, 0, true, false);
     setTimeout(function() {
-        mp.events.callRemote("Character:Save", data);
-    }, 1000)
+        mp.events.callRemote("client:appearance:save", data);
+    }, 1)
 });
 var clearTasksRender = false;
 mp.events.add("render", function() {

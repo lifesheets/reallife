@@ -1,3 +1,14 @@
+@font-face {
+    font-family: 'Glyphter';
+    src: url('./images.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}@font-face {
+    font-family: 'Technology';
+    src: url('./Technology.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 body {
     -webkit-user-select: none;
     /* Safari 3.1+ */
@@ -14,9 +25,8 @@ body {
     transform: translate(-50%, -50%);
     transition: all 1ms linear;
     transform: translate(-50%, -50%) scale(1);
-
-    z-index:2;
-    }
+    z-index: 2;
+}
 .interaction_key.show {
     position: absolute;
     animation: ShrinkIn 400ms;
@@ -83,7 +93,7 @@ body {
     font-size: 1.7vh;
     text-shadow: 0px 0px 15px #000;
     transition: all 200ms linear;
-    z-index:0;
+    z-index: 0;
 }
 .interaction_info.show {
     position: absolute;
@@ -97,78 +107,82 @@ body {
     transform: translate(-75%, -50%) scale(0.04, 1) !important;
     transition: all 200ms linear;
 }
-
-
 #player_hud {
-
     position: absolute;
-    bottom:0;
-    left:0;
-    opacity:0.8;
-
+    bottom: 0;
+    left: 0;
+    opacity: 0.8;
 }
-#player_hud >.cash {
+#player_hud>.cash {
     position: absolute;
-    top:2vh;
-    width:400px;
-    padding-left:35px;
-    line-height:25px;
-    font-weight:400;
-    font-size:25px;
-    color:#FFF;
-    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+    top: 2vh;
+    width: 400px;
+    padding-left: 35px;
+    line-height: 25px;
+    font-weight: 400;
+    font-size: 25px;
+    color: #FFF;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
-#player_hud >.cash::first-letter{
-    padding-right:3px;
-    font-size:20px;
+#player_hud>.cash::first-letter {
+    padding-right: 3px;
+    font-size: 20px;
 }
-#player_hud >.cash::before {
-    content:" ";
+#player_hud>.cash::before {
+    content: " ";
     background-image: url(wallet.svg);
-    top:-2px;
-    left:0;
+    top: -2px;
+    left: 0;
     position: absolute;
-    width:25px;
-    height:25px;
+    width: 25px;
+    height: 25px;
     background-position: center;
 }
-#player_hud >.playtime {
+#player_hud>.playtime {
     position: absolute;
-    top:4vh;
-    width:400px;
-    padding-left:35px;
-    line-height:25px;
-    font-weight:400;
-    font-size:25px;
-    color:#FFF;
-    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+    top: 4vh;
+    width: 400px;
+    padding-left: 35px;
+    line-height: 25px;
+    font-weight: 400;
+    font-size: 25px;
+    color: #FFF;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
-#player_hud >.playtime::before {
-    content:" ";
+#player_hud>.playtime::before {
+    content: " ";
     background-image: url(wallet.svg);
-    top:-2px;
-    left:0;
+    top: -2px;
+    left: 0;
     position: absolute;
-    width:25px;
-    height:25px;
+    width: 25px;
+    height: 25px;
     background-position: center;
 }
-#player_hud >.world {
+#player_hud>.world {
     position: absolute;
-    top:15vh;
+    top: 15vh;
 }
-#player_hud >.world>.time {
+#player_hud>.world>.time {
     font-family: Roboto;
-    font-size:25px;
-    font-weight:400;
-    color:#FFF;
-    text-shadow:0px 0px 10px rgba(0,0,0,0.4);
+    font-size: 25px;
+    font-weight: 400;
+    color: #FFF;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
-#player_hud >.world>.date {
+#player_hud>.world>.date {
     font-family: Roboto;
-    font-size:12px;
-    font-weight:400;
-    color:rgba(200,200,200,1);
-
-    text-shadow:0px 0px 5px rgba(0,0,0,0.4);
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(200, 200, 200, 1);
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+}
+#tacho {
+    position: absolute;
+    transform: translate(-100%, 0%) rotate3d(0, 1, 0, 0deg);
+    left: 100%;
+    margin: auto;
+    bottom: 0%;
+    width: 28vh;
+    height: 28vh;
 }

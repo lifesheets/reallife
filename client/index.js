@@ -264,6 +264,43 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 },{"process/browser.js":1,"timers":2}],3:[function(require,module,exports){
+mp.events.add("client:sync:stopanimsync", (tID, dict, name) => {
+	var player = mp.players.atRemoteId(tID);
+	if (player) {
+		player.stopAnimTask(dict, name, 1);
+	}
+});
+mp.events.add("client:sync:prepareanim", (anims) => {
+	anims.forEach(function(anim) {
+		console.log(JSON.stringify(anim));
+		if (mp.game.streaming.doesAnimDictExist(anims.dict)) {
+			mp.game.streaming.requestAnimDict(anims.dict);
+			while (mp.game.streaming.hasAnimDictLoaded(anims.dict)) {
+				mp.game.wait(10);
+			}
+			console.log("Loaded anim lib.", JSON.stringify(anim))
+		}
+	})
+});
+mp.events.add("client:sync:playanimation", (tID, dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout) => {
+	var player = mp.players.atRemoteId(tID);
+	if (player) {
+		if (mp.game.streaming.doesAnimDictExist(dict)) {
+			mp.game.streaming.requestAnimDict(dict);
+			while (mp.game.streaming.hasAnimDictLoaded(dict)) {
+				break;
+			}
+			console.log("sync play started for", player.name, dict, name, timeout);
+			player.taskPlayAnim(dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ);
+			if (timeout != 0) {
+				setTimeout(function() {
+					player.stopAnimTask(dict, name, 1);
+				}, timeout)
+			}
+		}
+	}
+});
+},{}],4:[function(require,module,exports){
 const absolute_path = "package://reallife/cef/views/";
 class CEFBrowser {
     constructor(url) {
@@ -328,9 +365,10 @@ module.exports = {
     interface:new CEFBrowser("empty.html"),
     hud:new CEFBrowser("empty.html"),
     notification:new CEFBrowser("empty.html"),
+    inventory:new CEFBrowser("empty.html"),
     class:CEFBrowser
 };
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var values = [];
 values["father"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 42, 43, 44];
 values["mother"] = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 45];
@@ -462,8 +500,8 @@ mp.events.add("Character:Save", (data) => {
     //mp.game.cam.doScreenFadeOut(500);
     mp.game.cam.renderScriptCams(false, false, 0, true, false);
     setTimeout(function() {
-        mp.events.callRemote("Character:Save", data);
-    }, 1000)
+        mp.events.callRemote("client:appearance:save", data);
+    }, 1)
 });
 var clearTasksRender = false;
 mp.events.add("render", function() {
@@ -497,12 +535,30 @@ mp.events.add("Character:Edit", (setClothing = false) => {
     }
     clearTasksRender = true;
 });
-},{"./browser.js":3}],5:[function(require,module,exports){
+},{"./browser.js":4}],6:[function(require,module,exports){
 "use strict";
 var CEFHud = require("./browser.js").hud;
 CEFHud.load("hud/index.html");
 var keyQueue = [];
+
+var isTachoVisible = false;
 mp.events.add("render", () => {
+	if (mp.players.local.isInAnyVehicle(false)) {
+		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
+
+		CEFHud.call("drawTacho",speed,90,180);
+		isTachoVisible = true;
+		return;
+	};
+	if (isTachoVisible) {
+		CEFHud.call("clearTacho");
+		isTachoVisible = false;
+	}
+
+
+
+
+
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
 	//CEFHud.call("drawInteraction", 69, "Selbstmord", 0.5, 0.9, 1000, 1)
@@ -511,7 +567,6 @@ mp.events.add("render", () => {
 	let row = 0;
 	Object.keys(keyQueue).forEach((key) => {
 		let req = keyQueue[key.toString()];
-		console.log(req);
 		if (req !== undefined) {
 			row += 1;
 			let x = req.x || 0.5;
@@ -527,14 +582,19 @@ mp.events.add("cef:interaction:receive", (key) => {
 	if (keyQueue[key.toString()]) {
 		console.log("interaction:receive", key);
 		keyQueue[key.toString()] = undefined;
+		mp.events.callRemote("client:interaction:receive", key);
 	}
 	console.log(keyQueue[key.toString()]);
 });
+mp.events.add("server:interaction:cancelrequest", (key) => {
+	if (keyQueue[key.toString()]) {
+		keyQueue[key.toString()] = undefined;
+		CEFHud.call("cancelInteraction", key)
+	}
+});
 mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0) => {
 	if (!keyQueue[key]) {
-
 		CEFHud.call("killInteraction", key)
-
 		console.log(key, string, duration, x, y);
 		keyQueue[key.toString()] = {
 			key: key,
@@ -548,7 +608,7 @@ mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0
 mp.keys.bind(0x71, false, function() {
 	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
-},{"./browser.js":3}],6:[function(require,module,exports){
+},{"./browser.js":4}],7:[function(require,module,exports){
 "use strict";
 
 
@@ -558,13 +618,6 @@ mp.keys.bind(0x71, false, function() {
 
 
 */
-
-
-
-
-
-
-
 
 var Bones = require("./libs/skeleton.js")
 console.log = function(...a) {
@@ -603,6 +656,7 @@ require("./character_creator.js")
 require("./login.js")
 require("./hud.js")
 require("./vehicles.js")
+require("./animations.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -612,7 +666,7 @@ mp.events.add("Notifications:New", (notification_data) => {
 
 
 
-},{"./browser.js":3,"./character_creator.js":4,"./hud.js":5,"./libs/attachments.js":7,"./libs/skeleton.js":8,"./libs/weapon_attachments.js":10,"./login.js":11,"./natives.js":13,"./utils.js":15,"./vector.js":16,"./vehicles.js":17}],7:[function(require,module,exports){
+},{"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./natives.js":14,"./utils.js":16,"./vector.js":17,"./vehicles.js":18}],8:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -825,7 +879,7 @@ function InitAttachmentsOnJoin()
 }
 
 InitAttachmentsOnJoin();
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var Skeleton = [];
 Skeleton.SKEL_ROOT = 0;
 Skeleton.FB_R_Brow_Out_000 = 1356;
@@ -926,7 +980,7 @@ Skeleton.SKEL_L_Clavicle = 64729;
 Skeleton.FACIAL_facialRoot = 65068;
 Skeleton.IK_L_Foot = 65245;
 module.exports = Skeleton;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports={
   "2725352035": {
     "HashKey": "WEAPON_UNARMED",
@@ -10155,7 +10209,7 @@ module.exports={
     "DLC": "spupgrade"
   }
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const weaponData = require("./weaponData");
 
 const PistolAttachmentPos = new mp.Vector3(0.02, 0.06, 0.1);
@@ -10240,7 +10294,7 @@ for (let weapon in weaponAttachmentData) {
 }
 
 
-},{"./weaponData":9}],11:[function(require,module,exports){
+},{"./weaponData":10}],12:[function(require,module,exports){
 var natives = require("./natives.js")
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
@@ -10269,14 +10323,8 @@ mp.game.ui.displayHud(false);
 mp.game.ui.displayRadar(false);
 mp.events.add('cef:account:login', (username, password) => {
 	console.log(username, password)
-
-
-	mp.events.callRemote("client:account:login",username,password);
+	mp.events.callRemote("client:account:login", username, password);
 });
-
-
-
-
 mp.events.add('server:account:init', () => {
 	console.log("Login start");
 	// cam pos 73.37151336669922, -3461.402587890625, 34.95772933959961
@@ -10293,20 +10341,41 @@ mp.events.add('server:account:init', () => {
 });
 mp.events.add('server:intro:start', () => {
 	console.log("start intro");
+	CEFInterface.load("empty.html");
 	mp.players.local.position = new mp.Vector3(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
-	mp.defaultCam = mp.cameras.new('default', new mp.Vector3(-133.93670654296875, -2376.887939453125, 15.57387962341309), new mp.Vector3(), 60);
-	mp.defaultCam.pointAtCoord(-133.6523895263672, -2378.825439453125, 15.16739273071289);
-	mp.defaultCam.setActive(true);
-	mp.game.cam.renderScriptCams(true, false, 0, true, false);
-	mp.game.graphics.transitionFromBlurred(1);
-	CEFInterface.load("character_creator/index.html");
-	CEFInterface.cursor(true);
-	mp.events.call("Character:Edit", true);
-	mp.players.local.setHeading(0);
+	mp.game.cam.doScreenFadeOut(1000);
+
+
+
+	setTimeout(() => {
+		mp.game.cam.doScreenFadeIn(100);
+		mp.defaultCam = mp.cameras.new('default', new mp.Vector3(-133.93670654296875, -2376.887939453125, 15.57387962341309), new mp.Vector3(), 60);
+		mp.defaultCam.pointAtCoord(-133.6523895263672, -2378.825439453125, 15.16739273071289);
+		mp.defaultCam.setActive(true);
+		mp.game.cam.renderScriptCams(true, false, 0, true, false);
+		mp.game.graphics.transitionFromBlurred(1);
+		CEFInterface.load("character_creator/index.html");
+		CEFInterface.cursor(true);
+		mp.events.call("Character:Edit", true);
+		mp.players.local.setHeading(0);
+	}, 3000);
 });
-},{"./browser.js":3,"./character_creator.js":4,"./maps/container.js":12,"./natives.js":13}],12:[function(require,module,exports){
+
+mp.events.add('server:game:start', () => {
+	mp.game.cam.doScreenFadeIn(100);
+
+    mp.defaultCam.setActive(false);
+    mp.players.local.freezePosition(false);
+    //mp.game.cam.doScreenFadeOut(500);
+mp.game.ui.displayHud(true);
+mp.game.ui.displayRadar(true);
+    mp.game.cam.renderScriptCams(false, false, 0, true, false);
+		CEFInterface.load("empty.html");
+		CEFInterface.cursor(false);
+});
+},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":14}],13:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
@@ -10318,7 +10387,7 @@ var obj = require("../objects.js");
   new obj("prop_boxpile_03a",{"x":-138.764,"y":-2378.261,"z":14.1575},{"x":0,"y":0,"z":0});
   new obj("prop_homeless_matress_02",{"x":-137.2492,"y":-2378.4546,"z":14.1493},{"x":0,"y":0,"z":-180.1432});
   new obj("prop_rub_matress_03",{"x":-135.6964,"y":-2378.4873,"z":14.1829},{"x":0,"y":0,"z":0});
-  new obj("xm_prop_x17_bag_01a",{"x":-137.4462,"y":-2377.6685,"z":14.1563},{"x":0,"y":0,"z":-17.2});
+  //new obj("xm_prop_x17_bag_01a",{"x":-137.4462,"y":-2377.6685,"z":14.1563},{"x":0,"y":0,"z":-17.2});
   new obj("prop_crate_float_1",{"x":-133.17,"y":-2378.5881,"z":14.1542},{"x":0,"y":0,"z":-185.8754});
   new obj("prop_cs_lester_crate",{"x":-134.5168,"y":-2378.8179,"z":14.249},{"x":0,"y":0,"z":0});
   new obj("v_serv_abox_04",{"x":-133.058,"y":-2376.856,"z":14.1657},{"x":0,"y":0,"z":10.3229});
@@ -10337,7 +10406,7 @@ var obj = require("../objects.js");
 
 
 
-},{"../objects.js":14}],13:[function(require,module,exports){
+},{"../objects.js":15}],14:[function(require,module,exports){
 var natives = {};
 mp.game.vehicle.getVehicleSeats = (veh) => mp.game.invoke("0xA7C4F2C6E744A550", veh.handle);
 mp.game.graphics.clearDrawOrigin = () => mp.game.invoke('0xFF0B610F6BE0D7AF'); // 26.07.2018 // GTA 1.44
@@ -10371,11 +10440,11 @@ natives.SET_ENTITY_ROTATION = (  entity,  pitch,  roll,  yaw,  rotationOrder,  p
 natives.GET_ENTITY_HEIGHT_ABOVE_GROUND = (  entity) => mp.game.invoke("0x1DD55701034110E5", entity); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 natives.WORLD3D_TO_SCREEN2D = ( worldX,  worldY,  worldZ,  screenX,  screenY) => mp.game.invoke("0x34E82F05DF2974F5", worldX,  worldY,  worldZ,  screenX,  screenY); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 module.exports = natives;
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (setImmediate){
 
 class objCreator {
-    constructor(model, position, rotation, dim) {
+    constructor(model, position, rotation, dim = 0) {
         let self = this;
         this.obj = undefined;
         this.model = model;
@@ -10422,9 +10491,21 @@ class objCreator {
         this.obj.destroy();
     }
 }
+var clientSideObjects = [];
+mp.events.add("server:objects:create", function(identifier,model,x,y,z,rx,ry,rz) {
+    clientSideObjects[identifier] = new objCreator(model,{"x":x,"y":y,"z":z},{"x":rx,"y":ry,"z":rz},mp.players.local.dimension);
+});
+mp.events.add("server:objects:delete", function(identifier) {
+    if (!clientSideObjects[identifier]) return;
+
+    console.log("delete",identifier)
+    clientSideObjects[identifier].delete();
+});
+
+
 module.exports = objCreator;
 }).call(this,require("timers").setImmediate)
-},{"timers":2}],15:[function(require,module,exports){
+},{"timers":2}],16:[function(require,module,exports){
 // https://github.com/glitchdetector/fivem-minimap-anchor
 function getMinimapAnchor() {
     let sfX = 1.0 / 20.0;
@@ -10449,7 +10530,7 @@ function getMinimapAnchor() {
 module.exports = {
     minimap_anchor: getMinimapAnchor
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
     let nVector = new mp.Vector3(this.x, this.y, this.z);
     let degrees = (rz + rot) * (Math.PI / 180);
@@ -10590,7 +10671,7 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 
 
@@ -10674,4 +10755,4 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{}]},{},[6]);
+},{}]},{},[7]);
