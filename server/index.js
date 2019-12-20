@@ -1,5 +1,5 @@
 
-//var mysql = require("./libs/mysql.js");
+var db = require("./database");
 require("./libs/attachments.js")
 require("./logic/index.js")
 require("./account/index.js")

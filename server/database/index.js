@@ -1,7 +1,9 @@
 const {Sequelize,Model,DataTypes} = require('sequelize');
-const sequelize = new Sequelize('database', 'username', 'password', {
-	host: 'localhost',
+const sequelize = new Sequelize('reallife', 'root', '', {
+	host: '127.0.0.1',
 	dialect: 'mysql'/* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
+},{
+	timestamps: false
 });
 
 

@@ -18,7 +18,7 @@ module.exports = function(sequelize) {
 			        if (value === null || (value.length < 3)) {
 			          	throw new Error("Passwort nicht lang genug.");
 			        }
-			    })
+			    }
 			}
 		},
 		email:{

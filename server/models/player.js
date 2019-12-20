@@ -12,6 +12,9 @@ class Player extends EventEmitter {
 
 		this._money = 0;
 		this._bankmoney = 0;
+
+
+		this._group = 0;
 	}
 	set money(val) {
 		// logic
