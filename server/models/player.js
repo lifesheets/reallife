@@ -2,6 +2,7 @@ var EventEmitter = require('events').EventEmitter;
 var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Interaction = require("../interaction");
+var Vehicles = require("../database").vehicles;
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
