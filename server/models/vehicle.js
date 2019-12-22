@@ -29,7 +29,7 @@ class Vehicle extends EventEmitter {
 	}
 	create(data) {
 		Vehicles.create({
-			"owner": this.owner.uID,
+			"owner": this.owner.interface.id,
 			"model": data.model,
 			"x": data.x,
 			"y": data.y,
@@ -50,7 +50,6 @@ class Vehicle extends EventEmitter {
 			}
 		}).then(veh => {
 			this.db_veh = veh[0];
-			// project will be the first entry of the Projects table with the title 'aProject' || null
 			this.model = this.db_veh.model;
 			this.park_position = {
 				x: this.db_veh.x,
