@@ -1,15 +1,12 @@
 var EventEmitter = require('events').EventEmitter;
 var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
-var Account = require("./account.js");
 var Interaction = require("../interaction");
 var Vehicles = require("../database").vehicles;
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
-		this.id = -1;
 		this.player = player;
-		this.account = new Account(this);
 		this.appearance = new Appearance(this);
 		this.cState = "auth";
 
@@ -49,7 +46,6 @@ class Player extends EventEmitter {
 
 		this.player.spawn(spawnPoint);
 		this.appearance.load();
-		this.player.dimension = 0;
 
 
 	}
