@@ -1,4 +1,6 @@
 const {Sequelize,Model,DataTypes} = require('sequelize');
+const Op = Sequelize.Op;
+
 const sequelize = new Sequelize('reallife', 'root', '', {
 	host: '127.0.0.1',
 	dialect: 'mysql'/* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
@@ -7,7 +9,7 @@ const sequelize = new Sequelize('reallife', 'root', '', {
 });
 
 
-var user = require("./player.js")(sequelize);
+var account = require("./account.js")(sequelize);
 var vehicle = require("./vehicle.js")(sequelize);
 
 
@@ -23,6 +25,7 @@ sequelize.authenticate().then(() => {
 });
 
 module.exports = {
-	user: user,
+	Op: Op,
+	account: account,
 	vehicle: vehicle
 }
