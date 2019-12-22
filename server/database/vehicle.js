@@ -7,8 +7,8 @@ module.exports = function(sequelize) {
 			primaryKey: true
 		},
 		owner:{
-			type: Sequelize.INTEGER
-			allowNull: false,
+			type: Sequelize.INTEGER,
+			allowNull: false
 		},
 		model: Sequelize.STRING,
 		x: Sequelize.FLOAT,
