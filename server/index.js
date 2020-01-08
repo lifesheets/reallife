@@ -8,10 +8,11 @@ var interaction = require("./interaction/index.js")
 var Account = require("./models/account.js")
 
 
-let acc = new Account(undefined);
-acc.register("nigga","gay","test@asf.de");
+//let acc = new Account(undefined);
+//acc.register("nigga","gay","test@asf.de");
 //acc.login("nigga","gay");
 
 mp.events.add("playerReady", player => {
 	player.call("server:account:init");
 });
+

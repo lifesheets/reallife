@@ -13,7 +13,7 @@ var ncp = require('ncp').ncp;
 var watch = require('node-watch');
 var prependFile = require('prepend-file');
 let source_server = "Q:/RageMP/reallife/server"
-let dest_server = "A:/RAGEMP/server-files/packages/reallife"
+let dest_server = "G:/RAGEMP/server-files/packages/reallife"
 
 ncp(source_server, dest_server, function(err) {
     if (err) {
@@ -36,7 +36,7 @@ watch('./server', {
     });
 });
 let source_client = "Q:/RageMP/reallife/client"
-let dest_client = "A:/RAGEMP/server-files/client_packages/reallife"
+let dest_client = "G:/RAGEMP/server-files/client_packages/reallife"
 let exclude = "development"
 ncp(source_client, dest_client, function(err) {
     if (err) {

@@ -23,7 +23,21 @@ mp.events.add("client:account:login", (player,username,password) => {
 	//player.interface.state = "register";
 
 
-	player.interface.account.register(username,password,"testmail@test.de");
+	/*player.interface.account.register(username,password,"testmail@test.de").then(e => {
+		console.log("e",e);
+	}).catch(e => {
+		console.log("err",e);
+	})*/
+
+
+	player.interface.account.login(username,password).then(e => {
+		console.log("e",e);
+		player.call("server:game:start");
+		player.interface.vehicles.load();
+		player.interface.spawn();
+	}).catch(e => {
+		console.log("err",e);
+	})
 
 
 

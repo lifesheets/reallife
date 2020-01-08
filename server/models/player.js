@@ -3,14 +3,14 @@ var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Account = require("./account.js");
 var Interaction = require("../interaction");
-var Vehicles = require("../database").vehicles;
+var VehicleManager = require("./vehicle.js").mgr;
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
-		this.id = -1;
 		this.player = player;
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
+		this.vehicles = new VehicleManager(this);
 		this.cState = "auth";
 
 
@@ -20,9 +20,19 @@ class Player extends EventEmitter {
 
 		this._group = 0;
 	}
+
+	get id() {
+		if (!this.account.loggedIn) return;
+		return this.account.id;
+	}
+
 	set money(val) {
 		// logic
 		this._money = val;
+	}
+	set money( val){
+		this._money = val;
+		this.player.setVariable("cash", val);
 	}
 	get money( ){
 		return this._money;

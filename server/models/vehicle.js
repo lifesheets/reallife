@@ -2,9 +2,11 @@ var EventEmitter = require('events').EventEmitter;
 var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Interaction = require("../interaction");
-var Vehicles = require("../database").vehicles;
+var Vehicles = require("../database").vehicle;
+
 class Vehicle extends EventEmitter {
 	constructor(owner, id, data) {
+		super();
 		this.owner = owner;
 		this.id = id;
 		this.park_position = {
@@ -49,17 +51,18 @@ class Vehicle extends EventEmitter {
 				id: this.id
 			}
 		}).then(veh => {
-			this.db_veh = veh[0];
+			console.log(veh.dataValues);
+			this.db_veh = veh.dataValues;
 			this.model = this.db_veh.model;
 			this.park_position = {
 				x: this.db_veh.x,
-				y: this.db_veh.x,
-				z: this.db_veh.x,
+				y: this.db_veh.y,
+				z: this.db_veh.z,
 				rx: this.db_veh.rx,
 				ry: this.db_veh.ry,
 				rz: this.db_veh.rz
 			};
-			this.tuning = this.db_veh.data.get();
+			this.tuning = this.db_veh.data ? this.db_veh.data : [];
 			this.spawn();
 		})
 	}
@@ -71,31 +74,29 @@ class Vehicle extends EventEmitter {
 			],
 			dimension: 0,
 			engine: false,
-			locked: true,
+			locked: false,
 			heading: this.park_position.rz
 		});
 		this.vehicle.interface = this;
 		this.vehicle.numberPlate = "TEST";
-
-
-
 		this.tuning.forEach((tune) => {
-			if(tune.type=="mod") {
+			if (tune.type == "mod") {
 				this.vehicle.setMod(parseInt(tune.type), parseInt(tune.index));
 			}
 			if (tune.type == "colorrgb") {
-				this.vehicle.setColorRGB(tune.r1,tune.g1,tune.b1, tune.r2,tune.g2,tune.b2);
+				this.vehicle.setColorRGB(tune.r1, tune.g1, tune.b1, tune.r2, tune.g2, tune.b2);
 			}
 			if (tune.type == "color") {
-				this.vehicle.setColor(tune.first,tune.second);
+				this.vehicle.setColor(tune.first, tune.second);
 			}
 			if (tune.type == "neon") {
-				this.vehicle.setNeonColor(tune.r,tune.g,tune.b);
+				this.vehicle.setNeonColor(tune.r, tune.g, tune.b);
 			}
 		})
+		console.log("spawn", this.vehicle.position);
 		return this.vehicle;
 	}
-	respawn(){
+	respawn() {
 		this.vehicle.destroy();
 		return this.spawn();
 	}
@@ -110,4 +111,62 @@ class Vehicle extends EventEmitter {
 		this.vehicle.locked = newState;
 	}
 }
-module.exports = Vehicle;
+
+class VehicleManager {
+	constructor(parent) {
+		this.parent = parent;
+		this.player = parent.player;
+
+		this.loadedVehs = [];
+		this.vehicles = [];
+	}
+	load() {
+		if (!this.parent.account.loggedIn) return;
+		Vehicles.findAll({
+			where: {
+				owner: this.parent.id
+			}
+		}).then(vehs => {
+			console.log("vehs",vehs);
+			//if (!vehs.length) return console.log("not enough vehs");
+
+			this.vehicles = vehs.map(e => {
+				return {
+					id:e.id,
+					owner:e.owner,
+					model:e.model,
+					x:e.x,
+					y:e.y,
+					z:e.z,
+					rx:e.rx,
+					ry:e.ry,
+					rz:e.rz,
+					data:e.data
+				}
+			});
+			console.log("this.vehicles",this.vehicles);
+			this.spawnAll();
+		}).catch(err => {
+			console.log("error fetching vehs",err);
+		})
+		console.log("load veh");
+	}
+	spawnAll() {
+		console.log("spawn all");
+
+		this.vehicles.forEach(v => {
+			this.loadedVehs.push(new Vehicle(this.player,v.id,v));
+
+		})
+
+
+	}
+}
+
+
+
+
+module.exports = {
+	mgr: VehicleManager,
+	vehicle: Vehicle
+};
