@@ -17,7 +17,7 @@ class Vehicle extends EventEmitter {
 			ry: 0,
 			rz: 0
 		}
-		this._tuning = {};
+		this.tuning = {};
 		this.model = "";
 		this.health = 500;
 		this.armor = 1000;
@@ -29,9 +29,6 @@ class Vehicle extends EventEmitter {
 			this.create(data);
 		}
 	}
-	setTune(data){
-		this._tuning = Object.assign(this._tuning,data)
-	}
 	create(data) {
 		Vehicles.create({
 			"owner": this.owner.interface.id,
@@ -42,7 +39,7 @@ class Vehicle extends EventEmitter {
 			"rx": data.rx,
 			"ry": data.ry,
 			"rz": data.rz,
-			"data": JSON.stringify({})
+			"data": JSON.stringify([])
 		}).then((mVeh) => {
 			this.id = mVeh.id;
 			this.load();
@@ -65,7 +62,7 @@ class Vehicle extends EventEmitter {
 				ry: this.db_veh.ry,
 				rz: this.db_veh.rz
 			};
-			this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
+			this.tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : [];
 			this.spawn();
 		})
 	}
@@ -82,7 +79,20 @@ class Vehicle extends EventEmitter {
 		});
 		this.vehicle.interface = this;
 		this.vehicle.numberPlate = "TEST";
-
+		this.tuning.forEach((tune) => {
+			if (tune.type == "mod") {
+				this.vehicle.setMod(parseInt(tune.type), parseInt(tune.index));
+			}
+			if (tune.type == "colorrgb") {
+				this.vehicle.setColorRGB(tune.r1, tune.g1, tune.b1, tune.r2, tune.g2, tune.b2);
+			}
+			if (tune.type == "color") {
+				this.vehicle.setColor(tune.first, tune.second);
+			}
+			if (tune.type == "neon") {
+				this.vehicle.setNeonColor(tune.r, tune.g, tune.b);
+			}
+		})
 		console.log("spawn", this.vehicle.position);
 		return this.vehicle;
 	}
@@ -93,39 +103,7 @@ class Vehicle extends EventEmitter {
 	park() {
 		//TODO
 	}
-	loadTunes() {
-		if (!this.vehicle) return;
-		Object.keys(this._tuning).forEach((name) => {
-			let tune = this._tuning[name];
-
-
-			if (name == "mod") {
-				this.vehicle.setMod(parseInt(tune.type), parseInt(tune.index));
-			}
-			if (name == "colorrgb") {
-				this.vehicle.setColorRGB(tune.r1, tune.g1, tune.b1, tune.r2, tune.g2, tune.b2);
-			}
-			if (name == "color") {
-				this.vehicle.setColor(tune.first, tune.second);
-			}
-			if (name == "neon") {
-				this.vehicle.setNeonColor(tune.r, tune.g, tune.b);
-			}
-		})
-	}
-	deleteTunes() {
-		if (!this.vehicle) return;
-		for (var i = 0; i < 50; i++) {
-			let s = this.vehicle.getMod(i);
-			if (s == -1) continue;
-			this.vehicle.setMod(i, -1);
-		}
-
-	}
 	reloadTunings() {
-
-		this.deleteTunes();
-		this.loadTunes();
 		//todo
 	}
 	toggleLock() {
