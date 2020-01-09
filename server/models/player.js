@@ -3,7 +3,7 @@ var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Account = require("./account.js");
 var Interaction = require("../interaction");
-var VehicleManager = require("./vehicle.js").mgr;
+var VehicleManager = require("./vehicle/vehicle.js").mgr;
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
