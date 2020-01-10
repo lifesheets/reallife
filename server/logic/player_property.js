@@ -1,22 +1,33 @@
 var Animations = require("../libs/animations.js");
 var Interaction = require("../interaction");
-var Vehicle = require("../models/vehicle/vehicle.js").vehicle;
+var Vehicle = require("../models/vehicle.js").vehicle;
 mp.events.addCommand("r", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	console.log(veh);
 	veh.interface.respawn();
 });
-mp.events.addCommand("rgb", (player, fullText, ...args) => {
+mp.events.addCommand("park", (player, fullText, ...args) => {
 	let veh = player.vehicle;
-	let [r, g, b] = args
-	veh.interface.setTune = {
-		"rgb": {
-			r: 255,
-			g: 100,
-			b: 200
-		}
-	};
 	console.log(veh);
+	veh.interface.park();
+});
+mp.events.addCommand("tune", (player, fullText, ...args) => {
+	let veh = player.vehicle;
+	let r = parseInt(args[0]);
+	let g = parseInt(args[1]);
+	let b = parseInt(args[2]);
+	console.log(r,g,b);
+	veh.interface.setTune({
+		"rgb": {
+			r1: r,
+			g1: g,
+			b1: b,
+			r2: r,
+			g2: g,
+			b2: b
+		}
+	});
+	//console.log(veh);
 	veh.interface.reloadTunings();
 	//veh.interface.respawn();
 });
