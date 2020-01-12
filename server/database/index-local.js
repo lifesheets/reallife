@@ -11,7 +11,6 @@ const Op = Sequelize.Op;
 const sequelize = new Sequelize("reallife", 'root', '', {
 	host: '127.0.0.1',   //or 127.0.0.1
   	dialect: 'mysql',
-  	logging: function () {},
     pool: {
         max: 5,
         min: 0,
