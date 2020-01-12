@@ -80,7 +80,7 @@ class Account extends EventEmitter {
 						return reject(err);
 					})
 				} else {
-					console.log("account exists", pAccount);
+					console.log("account exists", pAccount.dataValues);
 					return reject("account already exists");
 				}
 			}).catch(err => {
