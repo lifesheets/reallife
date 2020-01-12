@@ -22,7 +22,7 @@ class Vehicle extends EventEmitter {
 		this.armor = 1000;
 		this.db_veh = undefined;
 		this.vehicle = undefined;
-		if (this.id != false) {
+		if (this.id != null) {
 			this.load();
 		} else {
 			this.create(data);
