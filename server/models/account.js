@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var AccountDB = require("../database").account;
 var Op = require("../database").Op;
-//var bcrypt = require('bcrypt'); f
+var bcrypt = require('bcryptjs');
 const saltSecurity = 15;
 class Account extends EventEmitter {
 	constructor(parent) {
@@ -11,14 +11,12 @@ class Account extends EventEmitter {
 		this.data = false;
 		this.loggedIn = false;
 	}
-
 	get id() {
 		return this.data.uid ? this.data.uid : -1;
 	}
-
-
-
-
+	get status() {
+		return this.loggedIn ? this.loggedIn : false;
+	}
 	async login(username, password) {
 		return new Promise((resolve, reject) => {
 			AccountDB.findOne({
@@ -32,12 +30,17 @@ class Account extends EventEmitter {
 					return reject("account not exists");
 				} else {
 					console.log("account exists", pAccount.dataValues);
-					this.data = pAccount.dataValues;
-					this.loggedIn = true;
-					return resolve(pAccount.dataValues);
+					bcrypt.compare(password, pAccount.dataValues.password).then((res) => {
+						if (res == true) {
+							this.data = pAccount.dataValues;
+							this.loggedIn = true;
+							this.player.setVariable("loggedIn", true);
+							return resolve(pAccount.dataValues);
+						} else {
+							return reject("password wrong");
 
-
-
+						}
+					});
 				}
 			}).catch(err => {
 				console.log("[ERR]Error", err);
@@ -56,27 +59,25 @@ class Account extends EventEmitter {
 				}
 			}).then(pAccount => {
 				if (pAccount == null) {
-					console.log("this.player.serial",this.player.serial);
+					console.log("this.player.serial", this.player.serial);
 					if (!this.player) return reject("player not valid");
 					if (!this.player.serial) return reject("serial not valid");
 					//if (!this.player.rgscId) return reject("rgscId not valid");
-
-					console.log("account not exists", pAccount);
+					let pass_hash = await bcrypt.hash(password, 12);
+					console.log("account not exists", pAccount, "passhash", pass_hash);
 					AccountDB.create({
 						username: username,
-						password: password,
+						password: pass_hash,
 						email: email,
 						hwid: this.player.serial,
-						rgscId: "no"//this.player.rgscId
+						rgscId: "no" //this.player.rgscId
 					}).then((e) => {
 						console.log("Account created", e.dataValues);
-
-
 						this.data = e.dataValues;
 						this.loggedIn = true;
 						return resolve(e.dataValues);
 					}).catch((err) => {
-						console.log("Error Creating account",err);
+						console.log("Error Creating account", err);
 						return reject(err);
 					})
 				} else {
