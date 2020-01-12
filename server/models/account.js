@@ -72,7 +72,7 @@ class Account extends EventEmitter {
 						console.log("Account created", e);
 
 
-						this.data = pAccount.dataValues;
+						this.data = e.dataValues;
 						this.loggedIn = true;
 						return resolve(e.dataValues);
 					}).catch((err) => {
