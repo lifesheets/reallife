@@ -387,7 +387,7 @@ const appearanceIndex = {
 }
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
-mp.events.add("Character:Update", (data) => {
+mp.events.add("cef:character:update", (data) => {
     let cModel = mp.players.local.model == mp.game.joaat('mp_m_freemode_01') ? "Male" : "Female"
     data = JSON.parse(data);
     if (data.gender != cModel) {
@@ -489,7 +489,7 @@ mp.events.add("Character:Update", (data) => {
             data.resemblance * 0.01, data.tone * 0.01, 0.0, false);
     }
 });
-mp.events.add("Character:Save", (data) => {
+mp.events.add("cef:character:save", (data) => {
     console.log("SAVE CHAR");
     CEFInterface.clear();
     CEFInterface.cursor(false);
@@ -513,7 +513,7 @@ mp.events.add("render", function() {
         mp.defaultCam.setActive(true);
     }
 });
-mp.events.add("Character:Edit", (setClothing = false) => {
+mp.events.add("cef:character:edit", (setClothing = false) => {
     // Set To Male ( Male : mp_m_freemode_01, female : mp_f_freemode_01)
     if (setClothing) {
         mp.players.local.model = mp.game.joaat('mp_m_freemode_01');
@@ -651,12 +651,14 @@ mp.gameplayCam = mp.cameras.new('gameplay');
 mp.defaultCam = mp.cameras.new('default');
 mp.ui = {};
 mp.ui.ready = false;
+mp.loggedIn = false;
 mp.gameplayCam.setAffectsAiming(true);
 require("./character_creator.js")
 require("./login.js")
 require("./hud.js")
 require("./vehicles.js")
 require("./animations.js")
+require("./nametags.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -666,7 +668,7 @@ mp.events.add("Notifications:New", (notification_data) => {
 
 
 
-},{"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./natives.js":14,"./utils.js":16,"./vector.js":17,"./vehicles.js":18}],8:[function(require,module,exports){
+},{"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19}],8:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -10322,8 +10324,14 @@ mp.gui.chat.show(true);
 mp.game.ui.displayHud(false);
 mp.game.ui.displayRadar(false);
 mp.events.add('cef:account:login', (username, password) => {
+	if (mp.loggedIn) return;
 	console.log(username, password)
 	mp.events.callRemote("client:account:login", username, password);
+});
+mp.events.add('cef:account:register', (username, password, email) => {
+	if (mp.loggedIn) return;
+	console.log(username, password)
+	mp.events.callRemote("client:account:register", username, password, email);
 });
 mp.events.add('server:account:init', () => {
 	console.log("Login start");
@@ -10346,9 +10354,6 @@ mp.events.add('server:intro:start', () => {
 	mp.players.local.setAlpha(255);
 	mp.players.local.freezePosition(true);
 	mp.game.cam.doScreenFadeOut(1000);
-
-
-
 	setTimeout(() => {
 		mp.game.cam.doScreenFadeIn(100);
 		mp.defaultCam = mp.cameras.new('default', new mp.Vector3(-133.93670654296875, -2376.887939453125, 15.57387962341309), new mp.Vector3(), 60);
@@ -10358,24 +10363,22 @@ mp.events.add('server:intro:start', () => {
 		mp.game.graphics.transitionFromBlurred(1);
 		CEFInterface.load("character_creator/index.html");
 		CEFInterface.cursor(true);
-		mp.events.call("Character:Edit", true);
+		mp.events.call("cef:character:edit", true);
 		mp.players.local.setHeading(0);
 	}, 3000);
 });
-
 mp.events.add('server:game:start', () => {
 	mp.game.cam.doScreenFadeIn(100);
-
-    mp.defaultCam.setActive(false);
-    mp.players.local.freezePosition(false);
-    //mp.game.cam.doScreenFadeOut(500);
-mp.game.ui.displayHud(true);
-mp.game.ui.displayRadar(true);
-    mp.game.cam.renderScriptCams(false, false, 0, true, false);
-		CEFInterface.load("empty.html");
-		CEFInterface.cursor(false);
+	mp.defaultCam.setActive(false);
+	mp.players.local.freezePosition(false);
+	//mp.game.cam.doScreenFadeOut(500);
+	mp.game.ui.displayHud(true);
+	mp.game.ui.displayRadar(true);
+	mp.game.cam.renderScriptCams(false, false, 0, true, false);
+	CEFInterface.load("empty.html");
+	CEFInterface.cursor(false);
 });
-},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":14}],13:[function(require,module,exports){
+},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":15}],13:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
@@ -10406,7 +10409,66 @@ var obj = require("../objects.js");
 
 
 
-},{"../objects.js":15}],14:[function(require,module,exports){
+},{"../objects.js":16}],14:[function(require,module,exports){
+mp.nametags.enabled = false;
+mp.gui.chat.colors = true;
+
+
+
+mp.events.add('render', (nametags) => {
+    let startPosition = mp.players.local.getBoneCoords(12844, 0, 0, 0);
+    if ((mp.players.local.getVariable("loggedIn") == true) && (mp.players.local.getVariable("spawned") == true) && (mp.players.local.getVariable("death") == false)) {
+        mp.players.forEachInStreamRange((player) => {
+            if (player != mp.players.local) {
+                if (mp.game.system.vdist2(startPosition.x, startPosition.y, startPosition.z, player.position.x, player.position.y, player.position.z) < 400) {
+                    if ((player.getVariable("loggedIn") == true) && (player.getVariable("spawned") == true)) {
+                        let endPosition = player.getBoneCoords(12844, 0, 0, 0);
+                        let hitData = mp.raycasting.testPointToPoint(startPosition, endPosition, mp.players.local, (1 | 16 | 256));
+                        if (!hitData) {
+                            let color = [255, 255, 255, 200];
+                            let r = mp.lerp(170, 255, 1 / 100 * player.getHealth())
+                            let g = mp.lerp(30, 255, 1 / 100 * player.getHealth())
+                            let b = mp.lerp(30, 255, 1 / 100 * player.getHealth())
+                            if ((1 / 100 * player.getHealth()) < 0.1) {
+                                color[0] = 170;
+                                color[1] = 30;
+                                color[2] = 30;
+                            } else {
+                                color[0] = r;
+                                color[1] = g;
+                                color[2] = b;
+                            }
+                            let lPos = mp.players.local.position;
+                            let pos = player.getWorldPositionOfBone(player.getBoneIndexByName("IK_Head"));
+                            pos.z += 0.4;
+                            let dist = mp.game.system.vdist2(lPos.x, lPos.y, lPos.z, pos.x, pos.y, pos.z);
+                            let c_dist = 1 / 400 * dist;
+                            let size = mp.lerp(0.3, 0.06, c_dist)
+                            if (size > 0.3) {
+                                size = 0.3;
+                            } else if (size < 0.06) {
+                                size = 0.06;
+                            }
+                            let playerName = player.name;
+                            if (player.getVariable('playerName') != null) {
+                                playerName = player.getVariable('playerName');
+                            }
+                            mp.game.graphics.setDrawOrigin(pos.x, pos.y, pos.z, 0);
+                            mp.game.graphics.drawText(playerName, [0, 0], {
+                                font: 4,
+                                color: color,
+                                scale: [size, size],
+                                outline: true
+                            });
+                            mp.game.graphics.clearDrawOrigin()
+                        }
+                    }
+                }
+            }
+        })
+    }
+})
+},{}],15:[function(require,module,exports){
 var natives = {};
 mp.game.vehicle.getVehicleSeats = (veh) => mp.game.invoke("0xA7C4F2C6E744A550", veh.handle);
 mp.game.graphics.clearDrawOrigin = () => mp.game.invoke('0xFF0B610F6BE0D7AF'); // 26.07.2018 // GTA 1.44
@@ -10440,7 +10502,7 @@ natives.SET_ENTITY_ROTATION = (  entity,  pitch,  roll,  yaw,  rotationOrder,  p
 natives.GET_ENTITY_HEIGHT_ABOVE_GROUND = (  entity) => mp.game.invoke("0x1DD55701034110E5", entity); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 natives.WORLD3D_TO_SCREEN2D = ( worldX,  worldY,  worldZ,  screenX,  screenY) => mp.game.invoke("0x34E82F05DF2974F5", worldX,  worldY,  worldZ,  screenX,  screenY); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 module.exports = natives;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (setImmediate){
 
 class objCreator {
@@ -10505,7 +10567,7 @@ mp.events.add("server:objects:delete", function(identifier) {
 
 module.exports = objCreator;
 }).call(this,require("timers").setImmediate)
-},{"timers":2}],16:[function(require,module,exports){
+},{"timers":2}],17:[function(require,module,exports){
 // https://github.com/glitchdetector/fivem-minimap-anchor
 function getMinimapAnchor() {
     let sfX = 1.0 / 20.0;
@@ -10530,7 +10592,7 @@ function getMinimapAnchor() {
 module.exports = {
     minimap_anchor: getMinimapAnchor
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
     let nVector = new mp.Vector3(this.x, this.y, this.z);
     let degrees = (rz + rot) * (Math.PI / 180);
@@ -10671,7 +10733,7 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 
 
