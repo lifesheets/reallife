@@ -17,13 +17,20 @@ class Player extends EventEmitter {
 		this._money = 0;
 		this._bankmoney = 0;
 
-
 		this._group = 0;
+
+
+
+		this._damageLog = [];
 	}
 
 	get id() {
 		if (!this.account.loggedIn) return;
 		return this.account.id;
+	}
+	get status() {
+		if (!this.account.status) return;
+		return this.account.status;
 	}
 
 	set money(val) {
@@ -54,6 +61,14 @@ class Player extends EventEmitter {
 		this.emit("interact",key);
 	}
 
+	death(reason,killer,event = false){
+
+
+
+
+
+	}
+
 	spawn() {
 		let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
 
@@ -62,8 +77,24 @@ class Player extends EventEmitter {
 		this.player.dimension = 0;
 
 
+		this.player.setVariable("spawned",true);
+		this.player.setVariable("death",false);
+
 	}
 }
+
+
+
+mp.events.add("playerDeath", (player,reason,killer) => {
+	console.log("player died",player.name);
+
+
+
+		if (player.interface) {
+			player.interface.death(reason,killer,true);
+		}
+});
+
 
 mp.Player.prototype.__defineGetter__("interface", function() {
 	if (!this.interface_class) {
