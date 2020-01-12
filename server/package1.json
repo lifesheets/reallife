@@ -1,5 +1,5 @@
 {
-  "name": "reallife",
+  "name": "server.js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,6 @@
     "ncp": "^2.0.0",
     "node-pre-gyp": "^0.14.0",
     "node-watch": "^0.6.3",
-    "node-webhooks": "^1.4.2",
     "sequelize": "^5.21.3"
   },
   "devDependencies": {},
