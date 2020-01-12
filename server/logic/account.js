@@ -24,17 +24,37 @@ mp.events.add("client:account:login", (player, username, password) => {
 	//player.call("server:game:start");
 	//player.interface.spawn();
 });
+
+
+mp.events.add("client:account:register", (player, username,password,email) => {
+	player.interface.account.register(username, password,email).then(e => {
+		console.log("e", e);
+		player.interface.state = "register";
+		player.call("server:intro:start");
+
+
+
+
+	}).catch(e => {
+		console.log("err", e);
+	})
+});
+
 mp.events.add("client:interaction:receive", (player, key) => {
 	player.interface.interact(key);
 })
 mp.events.add("client:appearance:save", (player, data) => {
 	if (player.interface) {
 		player.interface.appearance.saveData(data);
-		player.interface.appearance.load();
 		if (player.interface.state == "register") {
+			player.interface.spawn();
+
+			//player.interface.vehicles.load();
+			//player.interface.spawn();
+
 			//server:objects:create", (identifier,model,x,y,z,rx,ry,rz
 			//"xm_prop_x17_bag_01a",{"x":-137.4462,"y":-2377.6685,"z":14.1563},{"x":0,"y":0,"z":-17.2}
-			player.call("server:objects:create", ["bag_register", "xm_prop_x17_bag_01a", -137.4462, -2377.6685, 14.1563, 0, 0, -17.2]);
+			/*player.call("server:objects:create", ["bag_register", "xm_prop_x17_bag_01a", -137.4462, -2377.6685, 14.1563, 0, 0, -17.2]);
 			let interaction_bag;
 			let interact_event;
 			let enterFunc = (player) => {
@@ -52,7 +72,7 @@ mp.events.add("client:appearance:save", (player, data) => {
 				player.call("server:interaction:cancelrequest", [70]);
 				player.interface.off("interact", interact_event)
 			};
-			interaction_bag = new Interaction(-137.53456115722656, -2377.543212890625, 15.397653579711914, 0, 1, enterFunc, leaveFunc);
+			interaction_bag = new Interaction(-137.53456115722656, -2377.543212890625, 15.397653579711914, 0, 1, enterFunc, leaveFunc);*/
 		}
 	}
 });
