@@ -31,7 +31,7 @@ class Account extends EventEmitter {
 					console.log("account not exists", pAccount);
 					return reject("account not exists");
 				} else {
-					console.log("account exists", pAccount);
+					console.log("account exists", pAccount.dataValues);
 					this.data = pAccount.dataValues;
 					this.loggedIn = true;
 					return resolve(pAccount.dataValues);
@@ -69,7 +69,7 @@ class Account extends EventEmitter {
 						hwid: this.player.serial,
 						rgscId: "no"//this.player.rgscId
 					}).then((e) => {
-						console.log("Account created", e);
+						console.log("Account created", e.dataValues);
 
 
 						this.data = e.dataValues;
