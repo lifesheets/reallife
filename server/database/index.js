@@ -6,16 +6,13 @@ const {
 
 // pass TMmzs9oo9DL6Y9Fm;
 const Op = Sequelize.Op;
-const database_name = "reallife";
-const sequelize = new Sequelize("", 'root', 'TMmzs9oo9DL6Y9Fm', {
+const sequelize = new Sequelize("reallife", 'root', 'TMmzs9oo9DL6Y9Fm', {
 	host: '127.0.0.1',
 	dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
 }, {
 	timestamps: false
 });
-sequelize.query("CREATE DATABASE `" + database_name + "`;").then(data => {
-	console.log("created");
-});
+
 var account = require("./account.js")(sequelize);
 var vehicle = require("./vehicle.js")(sequelize);
 sequelize.authenticate().then(() => {
