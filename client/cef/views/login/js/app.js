@@ -55,25 +55,60 @@ var Account = new class {
     }
     register() {
         this.salt = this.generateSalt();
-        let vals = this.getFieldValues();
-        this.username = vals.username;
-        this.password = md5(vals.password + "|" + this.salt);
-        if (vals.password.length < 3) {
-            if ($("#join_password").hasClass("wrong") == false) {
-                $("#join_password").addClass("wrong");
+        this.username = $("#reg_username").val();
+        this.password = md5($("#reg_password").val() + "|" + this.salt);
+        this.password2 = md5($("#reg_password2").val() + "|" + this.salt);
+        this.mail = $("#reg_email").val();
+        if ($("#reg_password").val().length < 3) {
+            if ($("#reg_password").hasClass("red") == false) {
+                $("#reg_password").addClass("red");
             }
         } else {
-            $("#join_password").removeClass("wrong");
+            $("#reg_password").removeClass("red");
         }
-        if ($("#join_password").hasClass("wrong") == false) {
+        if ($("#reg_password").hasClass("red") == false) {
             console.log("username", this.username);
             console.log("password", this.password);
-            mp.trigger("Account:Register", this.username, this.password, this.salt);
+            if (this.password != this.password2) {
+                $("#red_password2").addClass("red");
+                $("#red_password2").removeClass("green");
+                this.alert({
+                    title: "Passwort",
+                    titleSize: "16px",
+                    message: "Passwörter nicht gleich",
+                    messageColor: 'rgba(0,0,0,.8)',
+                    position: "bottomCenter",
+                    color: 'rgba(212,212,212, 0.8)',
+                    progressBarColor: 'rgba(136, 48, 255, 0.6)',
+                    close: false
+                })
+            } else {
+                $("#red_password1").removeClass("red");
+                $("#red_password1").addClass("green");
+                if (this.mail.indexOf("@") > -1) {
+                    $("#reg_email").removeClass("red");
+                    $("#reg_email").addClass("green");
+                    mp.trigger("cef:account:register", this.username, this.password, this.password2, this.salt, this.mail);
+                } else {
+                    $("#reg_email").addClass("red");
+                    $("#reg_email").removeClass("green");
+                    this.alert({
+                        title: "eMail",
+                        titleSize: "16px",
+                        message: "eMail Adresse bitte korrigieren",
+                        messageColor: 'rgba(0,0,0,.8)',
+                        position: "bottomCenter",
+                        color: 'rgba(212,212,212, 0.8)',
+                        progressBarColor: 'rgba(136, 48, 255, 0.6)',
+                        close: false
+                    })
+                }
+            }
         } else {
             this.alert({
-                title: "Password",
+                title: "Passwort",
                 titleSize: "16px",
-                message: "Please check your password (Min. length 4)   ",
+                message: "Passwort zu kurz (min 4 zeichen)",
                 messageColor: 'rgba(0,0,0,.8)',
                 position: "bottomCenter",
                 color: 'rgba(212,212,212, 0.8)',
@@ -93,6 +128,13 @@ var Account = new class {
              close: false
          })*/
         iziToast.show(text);
+    }
+    toggle(target, origin) {
+        $("#" + origin).hide();
+        $("#" + target).show();
+        $("#" + target).css({
+            "opacity": "1"
+        });
     }
 }
 

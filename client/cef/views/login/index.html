@@ -16,7 +16,7 @@
         <link href="css/style.css" rel="stylesheet"/>
     </head>
     <body>
-    	<div class="window login" style="left:50%;top:50%;--width:300px;">
+    	<div id="login" class="window login" style="left:50%;top:50%;--width:300px;">
             <div class="head">Anmelden</div><br>
             <div class="username">
                 <input id="join_username" class="input"></input>
@@ -25,12 +25,26 @@
                 <input id="join_password" class="input" type="password"></input>
             </div>
             <div class="button green" onclick="Account.login()">Login</div>
-            <div class="button outline small">Account erstellen</div>
+            <div class="button outline small" onclick="Account.toggle('register','login')">Account erstellen</div>
         </div>
 
-    	<div class="register" id="register">
-
-    	</div>
+    	<div id="register" class="window login" style="left:50%;top:50%;--width:430px;display:none;opacity:0">
+            <div class="head">Registrieren</div><br>
+            <div class="username">
+                <input id="reg_username" class="input"></input>
+            </div>
+            <div class="password">
+                <input id="reg_password" class="input" type="password"></input>
+            </div>
+            <div class="password">
+                <input id="red_password2" class="input" type="password"></input>
+            </div>
+            <div class="mail">
+                <input id="reg_email" class="input" ></input>
+            </div>
+            <div class="button green" onclick="Account.register()">Registrieren</div>
+            <div class="button outline small" onclick="Account.toggle('login','register')">Anmelden</div>
+        </div>
 
 
 
