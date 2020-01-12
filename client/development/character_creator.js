@@ -16,7 +16,7 @@ const appearanceIndex = {
 }
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
-mp.events.add("Character:Update", (data) => {
+mp.events.add("cef:character:update", (data) => {
     let cModel = mp.players.local.model == mp.game.joaat('mp_m_freemode_01') ? "Male" : "Female"
     data = JSON.parse(data);
     if (data.gender != cModel) {
@@ -118,7 +118,7 @@ mp.events.add("Character:Update", (data) => {
             data.resemblance * 0.01, data.tone * 0.01, 0.0, false);
     }
 });
-mp.events.add("Character:Save", (data) => {
+mp.events.add("cef:character:save", (data) => {
     console.log("SAVE CHAR");
     CEFInterface.clear();
     CEFInterface.cursor(false);
@@ -142,7 +142,7 @@ mp.events.add("render", function() {
         mp.defaultCam.setActive(true);
     }
 });
-mp.events.add("Character:Edit", (setClothing = false) => {
+mp.events.add("cef:character:edit", (setClothing = false) => {
     // Set To Male ( Male : mp_m_freemode_01, female : mp_f_freemode_01)
     if (setClothing) {
         mp.players.local.model = mp.game.joaat('mp_m_freemode_01');

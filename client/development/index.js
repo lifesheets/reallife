@@ -40,12 +40,14 @@ mp.gameplayCam = mp.cameras.new('gameplay');
 mp.defaultCam = mp.cameras.new('default');
 mp.ui = {};
 mp.ui.ready = false;
+mp.loggedIn = false;
 mp.gameplayCam.setAffectsAiming(true);
 require("./character_creator.js")
 require("./login.js")
 require("./hud.js")
 require("./vehicles.js")
 require("./animations.js")
+require("./nametags.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {

@@ -529,7 +529,7 @@ var CharacterCreator = new class {
                 }
             })
         }
-        mp.trigger("Character:Update", JSON.stringify(CharData));
+        mp.trigger("cef:character:update", JSON.stringify(CharData));
     }
     save() {
         let self = this;
@@ -576,7 +576,7 @@ var CharacterCreator = new class {
                 }
             })
         }
-        mp.trigger("Character:Save", JSON.stringify(CharData));
+        mp.trigger("cef:character:save", JSON.stringify(CharData));
     }
     slide(type, val) {
         if (type == "resemblance" || type == "tone") {
