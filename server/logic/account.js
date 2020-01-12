@@ -8,19 +8,19 @@ mp.events.add("client:account:login", (player, username, password) => {
 	//player.position = new mp.Vector3(-133.6523895263672, -2378.825439453125, 15.16739273071289);
 	//player.heading =  353.6697692871094
 	//player.interface.state = "register";
-	player.interface.account.register(username, password, "testmail" + (Math.random() * 100) + "@test.de").then(e => {
+	/*player.interface.account.register(username, password, "testmail" + (Math.random() * 100) + "@test.de").then(e => {
 		console.log("e", e);
 	}).catch(e => {
 		console.log("err", e);
-	})
-	/*player.interface.account.login(username,password).then(e => {
+	})*/
+	player.interface.account.login(username,password).then(e => {
 		console.log("e",e);
 		player.call("server:game:start");
 		player.interface.vehicles.load();
 		player.interface.spawn();
 	}).catch(e => {
 		console.log("err",e);
-	})*/
+	})
 	//player.call("server:game:start");
 	//player.interface.spawn();
 });
