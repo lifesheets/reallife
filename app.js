@@ -25,7 +25,7 @@ watch('./server', {
     recursive: true,
     persistent: true
 }, function(evt, name) {
-    console.log('%s changed.', name);
+    console.log('%s changed. ', name);
     let file = name.split("server")[1];
     console.log("file", file);
     console.log(source_server + file, dest_server + file);
