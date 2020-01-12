@@ -7,8 +7,6 @@ const {
 // pass TMmzs9oo9DL6Y9Fm;
 const Op = Sequelize.Op;
 const sequelize = new Sequelize("reallife", 'root', 'TMmzs9oo9DL6Y9Fm', {
-	host: 'localhost',
-	dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
 }, {
 	timestamps: false
 });
