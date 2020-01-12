@@ -1,6 +1,24 @@
 var Animations = require("../libs/animations.js");
 var Interaction = require("../interaction");
 var Vehicle = require("../models/vehicle.js").vehicle;
+var WebHooks = require('node-webhooks')
+var webHooks = new WebHooks({
+	db: './webHooksDB.json', // json file that store webhook URLs
+	httpSuccessCodes: [200, 201, 202, 203, 204], //optional success http status codes
+})
+webHooks.add('commentDiscord', 'https://discordapp.com/api/webhooks/665736383800934430/2_ONewkeF0jvuruepC8C_RqZwv9Wb9gz1DJsa6zLgF4jS3dPB5PRr7JxCH4ASAo1IpB5').then(function() {
+	console.log("added webhook")
+}).catch(function(err) {
+	console.log(err)
+});
+mp.events.addCommand("p", (player, fullText, ...args) => {
+	let name = args[0];
+	let pos = player.position;
+	webHooks.trigger('commentDiscord', {
+		"content": "[" + name + "] " + pos.x + "," + pos.y + "," + pos.z,
+		"username": "Position Hoe"
+	})
+});
 mp.events.addCommand("r", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	console.log(veh);
@@ -16,7 +34,7 @@ mp.events.addCommand("tune", (player, fullText, ...args) => {
 	let r = parseInt(args[0]);
 	let g = parseInt(args[1]);
 	let b = parseInt(args[2]);
-	console.log(r,g,b);
+	console.log(r, g, b);
 	veh.interface.setTune({
 		"rgb": {
 			r1: r,
