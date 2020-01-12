@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var AccountDB = require("../database").account;
 var Op = require("../database").Op;
-//var bcrypt = require('bcrypt');
+//var bcrypt = require('bcrypt'); f
 const saltSecurity = 15;
 class Account extends EventEmitter {
 	constructor(parent) {
