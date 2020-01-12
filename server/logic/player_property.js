@@ -43,5 +43,5 @@ mp.events.addCommand("veh", (player, fullText, ...args) => {
 		"ry": 0,
 		"rz": 0
 	})
-	console.log(veh);
+	console.log("create veh");
 });
