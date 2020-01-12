@@ -18,28 +18,20 @@ var Account = new class {
         for (var i = 0; i < 15; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
     }
-    getFieldValues() {
-        return {
-            username: $("#join_username").val(),
-            password: $("#join_password").val()
-        }
-    }
     login() {
         if (this.isBlocked == false) {
             console.log("login");
             let vals = this.getFieldValues();
-            this.username = vals.username;
-            this.password = vals.password;
+            this.username = $("#join_username").val();
+            this.password = $("#join_password").val();
             if (this.password.length < 3) {
-                if ($("#join_password").hasClass("wrong") == false) {
-                    $("#join_password").addClass("wrong");
+                if ($("#join_password").hasClass("red") == false) {
+                    $("#join_password").addClass("red");
                 }
             } else {
-                $("#join_password").removeClass("wrong");
+                $("#join_password").removeClass("red");
             }
-            if ($("#join_password").hasClass("wrong") == false) {
-                console.log("username", this.username);
-                console.log("password", this.password);
+            if ($("#join_password").hasClass("red") == false) {
                 mp.trigger("cef:account:login", this.username, this.password);
             } else {
                 this.alert({
@@ -54,10 +46,9 @@ var Account = new class {
         }
     }
     register() {
-        this.salt = this.generateSalt();
         this.username = $("#reg_username").val();
-        this.password = md5($("#reg_password").val() + "|" + this.salt);
-        this.password2 = md5($("#reg_password2").val() + "|" + this.salt);
+        this.password = $("#reg_password").val() ;
+        this.password2 = $("#reg_password2").val();
         this.mail = $("#reg_email").val();
         if ($("#reg_password").val().length < 3) {
             if ($("#reg_password").hasClass("red") == false) {
@@ -88,7 +79,7 @@ var Account = new class {
                 if (this.mail.indexOf("@") > -1) {
                     $("#reg_email").removeClass("red");
                     $("#reg_email").addClass("green");
-                    mp.trigger("cef:account:register", this.username, this.password, this.password2, this.salt, this.mail);
+                    mp.trigger("cef:account:register", this.username, this.password, this.password2, this.mail);
                 } else {
                     $("#reg_email").addClass("red");
                     $("#reg_email").removeClass("green");
