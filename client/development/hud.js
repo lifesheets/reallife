@@ -19,7 +19,7 @@ mp.events.add("render", () => {
 
 
 
-
+//-
 
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
