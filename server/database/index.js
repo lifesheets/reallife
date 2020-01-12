@@ -7,7 +7,7 @@ const {
 // pass TMmzs9oo9DL6Y9Fm;
 const Op = Sequelize.Op;
 const database_name = "reallife";
-const sequelize = new Sequelize(database_name, 'root', 'TMmzs9oo9DL6Y9Fm', {
+const sequelize = new Sequelize(database_name, 'root', '', {
 	host: '127.0.0.1',
 	dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
 }, {
