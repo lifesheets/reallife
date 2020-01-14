@@ -61,6 +61,7 @@ var Account = new class {
             console.log("username", this.username);
             console.log("password", this.password);
             console.log("password", this.password2);
+            alert(this.password+":"+this.password2)
             if (this.password != this.password2) {
                 $("#reg_password2").addClass("red");
                 $("#reg_password2").removeClass("green");
