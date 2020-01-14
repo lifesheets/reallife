@@ -565,7 +565,7 @@ mp.events.add("render", () => {
 			let cash = mp.players.local.getVariable('cash_hand') || "-1"
 			if (mp.cache["hud_cash"] != cash) {
 				mp.cache["hud_cash"] = cash;
-				CEFHud.call("updateHUD", ".cash", "$" + mp.cache["hud_cash"]);
+				CEFHud.call("updateHUD", ".cash",mp.cache["hud_cash"]);
 			}
 			let hunger = mp.players.local.getVariable('hunger_val');
 			if (mp.cache["hud_hunger"] != hunger) {
