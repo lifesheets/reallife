@@ -12,18 +12,11 @@ class Player extends EventEmitter {
 		this.appearance = new Appearance(this);
 		this.vehicles = new VehicleManager(this);
 		this.cState = "auth";
-
-
 		this._money = 0;
 		this._bankmoney = 0;
-
 		this._group = 0;
-
-
-
 		this._damageLog = [];
 	}
-
 	get id() {
 		if (!this.account.loggedIn) return;
 		return this.account.id;
@@ -32,19 +25,17 @@ class Player extends EventEmitter {
 		if (!this.account.status) return;
 		return this.account.status;
 	}
-
 	set money(val) {
 		// logic
 		this._money = val;
 	}
-	set money( val){
+	set money(val) {
 		this._money = val;
 		this.player.setVariable("cash_hand", val);
 	}
-	get money( ){
+	get money() {
 		return this._money;
 	}
-
 	set state(v) {
 		this.cState = v;
 	}
@@ -57,41 +48,32 @@ class Player extends EventEmitter {
 			tPlayer.call("client:sync:playanimation", [id, dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout])
 		});
 	}
-	interact(key){
-		this.emit("interact",key);
+	interact(key) {
+		this.emit("interact", key);
 	}
-
-	death(reason,killer,event = false){
-		this.player.setVariable("death",true);
+	death(reason, killer, event = false) {
+		this.player.setVariable("death", true);
+		setTimeout(() => {
+			this.spawn();
+		}, 5000);
 	}
 	spawn() {
 		let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
-
 		this.player.spawn(spawnPoint);
 		this.appearance.load();
 		this.player.dimension = 0;
 		this.money = 100;
-
 		this.player.call("server:game:start");
-		this.player.setVariable("spawned",true);
-		this.player.setVariable("death",false);
-
+		this.player.setVariable("spawned", true);
+		this.player.setVariable("death", false);
 	}
 }
-
-
-
-mp.events.add("playerDeath", (player,reason,killer) => {
-	console.log("player died",player.name);
-
-
-
-		if (player.interface) {
-			player.interface.death(reason,killer,true);
-		}
+mp.events.add("playerDeath", (player, reason, killer) => {
+	console.log("player died", player.name);
+	if (player.interface) {
+		player.interface.death(reason, killer, true);
+	}
 });
-
-
 mp.Player.prototype.__defineGetter__("interface", function() {
 	if (!this.interface_class) {
 		this.interface_class = new Player(this);
