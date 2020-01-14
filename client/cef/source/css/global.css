@@ -111,6 +111,11 @@
     src: url("../fonts/Lato-Bold.ttf") format('truetype');
     font-weight: bold;
 }
+@font-face {
+    font-family: Pricedown;
+    src: url("../fonts/pricedown.ttf") format('truetype');
+    font-weight: bold;
+}
 .pattern {
     position: absolute;
     top: 0;
