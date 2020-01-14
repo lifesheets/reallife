@@ -49,7 +49,7 @@ mp.events.add('server:account:init', () => {
 
 
 	mp.gui.chat.activate(false);
-	mp.gui.chat.show(false);
+	mp.gui.chat.show(true);
 
 	CEFInterface.load("login/index.html");
 	CEFInterface.cursor(true);

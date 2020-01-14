@@ -60,9 +60,10 @@ var Account = new class {
         if ($("#reg_password").hasClass("red") == false) {
             console.log("username", this.username);
             console.log("password", this.password);
+            console.log("password", this.password2);
             if (this.password != this.password2) {
-                $("#red_password2").addClass("red");
-                $("#red_password2").removeClass("green");
+                $("#reg_password2").addClass("red");
+                $("#reg_password2").removeClass("green");
                 this.alert({
                     title: "Passwort",
                     titleSize: "16px",
@@ -74,8 +75,8 @@ var Account = new class {
                     close: false
                 })
             } else {
-                $("#red_password1").removeClass("red");
-                $("#red_password1").addClass("green");
+                $("#reg_password2").removeClass("red");
+                $("#reg_password2").addClass("green");
                 if (this.mail.indexOf("@") > -1) {
                     $("#reg_email").removeClass("red");
                     $("#reg_email").addClass("green");
