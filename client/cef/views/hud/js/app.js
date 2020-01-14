@@ -371,21 +371,17 @@ Date.prototype.today = function() {
     return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "." + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "." + this.getFullYear();
 }
 
-
 function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
-  try {
-    decimalCount = Math.abs(decimalCount);
-    decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-
-    const negativeSign = amount < 0 ? "-" : "";
-
-    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-    let j = (i.length > 3) ? i.length % 3 : 0;
-
-    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-  } catch (e) {
-    console.log(e)
-  }
+    try {
+        decimalCount = Math.abs(decimalCount);
+        decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+        const negativeSign = amount < 0 ? "-" : "";
+        let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+        let j = (i.length > 3) ? i.length % 3 : 0;
+        return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+    } catch (e) {
+        console.log(e)
+    }
 };
 
 function updateTime() {
@@ -401,15 +397,32 @@ function updateHunger(progress) {
     }, 100);
     last_hunger = progress;
 }
+var transaction_stack = [];
 
-function updateHUD(what, value) {
+function addCashTransaction(cashChange) {
+    let index_id = transaction_stack.length;
+    if (transaction_stack.length > 5) {
+        let id_first = transaction_stack.shift()
 
-    if (what.indexOf("cash") > -1) {
-        value = "$ " + formatMoney(value, 0, ",", ".");
+        if ($("#" + id_first)) {
+            $("#" + id_first).remove();
+        }
+
     }
+    let id = "transaction-" + index_id + 1;
+    let tag = cashChange > 0 ? "green" : "red";
+    let prefix = cashChange > 0("$" + cashChange): ("-$" + (cashChange * 1));
+    $("#player_hud > .cash > .actions").append('<span id="' + id + '"" class="' + tag + '">' + prefix + '</span>')
+    transaction_stack.push(id);
+    setTimeout((id) => {
+        if ($("#" + id)) {
+            $("#" + id).remove();
+        }
+    }, 10000, id);
+}
 
-
-    $("#player_hud > " + what).html(value);
+function updateCash(what, value) {
+    $("#player_hud > .cash > span").html("$" + formatMoney(value, 0, ",", "."));
 }
 
 function toggleHUD(state) {

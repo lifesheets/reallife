@@ -549,6 +549,24 @@ CEFHud.load("hud/index.html");
 mp.events.add("cef:hud:ready", () => {
 	mp.cache["hud_ready"] = true;
 });
+mp.events.addDataHandler("cash_hand", (entity, value, oldValue) => {
+	if (entity != mp.players.local) return;
+	if (mp.cache["hud_ready"]) {
+		console.log("cash change");
+		mp.cache["hud_cash"] = value;
+		CEFHud.call("updateCash", mp.cache["hud_cash"]);
+		CEFHud.call("addCashTransaction", (oldValue - value));
+	}
+});
+mp.events.addDataHandler("hunger_val", (entity, value, oldValue) => {
+	if (entity != mp.players.local) return;
+	if (mp.cache["hud_ready"]) {
+		if (mp.cache["hud_hunger"] != value) {
+			mp.cache["hud_hunger"] = value;
+			CEFHud.call("updateHunger", mp.cache["hud_hunger"]);
+		}
+	}
+});
 mp.events.add("render", () => {
 	let res = mp.game.graphics.getScreenActiveResolution(0, 0);
 	//console.log(res);
@@ -559,19 +577,11 @@ mp.events.add("render", () => {
 				CEFHud.call("init", getMinimapAnchor());
 				mp.cache["hud"] = true;
 				CEFHud.call("toggleHUD", true);
+				CEFHud.call("updateCash", mp.players.local.getVariable('cash_hand'));
+				CEFHud.call("updateHunger", mp.players.local.getVariable('hunger_val'));
 			}
 			mp.cache["screen_x"] = res.x;
 			mp.cache["screen_y"] = res.y;
-			let cash = mp.players.local.getVariable('cash_hand') || "-1"
-			if (mp.cache["hud_cash"] != cash) {
-				mp.cache["hud_cash"] = cash;
-				CEFHud.call("updateHUD", ".cash",mp.cache["hud_cash"]);
-			}
-			let hunger = mp.players.local.getVariable('hunger_val');
-			if (mp.cache["hud_hunger"] != hunger) {
-				mp.cache["hud_hunger"] = hunger;
-				CEFHud.call("updateHunger", mp.cache["hud_hunger"]);
-			}
 			//mp.cache["hud"]
 		} else {
 			CEFHud.call("toggleHUD", false);
