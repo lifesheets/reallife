@@ -5,11 +5,11 @@ mp.gui.chat.colors = true;
 
 mp.events.add('render', (nametags) => {
     let startPosition = mp.players.local.getBoneCoords(12844, 0, 0, 0);
-    if ((mp.players.local.getVariable("loggedIn") == true) && (mp.players.local.getVariable("spawned") == true) && (mp.players.local.getVariable("death") == false)) {
+    if ((mp.players.local.getVariable("spawned") == true) && (mp.players.local.getVariable("death") == false)) {
         mp.players.forEachInStreamRange((player) => {
             if (player != mp.players.local) {
                 if (mp.game.system.vdist2(startPosition.x, startPosition.y, startPosition.z, player.position.x, player.position.y, player.position.z) < 400) {
-                    if ((player.getVariable("loggedIn") == true) && (player.getVariable("spawned") == true)) {
+                    if ((player.getVariable("spawned") == true)) {
                         let endPosition = player.getBoneCoords(12844, 0, 0, 0);
                         let hitData = mp.raycasting.testPointToPoint(startPosition, endPosition, mp.players.local, (1 | 16 | 256));
                         if (!hitData) {
@@ -43,7 +43,7 @@ mp.events.add('render', (nametags) => {
                             }
                             mp.game.graphics.setDrawOrigin(pos.x, pos.y, pos.z, 0);
                             mp.game.graphics.drawText(playerName, [0, 0], {
-                                font: 4,
+                                font: 3,
                                 color: color,
                                 scale: [size, size],
                                 outline: true

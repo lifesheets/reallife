@@ -77,6 +77,7 @@ class Player extends EventEmitter {
 		this.player.dimension = 0;
 
 
+		this.player.call("server:game:start");
 		this.player.setVariable("spawned",true);
 		this.player.setVariable("death",false);
 
