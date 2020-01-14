@@ -405,7 +405,7 @@ function updateHunger(progress) {
 function updateHUD(what, value) {
 
     if (what.indexOf("cash") > -1) {
-        value = "$ " + formatMoney(value, 2, ",", ".");
+        value = "$ " + formatMoney(value, 0, ",", ".");
     }
 
 
