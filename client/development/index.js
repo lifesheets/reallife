@@ -18,6 +18,7 @@ console.log = function(...a) {
 mp.lerp = function(a, b, n) {
 	return (1 - n) * a + n * b;
 }
+mp.cache = [];
 let utils = require("./utils.js")
 require("./natives.js")
 require("./libs/attachments.js")

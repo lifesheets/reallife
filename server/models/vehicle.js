@@ -84,7 +84,6 @@ class Vehicle extends EventEmitter {
 		this.vehicle.numberPlate = "TEST";
 		this.loadTunes();
 		console.log("spawn", this.vehicle.position);
-		console.log("this.vehicle", this.vehicle);
 		return this.vehicle;
 	}
 	respawn() {

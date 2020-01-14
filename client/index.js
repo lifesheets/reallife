@@ -538,11 +538,22 @@ mp.events.add("cef:character:edit", (setClothing = false) => {
 },{"./browser.js":4}],6:[function(require,module,exports){
 "use strict";
 var CEFHud = require("./browser.js").hud;
-CEFHud.load("hud/index.html");
+var getMinimapAnchor = require("./utils.js").minimap_anchor;
+
 var keyQueue = [];
 
 var isTachoVisible = false;
 mp.events.add("render", () => {
+	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
+
+	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
+		CEFHud.load("hud/index.html");
+
+	}
+	mp.cache["screen_x"] = rx;
+	mp.cache["screen_y"] = ry;
+
+
 	if (mp.players.local.isInAnyVehicle(false)) {
 		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
 
@@ -608,7 +619,7 @@ mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0
 mp.keys.bind(0x71, false, function() {
 	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
-},{"./browser.js":4}],7:[function(require,module,exports){
+},{"./browser.js":4,"./utils.js":17}],7:[function(require,module,exports){
 "use strict";
 
 
@@ -629,6 +640,7 @@ console.log = function(...a) {
 mp.lerp = function(a, b, n) {
 	return (1 - n) * a + n * b;
 }
+mp.cache = [];
 let utils = require("./utils.js")
 require("./natives.js")
 require("./libs/attachments.js")

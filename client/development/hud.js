@@ -1,10 +1,21 @@
 "use strict";
 var CEFHud = require("./browser.js").hud;
-CEFHud.load("hud/index.html");
+var getMinimapAnchor = require("./utils.js").minimap_anchor;
+
 var keyQueue = [];
 
 var isTachoVisible = false;
 mp.events.add("render", () => {
+	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
+
+	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
+		CEFHud.load("hud/index.html");
+
+	}
+	mp.cache["screen_x"] = rx;
+	mp.cache["screen_y"] = ry;
+
+
 	if (mp.players.local.isInAnyVehicle(false)) {
 		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
 
