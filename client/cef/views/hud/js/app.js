@@ -422,7 +422,7 @@ function addCashTransaction(cashChange) {
 }
 
 function updateCash(what, value) {
-    $("#player_hud > .cash > span").html("$" + formatMoney(value, 0, ",", "."));
+    $("#hand_cash").html("$" + formatMoney(value, 0, ",", "."));
 }
 
 function toggleHUD(state) {
