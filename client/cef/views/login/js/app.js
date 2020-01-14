@@ -81,7 +81,7 @@ var Account = new class {
                 if (this.mail.indexOf("@") > -1) {
                     $("#reg_email").removeClass("red");
                     $("#reg_email").addClass("green");
-                    mp.trigger("cef:account:register", this.username, this.password, this.password2, this.mail);
+                    mp.trigger("cef:account:register", this.username, this.password, this.mail);
                 } else {
                     $("#reg_email").addClass("red");
                     $("#reg_email").removeClass("green");
