@@ -62,13 +62,8 @@ class Player extends EventEmitter {
 	}
 
 	death(reason,killer,event = false){
-
-
-
-
-
+		this.player.setVariable("death",true);
 	}
-
 	spawn() {
 		let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
 

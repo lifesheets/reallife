@@ -552,7 +552,7 @@ mp.events.add("render", () => {
 	let res = mp.game.graphics.getScreenActiveResolution(0, 0);
 	//console.log(res);
 	if (mp.cache["hud_ready"]) {
-		if ((mp.players.local.getVariable("spawned") == true)) {
+		if ((mp.players.local.getVariable("spawned") == true) && (mp.players.local.getVariable("death") == false)) {
 			if ((res.x != mp.cache["screen_x"]) || (res.y != mp.cache["screen_y"]) || mp.cache["hud"] == false) {
 				console.log("init hud");
 				CEFHud.call("init", getMinimapAnchor());
@@ -561,7 +561,7 @@ mp.events.add("render", () => {
 			}
 			mp.cache["screen_x"] = res.x;
 			mp.cache["screen_y"] = res.y;
-			let cash = mp.players.local.getVariable('cash_hand') || "24"
+			let cash = mp.players.local.getVariable('cash_hand') || "-1"
 			if (mp.cache["hud_cash"] != cash) {
 				mp.cache["hud_cash"] = cash;
 				CEFHud.call("updateHUD", ".cash", "$" + mp.cache["hud_cash"]);
