@@ -59,7 +59,6 @@ class Account extends EventEmitter {
 					}]
 				}
 			}).then(async (pAccount) => {
-				console.log("account", pAccount.dataValues);
 				if (pAccount == null) {
 					console.log("this.player.serial", this.player.serial);
 					if (!this.player) return reject("player not valid");
