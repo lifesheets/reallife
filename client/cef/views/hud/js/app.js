@@ -411,7 +411,7 @@ function addCashTransaction(cashChange) {
     }
     let id = "transaction-" + index_id + 1;
     let tag = cashChange > 0 ? "green" : "red";
-    let prefix = cashChange > 0("$" + cashChange): ("-$" + (cashChange * 1));
+    let prefix = cashChange > 0 ? ("$" + cashChange) : ("-$" + (cashChange * 1));
     $("#player_hud > .cash > .actions").append('<span id="' + id + '"" class="' + tag + '">' + prefix + '</span>')
     transaction_stack.push(id);
     setTimeout((id) => {
