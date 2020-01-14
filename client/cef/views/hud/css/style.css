@@ -161,6 +161,7 @@ body {
 #player_hud>.hunger {
     position: absolute;
     width: 400px;
+    top:35px;
     padding-left: 35px;
     line-height: 25px;
     font-weight: 400;
