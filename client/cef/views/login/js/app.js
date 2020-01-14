@@ -21,9 +21,9 @@ var Account = new class {
     login() {
         if (this.isBlocked == false) {
             console.log("login");
-            let vals = this.getFieldValues();
             this.username = $("#join_username").val();
             this.password = $("#join_password").val();
+            //    alert("Login1" + this.username + ":"+this.password);
             if (this.password.length < 3) {
                 if ($("#join_password").hasClass("red") == false) {
                     $("#join_password").addClass("red");
@@ -32,6 +32,7 @@ var Account = new class {
                 $("#join_password").removeClass("red");
             }
             if ($("#join_password").hasClass("red") == false) {
+            //    alert("Login" + this.username + ":"+this.password);
                 mp.trigger("cef:account:login", this.username, this.password);
             } else {
                 this.alert({

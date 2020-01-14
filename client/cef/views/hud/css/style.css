@@ -1,14 +1,25 @@
-@font-face {
+/*@font-face {
     font-family: 'Glyphter';
     src: url('./images.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-}@font-face {
+}*/
+@font-face {
     font-family: 'Technology';
     src: url('./Technology.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'Glyphter';
+    src: url('./glyphter.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
 body {
     -webkit-user-select: none;
     /* Safari 3.1+ */
@@ -111,26 +122,35 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    opacity: 0.8;
+    opacity: 0.9;
+
 }
 #player_hud>.cash {
     position: absolute;
-    top: 2vh;
     width: 400px;
     padding-left: 35px;
     line-height: 25px;
     font-weight: 400;
     font-size: 25px;
     color: #FFF;
-    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+    text-shadow:
+    1px 0 0 rgba(0,0,0,0.5),
+    -1px 0 0 rgba(0,0,0,0.5),
+    0 1px 0 rgba(0,0,0,0.5),
+    0 -1px 0 rgba(0,0,0,0.5),
+    1px 1px rgba(0,0,0,0.5),
+    -1px -1px 0 rgba(0,0,0,0.5),
+    1px -1px 0 rgba(0,0,0,0.5),
+    -1px 1px 0 rgba(0,0,0,0.5);
 }
 #player_hud>.cash::first-letter {
     padding-right: 3px;
     font-size: 20px;
 }
 #player_hud>.cash::before {
-    content: " ";
-    background-image: url(wallet.svg);
+    font-family: Glyphter;
+    content: "\0041";
+   /* background-image: url(wallet.svg)*/
     top: -2px;
     left: 0;
     position: absolute;
@@ -138,44 +158,31 @@ body {
     height: 25px;
     background-position: center;
 }
-#player_hud>.playtime {
-    position: absolute;
-    top: 4vh;
-    width: 400px;
-    padding-left: 35px;
-    line-height: 25px;
-    font-weight: 400;
-    font-size: 25px;
-    color: #FFF;
-    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
-}
-#player_hud>.playtime::before {
-    content: " ";
-    background-image: url(wallet.svg);
-    top: -2px;
-    left: 0;
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    background-position: center;
-}
+
 #player_hud>.world {
     position: absolute;
-    top: 15vh;
+    bottom: 1.2vh;
+        text-shadow:
+    1px 0 0 rgba(0,0,0,0.5),
+    -1px 0 0 rgba(0,0,0,0.5),
+    0 1px 0 rgba(0,0,0,0.5),
+    0 -1px 0 rgba(0,0,0,0.5),
+    1px 1px rgba(0,0,0,0.5),
+    -1px -1px 0 rgba(0,0,0,0.5),
+    1px -1px 0 rgba(0,0,0,0.5),
+    -1px 1px 0 rgba(0,0,0,0.5);
 }
 #player_hud>.world>.time {
     font-family: Roboto;
-    font-size: 25px;
+    font-size: 22px;
     font-weight: 400;
     color: #FFF;
-    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
 #player_hud>.world>.date {
     font-family: Roboto;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
-    color: rgba(200, 200, 200, 1);
-    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+    color: rgb(220, 220, 220);
 }
 #tacho {
     position: absolute;
