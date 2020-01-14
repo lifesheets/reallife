@@ -408,7 +408,7 @@ function init(minimap) {
         left: (minimap.rightX) * width + offset.left
     })
     $("#hunger_progress").css({
-        width: ((minimap.width * width) / 2) + "px"
+        width: ((minimap.width * width) / 4) + "px"
     })
     if (time_interval) {
         clearInterval(time_interval)
