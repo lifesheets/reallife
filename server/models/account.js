@@ -48,6 +48,7 @@ class Account extends EventEmitter {
 		})
 	}
 	async register(username, password, email) {
+		console.log("register route",username,password,email);
 		return new Promise(async (resolve, reject) => {
 			AccountDB.findOne({
 				where: {
@@ -58,6 +59,7 @@ class Account extends EventEmitter {
 					}]
 				}
 			}).then(async (pAccount) => {
+				console.log("account", pAccount.dataValues);
 				if (pAccount == null) {
 					console.log("this.player.serial", this.player.serial);
 					if (!this.player) return reject("player not valid");
