@@ -1,31 +1,42 @@
 "use strict";
 var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
-
 var keyQueue = [];
 var isTachoVisible = false;
-
-
-
+mp.cache["hud"] = true;
+mp.cache["hud_cash"] = 0;
+mp.cache["hud_ready"] = false;
 CEFHud.load("hud/index.html");
-
-
-
+mp.events.add("cef:hud:ready", () => {
+	mp.cache["hud_ready"] = true;
+});
 mp.events.add("render", () => {
-	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
-
-	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
-
-
+	let res = mp.game.graphics.getScreenActiveResolution(0, 0);
+	//console.log(res);
+	if (mp.cache["hud_ready"]) {
+		if ((mp.players.local.getVariable("spawned") == true)) {
+			if ((res.x != mp.cache["screen_x"]) || (res.y != mp.cache["screen_y"]) || mp.cache["hud"] == false) {
+				console.log("init hud");
+				CEFHud.call("init", getMinimapAnchor());
+				mp.cache["hud"] = true;
+				CEFHud.call("toggleHUD", true);
+			}
+			mp.cache["screen_x"] = res.x;
+			mp.cache["screen_y"] = res.y;
+			let cash = mp.players.local.getVariable('cash_hand') || "24"
+			if (mp.cache["hud_cash"] != cash) {
+				mp.cache["hud_cash"] = cash;
+				CEFHud.call("updateHUD", ".cash", "$" + mp.cache["hud_cash"]);
+			}
+			//mp.cache["hud"]
+		} else {
+			CEFHud.call("toggleHUD", false);
+			mp.cache["hud"] = false;
+		}
 	}
-	mp.cache["screen_x"] = rx;
-	mp.cache["screen_y"] = ry;
-
-
 	if (mp.players.local.isInAnyVehicle(false)) {
 		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
-
-		CEFHud.call("drawTacho",speed,90,180);
+		CEFHud.call("drawTacho", speed, 90, 180);
 		isTachoVisible = true;
 		return;
 	};
@@ -33,11 +44,7 @@ mp.events.add("render", () => {
 		CEFHud.call("clearTacho");
 		isTachoVisible = false;
 	}
-
-
-
-//-
-
+	//-
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
 	//CEFHud.call("drawInteraction", 69, "Selbstmord", 0.5, 0.9, 1000, 1)

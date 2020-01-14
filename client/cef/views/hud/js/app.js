@@ -194,7 +194,7 @@ function drawTacho(speed,fuel = 0,maxSpeed = 250) {
     let context = document.getElementById("tacho_canvas").getContext('2d');
     let width = $("#tacho_canvas").width();
     let height = $("#tacho_canvas").height();
-    console.log(width, height);
+    //console.log(width, height);
     let radius = width / 2.2;
 
     let line_size = width/width*7;
@@ -377,7 +377,7 @@ function drawTacho(speed,fuel = 0,maxSpeed = 250) {
     context.textAlign = "center";
     context.textBaseline = 'middle';
 
-    context.fillText('\u0042', (centerX- radius/1.7), centerY);
+    context.fillText('\u0043', (centerX- radius/1.7), centerY);
     context.closePath();
 
 
@@ -413,18 +413,46 @@ function drawTacho(speed,fuel = 0,maxSpeed = 250) {
     },10);
 */
 //clearInteraction(65)
+
+Date.prototype.timeNow = function() {
+    return ((this.getHours() < 10) ? "0" : "") + this.getHours() + ":" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ":" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
+}
+Date.prototype.today = function() {
+    return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "." + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "." + this.getFullYear();
+}
+function updateTime() {
+    var currentdate = new Date();
+    $("#player_hud > .world > .time").text(currentdate.timeNow());
+    $("#player_hud > .world > .date").text(currentdate.today());
+}
+
+
+function updateHUD(what,value) {
+    $("#player_hud > "+what).html(value);
+}
+function toggleHUD(state) {
+    $("#player_hud").css("display",(state ? "block": "none"));
+}
+
+var time_interval;
 function init(minimap) {
     let height = $(window).height();
     let width = $(window).width();
     let offset = {
         top: 0,
-        left: 15
+        left: 25
     }
     let cell = 0;
-    /* $("#hunger").css({
-         top: (minimap.bottomY) * height - (cHeight) + offset.top,
-         left: (minimap.rightX) * width + (cWidth * cell) + offset.left
+    console.log("load minimap",minimap);
+     $("#player_hud").css({
+         top: (minimap.topY) * height ,
+         left: (minimap.rightX) * width + offset.left
      })
+
+    if (time_interval) {clearInterval(time_interval)};
+    time_interval = setInterval(updateTime, 1000)
+
+     /*
      cell += 1;
      $("#thirst").css({
          top: (minimap.bottomY) * height - (cHeight) + offset.top,
@@ -437,5 +465,5 @@ function init(minimap) {
      })*/
 }
 $(document).ready(function(event) {
-    // mp.trigger("HUD:Ready");
+     mp.trigger("cef:hud:ready");
 });
