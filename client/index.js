@@ -539,31 +539,42 @@ mp.events.add("cef:character:edit", (setClothing = false) => {
 "use strict";
 var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
-
 var keyQueue = [];
 var isTachoVisible = false;
-
-
-
+mp.cache["hud"] = true;
+mp.cache["hud_cash"] = 0;
+mp.cache["hud_ready"] = false;
 CEFHud.load("hud/index.html");
-
-
-
+mp.events.add("cef:hud:ready", () => {
+	mp.cache["hud_ready"] = true;
+});
 mp.events.add("render", () => {
-	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
-
-	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
-
-
+	let res = mp.game.graphics.getScreenActiveResolution(0, 0);
+	//console.log(res);
+	if (mp.cache["hud_ready"]) {
+		if ((mp.players.local.getVariable("spawned") == true)) {
+			if ((res.x != mp.cache["screen_x"]) || (res.y != mp.cache["screen_y"]) || mp.cache["hud"] == false) {
+				console.log("init hud");
+				CEFHud.call("init", getMinimapAnchor());
+				mp.cache["hud"] = true;
+				CEFHud.call("toggleHUD", true);
+			}
+			mp.cache["screen_x"] = res.x;
+			mp.cache["screen_y"] = res.y;
+			let cash = mp.players.local.getVariable('cash_hand') || "24"
+			if (mp.cache["hud_cash"] != cash) {
+				mp.cache["hud_cash"] = cash;
+				CEFHud.call("updateHUD", ".cash", "$" + mp.cache["hud_cash"]);
+			}
+			//mp.cache["hud"]
+		} else {
+			CEFHud.call("toggleHUD", false);
+			mp.cache["hud"] = false;
+		}
 	}
-	mp.cache["screen_x"] = rx;
-	mp.cache["screen_y"] = ry;
-
-
 	if (mp.players.local.isInAnyVehicle(false)) {
 		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
-
-		CEFHud.call("drawTacho",speed,90,180);
+		CEFHud.call("drawTacho", speed, 90, 180);
 		isTachoVisible = true;
 		return;
 	};
@@ -571,11 +582,7 @@ mp.events.add("render", () => {
 		CEFHud.call("clearTacho");
 		isTachoVisible = false;
 	}
-
-
-
-//-
-
+	//-
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
 	//CEFHud.call("drawInteraction", 69, "Selbstmord", 0.5, 0.9, 1000, 1)
@@ -636,6 +643,10 @@ mp.keys.bind(0x71, false, function() {
 
 */
 
+mp.enums = require("../../server/libs/enums.js")
+
+
+
 var Bones = require("./libs/skeleton.js")
 console.log = function(...a) {
 	a = a.map(function(e) {
@@ -686,7 +697,7 @@ mp.events.add("Notifications:New", (notification_data) => {
 
 
 
-},{"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19}],8:[function(require,module,exports){
+},{"../../server/libs/enums.js":20,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19}],8:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -10341,6 +10352,13 @@ mp.gui.chat.activate(false);
 mp.gui.chat.show(true);
 mp.game.ui.displayHud(false);
 mp.game.ui.displayRadar(false);
+
+
+mp.events.add('server:account:alert', (msg) => {
+	if (mp.loggedIn) return;
+	console.log(username, password)
+	CEFInterface.call("alert_login",msg)
+});
 mp.events.add('cef:account:login', (username, password) => {
 	if (mp.loggedIn) return;
 	console.log(username, password)
@@ -10479,7 +10497,7 @@ mp.events.add('render', (nametags) => {
                             }
                             mp.game.graphics.setDrawOrigin(pos.x, pos.y, pos.z, 0);
                             mp.game.graphics.drawText(playerName, [0, 0], {
-                                font: 3,
+                                font: 4,
                                 color: color,
                                 scale: [size, size],
                                 outline: true
@@ -10841,4 +10859,17 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
+},{}],20:[function(require,module,exports){
+(function (global){
+let enum_count = 0;
+var enums = {
+    PASSWORD_WRONG:enum_count++,
+    EMAIL_ALREADY_IN_USE:enum_count++,
+    EMAIL_USERNAME_IN_USE:enum_count++
+}
+Object.keys(enums).forEach(function(key, value) {
+	global[key] = enums[key];
+})
+module.exports = enums;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}]},{},[7]);

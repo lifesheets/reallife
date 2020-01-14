@@ -43,7 +43,7 @@ mp.events.add('render', (nametags) => {
                             }
                             mp.game.graphics.setDrawOrigin(pos.x, pos.y, pos.z, 0);
                             mp.game.graphics.drawText(playerName, [0, 0], {
-                                font: 3,
+                                font: 4,
                                 color: color,
                                 scale: [size, size],
                                 outline: true
