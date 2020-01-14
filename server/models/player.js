@@ -39,7 +39,7 @@ class Player extends EventEmitter {
 	}
 	set money( val){
 		this._money = val;
-		this.player.setVariable("cash", val);
+		this.player.setVariable("cash_hand", val);
 	}
 	get money( ){
 		return this._money;
@@ -75,7 +75,7 @@ class Player extends EventEmitter {
 		this.player.spawn(spawnPoint);
 		this.appearance.load();
 		this.player.dimension = 0;
-
+		this.money = 100;
 
 		this.player.call("server:game:start");
 		this.player.setVariable("spawned",true);

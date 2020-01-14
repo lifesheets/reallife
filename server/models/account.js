@@ -1,6 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var AccountDB = require("../database").account;
 var Op = require("../database").Op;
+var e = require("../libs/enums.js");
 var bcrypt = require('bcryptjs');
 const saltSecurity = 15;
 class Account extends EventEmitter {
@@ -18,6 +19,7 @@ class Account extends EventEmitter {
 		return this.loggedIn ? this.loggedIn : false;
 	}
 	async login(username, password) {
+		console.log("register route",username,password);
 		return new Promise((resolve, reject) => {
 			AccountDB.findOne({
 				where: {
@@ -37,7 +39,7 @@ class Account extends EventEmitter {
 							this.player.setVariable("loggedIn", true);
 							return resolve(pAccount.dataValues);
 						} else {
-							return reject("password wrong");
+							return reject(e.PASSWORD_WRONG);
 
 						}
 					});
@@ -83,7 +85,7 @@ class Account extends EventEmitter {
 					})
 				} else {
 					console.log("account exists", pAccount.dataValues);
-					return reject("account already exists");
+					return reject(e.EMAIL_USERNAME_IN_USE);
 				}
 			}).catch(err => {
 				console.log("[ERR]Err", err);
