@@ -47,7 +47,7 @@ mp.events.addCommand("tune", (player, fullText, ...args) => {
 	});
 	//console.log(veh);
 	veh.interface.reloadTunings();
-	//veh.interface.respawn();
+	//veh.interface.respawn() ;
 });
 mp.events.addCommand("veh", (player, fullText, ...args) => {
 	let pos = player.position;
