@@ -24,6 +24,13 @@ mp.gui.chat.activate(false);
 mp.gui.chat.show(true);
 mp.game.ui.displayHud(false);
 mp.game.ui.displayRadar(false);
+
+
+mp.events.add('server:account:alert', (msg) => {
+	if (mp.loggedIn) return;
+	console.log(username, password)
+	CEFInterface.call("alert_login",msg)
+});
 mp.events.add('cef:account:login', (username, password) => {
 	if (mp.loggedIn) return;
 	console.log(username, password)

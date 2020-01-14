@@ -8,6 +8,10 @@
 
 */
 
+mp.enums = require("../../server/libs/enums.js")
+
+
+
 var Bones = require("./libs/skeleton.js")
 console.log = function(...a) {
 	a = a.map(function(e) {
