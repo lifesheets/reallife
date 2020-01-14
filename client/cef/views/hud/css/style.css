@@ -195,7 +195,7 @@ body {
 
 #player_hud>.hunger >.bar {
     position: absolute;
-    width:25%;
+    width:10%;
     margin-top:7px;
     height:11px;
     background:rgba(0,0,0,0.5);
