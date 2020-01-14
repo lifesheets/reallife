@@ -3,13 +3,19 @@ var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
 
 var keyQueue = [];
-
 var isTachoVisible = false;
+
+
+
+CEFHud.load("hud/index.html");
+
+
+
 mp.events.add("render", () => {
 	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
 
 	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
-		CEFHud.load("hud/index.html");
+
 
 	}
 	mp.cache["screen_x"] = rx;

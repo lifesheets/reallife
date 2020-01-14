@@ -45,6 +45,12 @@ mp.events.add('server:account:init', () => {
 	mp.defaultCam.pointAtCoord(109.21778869628906, -3332.524169921875, 31.724140167236328);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
+
+
+
+	mp.gui.chat.activate(false);
+	mp.gui.chat.show(false);
+
 	CEFInterface.load("login/index.html");
 	CEFInterface.cursor(true);
 });

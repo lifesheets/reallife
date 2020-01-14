@@ -541,13 +541,19 @@ var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
 
 var keyQueue = [];
-
 var isTachoVisible = false;
+
+
+
+CEFHud.load("hud/index.html");
+
+
+
 mp.events.add("render", () => {
 	let {rx, ry} = mp.game.graphics.getScreenActiveResolution(0, 0);
 
 	if ((rx != mp.cache["screen_x"]) || (ry != mp.cache["screen_y"])) {
-		CEFHud.load("hud/index.html");
+
 
 	}
 	mp.cache["screen_x"] = rx;
@@ -10356,6 +10362,12 @@ mp.events.add('server:account:init', () => {
 	mp.defaultCam.pointAtCoord(109.21778869628906, -3332.524169921875, 31.724140167236328);
 	mp.defaultCam.setActive(true);
 	mp.game.cam.renderScriptCams(true, false, 0, true, false);
+
+
+
+	mp.gui.chat.activate(false);
+	mp.gui.chat.show(false);
+
 	CEFInterface.load("login/index.html");
 	CEFInterface.cursor(true);
 });
