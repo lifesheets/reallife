@@ -48,7 +48,7 @@ var Account = new class {
     register() {
         this.username = $("#reg_username").val();
         this.password = $("#reg_password").val() ;
-        this.password2 = $("#reg_password2").val();
+        this.password2 = $("#req_password2").val();
         this.mail = $("#reg_email").val();
         if ($("#reg_password").val().length < 3) {
             if ($("#reg_password").hasClass("red") == false) {
