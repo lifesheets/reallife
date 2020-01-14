@@ -552,12 +552,13 @@ mp.events.add("cef:hud:ready", () => {
 mp.events.addDataHandler("cash_hand", (entity, value, oldValue) => {
 	if (entity != mp.players.local) return;
 	if (mp.cache["hud_ready"]) {
-		console.log("cash change");
-		mp.cache["hud_cash"] = value;
-		CEFHud.call("updateCash", mp.cache["hud_cash"]);
-		if ((oldValue != undefined) && (value != undefined)) {
-			CEFHud.call("addCashTransaction", (oldValue - value));
+		console.log("cash change", entity, value, oldValue);
+		CEFHud.call("updateCash", value);
+		if ((mp.cache["hud_cash"] != 0)) {
+			console.log("add transaction", (value - mp.cache["hud_cash"]))
+			CEFHud.call("addCashTransaction", (value - mp.cache["hud_cash"]));
 		}
+		mp.cache["hud_cash"] = value;
 	}
 });
 mp.events.addDataHandler("hunger_val", (entity, value, oldValue) => {
@@ -594,11 +595,12 @@ mp.events.add("render", () => {
 		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
 		CEFHud.call("drawTacho", speed, 90, 180);
 		isTachoVisible = true;
-		return;
-	};
-	if (isTachoVisible) {
-		CEFHud.call("clearTacho");
-		isTachoVisible = false;
+		//return;
+	} else {
+		if (isTachoVisible) {
+			CEFHud.call("clearTacho");
+			isTachoVisible = false;
+		}
 	}
 	//-
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
@@ -618,6 +620,27 @@ mp.events.add("render", () => {
 			//console.log( "drawInteraction", req.key, req.string, x, y, req.duration, 1)
 		}
 	})
+	let row1 = 0;
+	mp.game.graphics.drawText("A", [0.4, 0.4 + (0.04 * row1)], {
+		font: 3,
+		color: [255, 255, 255, 200],
+		scale: [0.4, 0.4],
+		outline: true
+	});
+	row1 += 1;
+	mp.game.graphics.drawText("H", [0.4, 0.4 + (0.04 * row1)], {
+		font: 3,
+		color: [255, 255, 255, 200],
+		scale: [0.4, 0.4],
+		outline: true
+	});
+	row1 += 1;
+	mp.game.graphics.drawText("C", [0.4, 0.4 + (0.04 * row1)], {
+		font: 3,
+		color: [255, 255, 255, 200],
+		scale: [0.4, 0.4],
+		outline: true
+	});
 });
 mp.events.add("cef:interaction:receive", (key) => {
 	//console.log(keyQueue[key]);

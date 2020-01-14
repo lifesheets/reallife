@@ -397,32 +397,62 @@ function updateHunger(progress) {
     }, 100);
     last_hunger = progress;
 }
-var transaction_stack = [];
+let c_transactions = 0;
 
 function addCashTransaction(cashChange) {
-    let index_id = transaction_stack.length;
-    if (transaction_stack.length > 5) {
-        let id_first = transaction_stack.shift()
-
-        if ($("#" + id_first)) {
-            $("#" + id_first).remove();
-        }
-
-    }
-    let id = "transaction-" + index_id + 1;
+    if (c_transactions > 5) return;
+    let id = "transaction-" + Date.now() + 1;
     let tag = cashChange > 0 ? "green" : "red";
-    let prefix = cashChange > 0 ? ("$" + cashChange) : ("-$" + (cashChange * 1));
-    $("#player_hud > .cash > .actions").append('<span id="' + id + '"" class="' + tag + '">' + prefix + '</span>')
-    transaction_stack.push(id);
-    setTimeout((id) => {
-        if ($("#" + id)) {
-            $("#" + id).remove();
+    let cash_amt = formatMoney(parseInt(cashChange).toString().replace("-", ""), 0, ",", ".");
+    let prefix = cashChange > 0 ? ("$" + cash_amt) : ("$-" + cash_amt);
+    $("#player_hud > .cash > .actions").css({
+        "left": "0px",
+        "bottom": $("#hand_cash").height() + "px"
+    })
+    $("#player_hud > .cash > .actions").append(`<span style="transform:translate(0,100%);opacity:0;" id="${id}" class="${tag}">${prefix}</span>`)
+    setTimeout((attrId) => {
+        if ($("#" + attrId)) {
+            $("#" + attrId).attr('style', '');
         }
-    }, 10000, id);
+    }, 10, id);
+    c_transactions += 1;
+    setTimeout((attrId) => {
+        if ($("#" + attrId)) {
+            $("#" + attrId).remove();
+        }
+        c_transactions -= 1;
+    }, 1000, id);
 }
+var cur_cash = 0;
 
-function updateCash(value) {
-    $("#hand_cash").html("$" + formatMoney(value, 0, ",", "."));
+function updateCash(nCash) {
+    jQuery({
+        value: cur_cash
+    }).animate({
+        value: nCash
+    }, {
+        duration: 500,
+        easing: 'linear', // can be anything
+        step: function(stepValue) { // called on every step
+            console.log(stepValue);
+            // Update the element's text with rounded-up value:
+            //$('#el').text(Math.ceil(this.someValue) + "%");
+            $("#hand_cash").html("$" + formatMoney(stepValue, 0, ",", "."));
+        }
+    });
+    /*
+    jQuery({
+        Counter: cur_cash
+    }).animate({
+        Counter: parseInt(value)
+    }, {
+        duration: 100,
+        step: function() {
+            // $(this).text(Math.ceil(this.Counter));
+            $("#hand_cash").html("$" + formatMoney(this.Counter, 0, ",", "."));
+        }
+    });*/
+    cur_cash = nCash;
 }
 
 function toggleHUD(state) {

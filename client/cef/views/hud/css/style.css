@@ -136,14 +136,14 @@ body {
     font-size: 25px;
     color: #FFF;
     text-shadow:
-    1px 0 0 rgba(0,0,0,0.5),
-    -1px 0 0 rgba(0,0,0,0.5),
-    0 1px 0 rgba(0,0,0,0.5),
-    0 -1px 0 rgba(0,0,0,0.5),
-    1px 1px rgba(0,0,0,0.5),
-    -1px -1px 0 rgba(0,0,0,0.5),
-    1px -1px 0 rgba(0,0,0,0.5),
-    -1px 1px 0 rgba(0,0,0,0.5);
+    1px 0 0 rgba(0,0,0,0.2),
+    -1px 0 0 rgba(0,0,0,0.2),
+    0 1px 0 rgba(0,0,0,0.2),
+    0 -1px 0 rgba(0,0,0,0.2),
+    1px 1px rgba(0,0,0,0.2),
+    -1px -1px 0 rgba(0,0,0,0.2),
+    1px -1px 0 rgba(0,0,0,0.2),
+    -1px 1px 0 rgba(0,0,0,0.2);
     display: inline-block;
 }
 #player_hud>.cash>span::first-letter {
@@ -164,34 +164,45 @@ body {
 
 #player_hud>.cash>.actions {
     position: absolute;
-    display: inline;
-    bottom:0px;
+    display: block;
+    bottom:25%;
+    line-height:25px;
 
 }
 #player_hud>.cash>.actions>span {
     position: relative;
     padding-left: 35px;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 25px;
     color: #FFF;
     text-shadow:
-    1px 0 0 rgba(0,0,0,0.5),
-    -1px 0 0 rgba(0,0,0,0.5),
-    0 1px 0 rgba(0,0,0,0.5),
-    0 -1px 0 rgba(0,0,0,0.5),
-    1px 1px rgba(0,0,0,0.5),
-    -1px -1px 0 rgba(0,0,0,0.5),
-    1px -1px 0 rgba(0,0,0,0.5),
-    -1px 1px 0 rgba(0,0,0,0.5);
+    1px 0 0 rgba(0,0,0,0.1),
+    -1px 0 0 rgba(0,0,0,0.1),
+    0 1px 0 rgba(0,0,0,0.1),
+    0 -1px 0 rgba(0,0,0,0.1),
+    1px 1px rgba(0,0,0,0.1),
+    -1px -1px 0 rgba(0,0,0,0.1),
+    1px -1px 0 rgba(0,0,0,0.1),
+    -1px 1px 0 rgba(0,0,0,0.1);
     display: block;
+    transform:translate(0,0%);
+    opacity:1;
+    transition: all 50ms linear;
 
 }
 #player_hud>.cash>.actions>span.red {
-    color:red;
+    color:rgba(255, 97, 88,1);
 }
 #player_hud>.cash>.actions>span.green {
-    color:green;
+    color:rgba(76, 255, 79,1);
 }
+
+#player_hud>.cash>.actions>span::first-letter {
+    padding-right: 5px;
+    font-size: 20px;
+}
+
+
 
 
 #player_hud>.hunger {
