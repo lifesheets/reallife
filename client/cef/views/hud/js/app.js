@@ -371,6 +371,23 @@ Date.prototype.today = function() {
     return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "." + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "." + this.getFullYear();
 }
 
+
+function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+  try {
+    decimalCount = Math.abs(decimalCount);
+    decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+
+    const negativeSign = amount < 0 ? "-" : "";
+
+    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+    let j = (i.length > 3) ? i.length % 3 : 0;
+
+    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+  } catch (e) {
+    console.log(e)
+  }
+};
+
 function updateTime() {
     var currentdate = new Date();
     $("#player_hud > .world > .time").text(currentdate.timeNow());
@@ -386,6 +403,12 @@ function updateHunger(progress) {
 }
 
 function updateHUD(what, value) {
+
+    if (what.indexOf("cash") > -1) {
+        value = formatMoney(value, 2, ",", ".");
+    }
+
+
     $("#player_hud > " + what).html(value);
 }
 
