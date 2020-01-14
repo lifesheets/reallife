@@ -555,7 +555,9 @@ mp.events.addDataHandler("cash_hand", (entity, value, oldValue) => {
 		console.log("cash change");
 		mp.cache["hud_cash"] = value;
 		CEFHud.call("updateCash", mp.cache["hud_cash"]);
-		CEFHud.call("addCashTransaction", (oldValue - value));
+		if ((oldValue != undefined) && (value != undefined)) {
+			CEFHud.call("addCashTransaction", (oldValue - value));
+		}
 	}
 });
 mp.events.addDataHandler("hunger_val", (entity, value, oldValue) => {

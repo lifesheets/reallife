@@ -421,7 +421,7 @@ function addCashTransaction(cashChange) {
     }, 10000, id);
 }
 
-function updateCash(what, value) {
+function updateCash(value) {
     $("#hand_cash").html("$" + formatMoney(value, 0, ",", "."));
 }
 
