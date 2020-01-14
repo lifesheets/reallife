@@ -2,7 +2,7 @@ var Animations = require("../libs/animations.js");
 var Interaction = require("../interaction");
 mp.events.add("client:account:login", (player, username, password) => {
 	// TODO
-	console.log(username, password)
+	console.log("login", username, password)
 	// register
 	//-133.6523895263672, -2378.825439453125, 15.16739273071289, 353.6697692871094
 	//player.position = new mp.Vector3(-133.6523895263672, -2378.825439453125, 15.16739273071289);
@@ -13,35 +13,48 @@ mp.events.add("client:account:login", (player, username, password) => {
 	}).catch(e => {
 		console.log("err", e);
 	})*/
-	player.interface.account.login(username,password).then(e => {
-		console.log("e",e);
+	player.interface.account.login(username, password).then(e => {
+		console.log("e", e);
 		player.call("server:game:start");
 		player.interface.vehicles.load();
 		player.interface.spawn();
 	}).catch(e => {
-		console.log("err",e);
+		console.log("err", e);
+		player.call("server:account:msg", [{
+			title: "Account",
+			titleSize: "16px",
+			message: e,
+			messageColor: 'rgba(0,0,0,.8)',
+			position: "bottomCenter",
+			color: 'rgba(212,212,212, 0.8)',
+			progressBarColor: 'rgba(136, 48, 255, 0.6)',
+			close: false
+		}]);
 	})
 	//player.call("server:game:start");
 	//player.interface.spawn();
 });
-
-
-mp.events.add("client:account:register", (player, username,password,email) => {
-	console.log("username,password,email",username,password,email);
-	player.interface.account.register(username, password,email).then(e => {
+mp.events.add("client:account:register", (player, username, password, email) => {
+	console.log("username,password,email", username, password, email);
+	player.interface.account.register(username, password, email).then(e => {
 		console.log("e", e);
 		player.interface.state = "register";
 		player.dimension = e.uid;
 		player.call("server:intro:start");
-
-
-
-
 	}).catch(e => {
+		player.call("server:account:msg", [{
+			title: "Account",
+			titleSize: "16px",
+			message: "Account existiert bereits (eMail oder Username)",
+			messageColor: 'rgba(0,0,0,.8)',
+			position: "bottomCenter",
+			color: 'rgba(212,212,212, 0.8)',
+			progressBarColor: 'rgba(136, 48, 255, 0.6)',
+			close: false
+		}]);
 		console.log("err", e);
 	})
 });
-
 mp.events.add("client:interaction:receive", (player, key) => {
 	player.interface.interact(key);
 })
@@ -50,10 +63,8 @@ mp.events.add("client:appearance:save", (player, data) => {
 		player.interface.appearance.saveData(data);
 		if (player.interface.state == "register") {
 			player.interface.spawn();
-
 			//player.interface.vehicles.load();
 			//player.interface.spawn();
-
 			//server:objects:create", (identifier,model,x,y,z,rx,ry,rz
 			//"xm_prop_x17_bag_01a",{"x":-137.4462,"y":-2377.6685,"z":14.1563},{"x":0,"y":0,"z":-17.2}
 			/*player.call("server:objects:create", ["bag_register", "xm_prop_x17_bag_01a", -137.4462, -2377.6685, 14.1563, 0, 0, -17.2]);
