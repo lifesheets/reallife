@@ -203,6 +203,17 @@ body {
     box-shadow: 0px 0px 2.5px 2.5px rgba(180,180,180,0.1);
 }
 
+#player_hud>.hunger>.bar  >.fill {
+    position: absolute;
+    top:1px;
+    margin-left:1px;
+    max-width:98%;
+    height:9px;
+    background:rgba(255,255,255,0.9);
+    border-radius:50px;
+    box-shadow: 0px 0px 2.5px 2.5px rgba(180,180,180,0.1);
+}
+
 
 
 

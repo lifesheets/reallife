@@ -543,6 +543,7 @@ var keyQueue = [];
 var isTachoVisible = false;
 mp.cache["hud"] = true;
 mp.cache["hud_cash"] = 0;
+mp.cache["hud_hunger"] = 0;
 mp.cache["hud_ready"] = false;
 CEFHud.load("hud/index.html");
 mp.events.add("cef:hud:ready", () => {
@@ -565,6 +566,11 @@ mp.events.add("render", () => {
 			if (mp.cache["hud_cash"] != cash) {
 				mp.cache["hud_cash"] = cash;
 				CEFHud.call("updateHUD", ".cash", "$" + mp.cache["hud_cash"]);
+			}
+			let hunger = mp.players.local.getVariable('hunger_val');
+			if (mp.cache["hud_hunger"] != hunger) {
+				mp.cache["hud_hunger"] = hunger;
+				CEFHud.call("updateHunger", mp.cache["hud_hunger"]);
 			}
 			//mp.cache["hud"]
 		} else {

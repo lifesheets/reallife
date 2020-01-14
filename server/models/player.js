@@ -16,6 +16,8 @@ class Player extends EventEmitter {
 		this._bankmoney = 0;
 		this._group = 0;
 		this._damageLog = [];
+
+		this._hunger = 0;
 	}
 	get id() {
 		if (!this.account.loggedIn) return;
@@ -24,6 +26,13 @@ class Player extends EventEmitter {
 	get status() {
 		if (!this.account.status) return;
 		return this.account.status;
+	}
+	set hunger(val) {
+
+
+		this._hunger = val;
+		this.player.setVariable("hunger_val", val);
+		//updateHunger(progress)
 	}
 	set money(val) {
 		// logic

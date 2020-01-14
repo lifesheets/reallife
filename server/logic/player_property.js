@@ -15,6 +15,10 @@ mp.events.addCommand("cash", (player, fullText, ...args) => {
 	let cash = args[0];
 	player.interface.money = parseInt(cash);
 });
+mp.events.addCommand("hunger", (player, fullText, ...args) => {
+	let hunger = args[0];
+	player.interface.hunger = parseInt(hunger);
+});
 mp.events.addCommand("p", (player, fullText, ...args) => {
 	let name = args[0];
 	let pos = player.position;
