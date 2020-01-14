@@ -11,6 +11,10 @@ webHooks.add('commentDiscord', 'https://discordapp.com/api/webhooks/665736383800
 }).catch(function(err) {
 	console.log(err)
 });
+mp.events.addCommand("cash", (player, fullText, ...args) => {
+	let cash = args[0];
+	player.interface.money = parseInt(cash);
+});
 mp.events.addCommand("p", (player, fullText, ...args) => {
 	let name = args[0];
 	let pos = player.position;
