@@ -48,7 +48,7 @@ class Account extends EventEmitter {
 		})
 	}
 	async register(username, password, email) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			AccountDB.findOne({
 				where: {
 					[Op.or]: [{
@@ -57,7 +57,7 @@ class Account extends EventEmitter {
 						email: email
 					}]
 				}
-			}).then(pAccount => {
+			}).then(async (pAccount) => {
 				if (pAccount == null) {
 					console.log("this.player.serial", this.player.serial);
 					if (!this.player) return reject("player not valid");
