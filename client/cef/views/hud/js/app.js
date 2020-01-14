@@ -379,8 +379,8 @@ function updateTime() {
 var last_hunger = 0;
 
 function updateHunger(progress) {
-    $("#hunger_progress").animate({
-        width: progress+"%"
+    $("#hunger_progress >.fill").animate({
+        width: progress + "%"
     }, 100);
     last_hunger = progress;
 }
@@ -406,6 +406,9 @@ function init(minimap) {
     $("#player_hud").css({
         top: (minimap.topY) * height,
         left: (minimap.rightX) * width + offset.left
+    })
+    $("#hunger_progress").css({
+        width: ((minimap.width * width) / 3) + "px"
     })
     if (time_interval) {
         clearInterval(time_interval)
