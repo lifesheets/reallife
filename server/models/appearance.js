@@ -23,14 +23,11 @@ const appearanceIndex = {
 	"chesthair": 10
 }
 class Appearance extends EventEmitter {
-	async constructor(parent) {
+	constructor(parent) {
 		super();
 		this.parent = parent;
 		this._dbentry;
 		this._data = [];
-		setTimeout(() => {
-			await this.init();
-		}, 100);
 	}
 	async init() {
 		return new Promise((resolve, reject) => {
@@ -49,7 +46,8 @@ class Appearance extends EventEmitter {
 		console.log("Realod Appearance");
 		this.parent.log("Reloaded Appearance")
 	}
-	saveData(data) {
+	async saveData(data) {
+		await self.init();
 		console.log("char data", typeof data);
 		this._data = JSON.parse(data);
 		this._dbentry.update({
@@ -62,7 +60,6 @@ class Appearance extends EventEmitter {
 	}
 	async load() {
 		let self = this;
-		await self.init();
 		let data = self._data;
 		if (data.gender == "Male") {
 			self.parent.player.model = mp.joaat('mp_m_freemode_01');
