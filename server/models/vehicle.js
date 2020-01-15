@@ -3,10 +3,7 @@ var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Interaction = require("../interaction");
 var Vehicles = require("../database").vehicle;
-
-
-var dirt_mul = (30*1000) / 15;
-
+var dirt_mul = (30 * 1000) / 15;
 class Vehicle extends EventEmitter {
 	constructor(owner, id, data) {
 		super();
@@ -71,12 +68,9 @@ class Vehicle extends EventEmitter {
 				rz: this.db_veh.rz
 			};
 			this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
-
-
-//this.player.setVariable("hunger_val", val);
+			//this.player.setVariable("hunger_val", val);
 			this.kmTravel = this.db_veh.kmTravel;
 			this.kmClean = this.db_veh.kmClean;
-
 			console.log(this._tuning);
 			this.spawn();
 		})
@@ -94,7 +88,7 @@ class Vehicle extends EventEmitter {
 		});
 		this.vehicle.interface = this;
 		this.vehicle.numberPlate = "TEST";
-		console.log("spawn set dirt to",(this.kmClean / dirt_mul))
+		console.log("spawn set dirt to", (this.kmClean / dirt_mul))
 		this.vehicle.setVariable("dirt_level", (this.kmClean / dirt_mul))
 		this.loadTunes();
 		console.log("spawn", this.vehicle.position);
@@ -157,47 +151,31 @@ class Vehicle extends EventEmitter {
 		this.db_veh.ry = this.park_position.ry;
 		this.db_veh.rz = this.park_position.rz;
 		this.db_veh.data = JSON.stringify(this._tuning);
-		this.db_veh.save().then( () => {
+		this.db_veh.save().then(() => {
 			console.log("saved veh");
 		}).catch(err => {
-			console.log("err saving",err);
+			console.log("err saving", err);
 		})
 		//this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
 	}
-	update() {
-
-
-	}
+	update() {}
 	toggleLock() {
 		let newState = !this.vehicle.locked;
 		this.vehicle.locked = newState;
 	}
 }
-
-mp.events.add("client:vehicle:update", (player,dist) => {
-	console.log("client:vehicle:update", player.name,dist);
-	//if (player.interface) {
-	//	player.interface.death(reason, killer, true);
-	//}
+mp.events.add("client:vehicle:update", (player, dist) => {
+	console.log("client:vehicle:update", player.name, dist);
 	let pVeh = player.vehicle;
 	if (pVeh.interface) {
 		console.log("has interface");
-
 		pVeh.interface.kmTravel += dist;
 		pVeh.interface.kmClean += dist;
-
-		let dirt_level = (pVeh.interface.kmClean / dirt_mul) > 15 ? 15 : (pVeh.interface.kmClean / dirt_mul) ;
-		console.log("dirT level",dirt_level);
+		let dirt_level = (pVeh.interface.kmClean / dirt_mul) > 15 ? 15 : (pVeh.interface.kmClean / dirt_mul);
+		console.log("dirt level", dirt_level);
 		pVeh.setVariable("dirt_level", dirt_level)
 	}
-
-
-
-
-
 });
-
-
 class VehicleManager {
 	constructor(parent) {
 		this.parent = parent;

@@ -536,6 +536,18 @@ mp.events.add("cef:character:edit", (setClothing = false) => {
     clearTasksRender = true;
 });
 },{"./browser.js":4}],6:[function(require,module,exports){
+var render_house = undefined;
+mp.events.add("render", () => {
+	if (render_house == undefined) return;
+	mp.game.graphics.drawMarker(43, render_house.x, render_house.y, render_house.z, 0, 0, 0, 0, 0, 0, 1, 1, 1, 36, 214, 42, 200, true, false, 2, false, "", "", false);
+});
+mp.events.add("server:estate:enablemarker", (data) => {
+	render_house = JSON.parse(data);
+});
+mp.events.add("server:estate:disablemarker", () => {
+	render_house = undefined;
+});
+},{}],7:[function(require,module,exports){
 "use strict";
 var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
@@ -663,7 +675,7 @@ mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0
 mp.keys.bind(0x71, false, function() {
 	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
-},{"./browser.js":4,"./utils.js":17}],7:[function(require,module,exports){
+},{"./browser.js":4,"./utils.js":18}],8:[function(require,module,exports){
 "use strict";
 
 
@@ -719,6 +731,7 @@ require("./hud.js")
 require("./vehicles.js")
 require("./animations.js")
 require("./nametags.js")
+require("./house.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -728,7 +741,7 @@ mp.events.add("Notifications:New", (notification_data) => {
 
 
 
-},{"../../server/libs/enums.js":20,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19}],8:[function(require,module,exports){
+},{"../../server/libs/enums.js":21,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./house.js":6,"./hud.js":7,"./libs/attachments.js":9,"./libs/skeleton.js":10,"./libs/weapon_attachments.js":12,"./login.js":13,"./nametags.js":15,"./natives.js":16,"./utils.js":18,"./vector.js":19,"./vehicles.js":20}],9:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -941,7 +954,7 @@ function InitAttachmentsOnJoin()
 }
 
 InitAttachmentsOnJoin();
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Skeleton = [];
 Skeleton.SKEL_ROOT = 0;
 Skeleton.FB_R_Brow_Out_000 = 1356;
@@ -1042,7 +1055,7 @@ Skeleton.SKEL_L_Clavicle = 64729;
 Skeleton.FACIAL_facialRoot = 65068;
 Skeleton.IK_L_Foot = 65245;
 module.exports = Skeleton;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports={
   "2725352035": {
     "HashKey": "WEAPON_UNARMED",
@@ -10271,7 +10284,7 @@ module.exports={
     "DLC": "spupgrade"
   }
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const weaponData = require("./weaponData");
 
 const PistolAttachmentPos = new mp.Vector3(0.02, 0.06, 0.1);
@@ -10356,7 +10369,7 @@ for (let weapon in weaponAttachmentData) {
 }
 
 
-},{"./weaponData":10}],12:[function(require,module,exports){
+},{"./weaponData":11}],13:[function(require,module,exports){
 var natives = require("./natives.js")
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
@@ -10451,7 +10464,7 @@ mp.events.add('server:game:start', () => {
 	CEFInterface.load("empty.html");
 	CEFInterface.cursor(false);
 });
-},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":15}],13:[function(require,module,exports){
+},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":14,"./natives.js":16}],14:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
@@ -10482,7 +10495,7 @@ var obj = require("../objects.js");
 
 
 
-},{"../objects.js":16}],14:[function(require,module,exports){
+},{"../objects.js":17}],15:[function(require,module,exports){
 mp.nametags.enabled = false;
 mp.gui.chat.colors = true;
 
@@ -10541,7 +10554,7 @@ mp.events.add('render', (nametags) => {
         })
     }
 })
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var natives = {};
 mp.game.vehicle.getVehicleSeats = (veh) => mp.game.invoke("0xA7C4F2C6E744A550", veh.handle);
 mp.game.graphics.clearDrawOrigin = () => mp.game.invoke('0xFF0B610F6BE0D7AF'); // 26.07.2018 // GTA 1.44
@@ -10575,7 +10588,7 @@ natives.SET_ENTITY_ROTATION = (  entity,  pitch,  roll,  yaw,  rotationOrder,  p
 natives.GET_ENTITY_HEIGHT_ABOVE_GROUND = (  entity) => mp.game.invoke("0x1DD55701034110E5", entity); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 natives.WORLD3D_TO_SCREEN2D = ( worldX,  worldY,  worldZ,  screenX,  screenY) => mp.game.invoke("0x34E82F05DF2974F5", worldX,  worldY,  worldZ,  screenX,  screenY); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 module.exports = natives;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (setImmediate){
 
 class objCreator {
@@ -10640,7 +10653,7 @@ mp.events.add("server:objects:delete", function(identifier) {
 
 module.exports = objCreator;
 }).call(this,require("timers").setImmediate)
-},{"timers":2}],17:[function(require,module,exports){
+},{"timers":2}],18:[function(require,module,exports){
 // https://github.com/glitchdetector/fivem-minimap-anchor
 function getMinimapAnchor() {
     let sfX = 1.0 / 20.0;
@@ -10665,7 +10678,7 @@ function getMinimapAnchor() {
 module.exports = {
     minimap_anchor: getMinimapAnchor
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
     let nVector = new mp.Vector3(this.x, this.y, this.z);
     let degrees = (rz + rot) * (Math.PI / 180);
@@ -10806,7 +10819,7 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var CEFHud = require("./browser.js").hud;
 var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
@@ -10956,7 +10969,7 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{"./browser.js":4}],20:[function(require,module,exports){
+},{"./browser.js":4}],21:[function(require,module,exports){
 (function (global){
 let enum_count = 0;
 var enums = {
@@ -10969,4 +10982,4 @@ Object.keys(enums).forEach(function(key, value) {
 })
 module.exports = enums;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[7]);
+},{}]},{},[8]);
