@@ -5,7 +5,7 @@ var Interaction = require("../interaction");
 var Vehicles = require("../database").vehicle;
 
 
-var dirt_mul = 1000 / 15;
+var dirt_mul = (30*1000) / 15;
 
 class Vehicle extends EventEmitter {
 	constructor(owner, id, data) {

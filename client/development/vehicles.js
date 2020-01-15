@@ -10,7 +10,7 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 100;
+var updateThreshold = 500;
 var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
@@ -51,7 +51,7 @@ mp.events.add("render", () => {
         }
     }
 
-    mp.game.graphics.drawText("KM COUNT " + kmTotal.toFixed(4), [0.5, 0.7 ], {
+    mp.game.graphics.drawText("KM COUNT " + (kmTotal/1000).toFixed(4), [0.5, 0.7 ], {
         font: 4,
         color: [255, 255, 255, 200],
         scale: [0.4, 0.4],
