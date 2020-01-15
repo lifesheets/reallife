@@ -10819,7 +10819,7 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 5;
+var updateThreshold = 100;
 var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
@@ -10848,7 +10848,7 @@ mp.events.add("render", () => {
             let dist = mp.game.system.vdist2(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z);
             self.pos = cPos;
             if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
-                dist = dist / 3.6; // Unit3d to km
+                dist = dist * 3.6; // Unit3d to km
                 kmTotal += dist;
                 kmCounter += dist;
                 if (kmCounter >= updateThreshold) {
