@@ -39,6 +39,6 @@ sequelize.authenticate().then(() => {
 module.exports = {
 	Op: Op,
 	account: account,
-	vehicle: vehicle
+	vehicle: vehicle,
 	estate: estate
 }
