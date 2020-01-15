@@ -72,7 +72,7 @@ mp.events.add("render", () => {
 			//console.log( "drawInteraction", req.key, req.string, x, y, req.duration, 1)
 		}
 	})
-	let row1 = 0;
+/*	let row1 = 0;
 	mp.game.graphics.drawText("A", [0.4, 0.4 + (0.04 * row1)], {
 		font: 3,
 		color: [255, 255, 255, 200],
@@ -92,7 +92,7 @@ mp.events.add("render", () => {
 		color: [255, 255, 255, 200],
 		scale: [0.4, 0.4],
 		outline: true
-	});
+	});*/
 });
 mp.events.add("cef:interaction:receive", (key) => {
 	//console.log(keyQueue[key]);

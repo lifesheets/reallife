@@ -52,7 +52,7 @@ class House extends EventEmitter {
 		console.log(this);
 		console.log(player.interface.id);
 		if (!this.entered_players[player.interface.id]) {
-			player.call("server:interaction:request", [69, "Betreten", 1500]);
+			player.call("server:interaction:request", [70, "Betreten", 1500]);
 			player.interface.once("interact", this.interact_event_enter_cache[player.interface.id] = key => {
 				console.log("enter house");
 				this.entered_players[player.interface.id] = true;
@@ -62,7 +62,7 @@ class House extends EventEmitter {
 			})
 		}
 		if (this.entered_players[player.interface.id]) {
-			player.call("server:interaction:request", [69, "Verlassen", 1500]);
+			player.call("server:interaction:request", [70, "Verlassen", 1500]);
 			player.interface.once("interact", this.interact_event_leave_cache[player.interface.id] = key => {
 				console.log("leave house");
 				player.outputChatBox(`raus`);
@@ -73,7 +73,7 @@ class House extends EventEmitter {
 		}
 	}
 	leaveInteract(player) {
-		if (this.interact_event_leave_cache[player.interface.id] || this.interact_event_enter_cache[player.interface.id]) player.call("server:interaction:cancelrequest", [69]);
+		if (this.interact_event_leave_cache[player.interface.id] || this.interact_event_enter_cache[player.interface.id]) player.call("server:interaction:cancelrequest", [70]);
 		if (this.interact_event_leave_cache[player.interface.id]) {
 			player.interface.off("interact", this.interact_event_leave_cache[player.interface.id])
 			this.interact_event_leave_cache[player.interface.id] = undefined;
