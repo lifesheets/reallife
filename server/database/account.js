@@ -25,6 +25,30 @@ module.exports = function(sequelize) {
 		rgscId:{
 			type: Sequelize.STRING,
 			allowNull: false
+		},
+		adminlvl:{
+			type: Sequelize.INTEGER,
+			defaultValue: 0
+		},
+		char: {
+			type: Sequelize.STRING,
+			defaultValue: JSON.stringify({})
+		},
+		bank: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0
+		},
+		cash: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0
+		},
+		groupid: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0
+		},
+		group_rank: {
+			type: Sequelize.INTEGER,
+			defaultValue: 0
 		}
 	});
 };

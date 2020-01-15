@@ -31,9 +31,9 @@ mp.events.add('render', (nametags) => {
                             pos.z += 0.4;
                             let dist = mp.game.system.vdist2(lPos.x, lPos.y, lPos.z, pos.x, pos.y, pos.z);
                             let c_dist = 1 / 400 * dist;
-                            let size = mp.lerp(0.3, 0.06, c_dist)
-                            if (size > 0.3) {
-                                size = 0.3;
+                            let size = mp.lerp(0.4, 0.06, c_dist)
+                            if (size > 0.4) {
+                                size = 0.4;
                             } else if (size < 0.06) {
                                 size = 0.06;
                             }

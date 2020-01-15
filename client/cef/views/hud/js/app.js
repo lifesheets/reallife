@@ -432,26 +432,12 @@ function updateCash(nCash) {
         value: nCash
     }, {
         duration: 500,
-        easing: 'linear', // can be anything
-        step: function(stepValue) { // called on every step
-            console.log(stepValue);
-            // Update the element's text with rounded-up value:
-            //$('#el').text(Math.ceil(this.someValue) + "%");
+        easing: 'linear',
+        step: function(stepValue) {
             $("#hand_cash").html("$" + formatMoney(stepValue, 0, ",", "."));
         }
     });
-    /*
-    jQuery({
-        Counter: cur_cash
-    }).animate({
-        Counter: parseInt(value)
-    }, {
-        duration: 100,
-        step: function() {
-            // $(this).text(Math.ceil(this.Counter));
-            $("#hand_cash").html("$" + formatMoney(this.Counter, 0, ",", "."));
-        }
-    });*/
+
     cur_cash = nCash;
 }
 

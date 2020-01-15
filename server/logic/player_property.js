@@ -36,8 +36,9 @@ mp.events.addCommand("park", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	console.log(veh);
 	veh.interface.park();
+	veh.interface.save();
 });
-mp.events.addCommand("tune", (player, fullText, ...args) => {
+mp.events.addCommand("rgb", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	let r = parseInt(args[0]);
 	let g = parseInt(args[1]);
@@ -53,10 +54,58 @@ mp.events.addCommand("tune", (player, fullText, ...args) => {
 			b2: b
 		}
 	});
-	//console.log(veh);
 	veh.interface.reloadTunings();
-	//veh.interface.respawn() ;
+	veh.interface.save();
 });
+
+mp.events.addCommand("color", (player, fullText, ...args) => {
+	let veh = player.vehicle;
+	let f = parseInt(args[0]);
+	let s = parseInt(args[1]);
+	console.log(f,s);
+	veh.interface.setTune({
+		"color": {
+			first:f,
+			second:s
+		}
+	});
+	veh.interface.reloadTunings();
+	veh.interface.save();
+});
+
+
+mp.events.addCommand("neon", (player, fullText, ...args) => {
+	let veh = player.vehicle;
+	let r = parseInt(args[0]);
+	let g = parseInt(args[1]);
+	let b = parseInt(args[2]);
+	console.log(r, g, b);
+	veh.interface.setTune({
+		"neon": {
+			r:r,
+			g:g,
+			b:b
+		}
+	});
+	veh.interface.reloadTunings();
+	veh.interface.save();
+});
+mp.events.addCommand("tune", (player, fullText, ...args) => {
+	let veh = player.vehicle;
+	let type = parseInt(args[0]);
+	let index = parseInt(args[1]);
+	console.log(type,index);
+	veh.interface.setTune({
+		[`mod_${type}`]: {
+			type:type,
+			index:index
+		}
+	});
+	veh.interface.reloadTunings();
+	veh.interface.save();
+});
+
+
 mp.events.addCommand("veh", (player, fullText, ...args) => {
 	let pos = player.position;
 	let model = args[0];
