@@ -3,19 +3,13 @@ var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
     //const isInvincible = entity.getVariable('isInvincible');
     //entity.setInvincible(!!isInvincible);
-
     if (entity.type !== 'vehicle') return;
-
-
     entity.setDirtLevel(entity.getVariable('dirt_level'));
 });
 mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
-
-
     entity.setDirtLevel(value);
 });
-
 var updateThreshold = 1000;
 var last_pos = null;
 var kmCounter = 0;
@@ -34,10 +28,9 @@ mp.events.add("render", () => {
             }
         }
     }
-    if (mp.game.ui.isPauseMenuActive() == false) {
-        let localVeh = mp.players.local.vehicle;
-        var self = this;
-        if (localVeh) {
+    let localVeh = mp.players.local.vehicle;
+    var self = this;
+    if (localVeh) {
         if ((localVeh.getPedInSeat(-1) == mp.players.local.handle)) {
             let veh_model = localVeh.model;
             if (last_pos == null) last_pos = mp.players.local.position;
@@ -49,15 +42,30 @@ mp.events.add("render", () => {
                 dist = dist / 3.6; // Unit3d to km
                 kmCounter += dist;
                 if (kmCounter >= updateThreshold) {
-                    console.log("update km count",kmCounter);
+                    console.log("update km count", kmCounter);
                     mp.events.callRemote("client:vehicle:update", parseFloat(kmCounter));
                     kmCounter = 0;
                 }
             }
             last_pos = cPos;
         }
-        }
     }
+
+    mp.game.graphics.drawText("KM COUNT" + kmCounter, [0.5, 0.7 ], {
+        font: 3,
+        color: [255, 255, 255, 200],
+        scale: [0.4, 0.4],
+        outline: true
+    });
+    if (localVeh) {
+        mp.game.graphics.drawText("DIRT" + localVeh.getVariable('dirt_level'), [0.5, 0.75 ], {
+            font: 3,
+            color: [255, 255, 255, 200],
+            scale: [0.4, 0.4],
+            outline: true
+        });
+    }
+
 });
 var seats = {
     0: "seat_pside_f", // passanger side front
