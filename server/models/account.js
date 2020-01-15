@@ -31,7 +31,7 @@ class Account extends EventEmitter {
 					console.log("account not exists", pAccount);
 					return reject("account not exists");
 				} else {
-					console.log("account exists", pAccount.dataValues);
+					console.log("account exists" );
 					bcrypt.compare(password, pAccount.dataValues.password).then((res) => {
 						if (res == true) {
 							this.data = pAccount.dataValues;
