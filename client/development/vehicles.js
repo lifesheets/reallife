@@ -36,7 +36,7 @@ mp.events.add("render", () => {
             let veh_model = localVeh.model;
             if (last_pos == null) last_pos = mp.players.local.position;
             let cPos = mp.players.local.position;
-            let dist = mp.game.system.vdist2(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z) * 3.6;
+            let dist = mp.game.system.vdist(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z) ;
             self.pos = cPos;
             if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
                 kmTotal += dist;
