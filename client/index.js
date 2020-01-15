@@ -10845,6 +10845,7 @@ mp.events.add("render", () => {
     if (mp.game.ui.isPauseMenuActive() == false) {
         let localVeh = mp.players.local.vehicle;
         var self = this;
+        if (localVeh) {
         if ((localVeh.getPedInSeat(-1) == mp.players.local.handle)) {
             let veh_model = localVeh.model;
             if (last_pos == null) last_pos = mp.players.local.position;
@@ -10862,6 +10863,7 @@ mp.events.add("render", () => {
                 }
             }
             last_pos = cPos;
+        }
         }
     }
 });
