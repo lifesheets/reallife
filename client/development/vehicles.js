@@ -38,7 +38,6 @@ mp.events.add("render", () => {
             let dist = mp.game.system.vdist2(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z);
             self.pos = cPos;
             if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
-                dist = dist / 1000
                 dist = dist / 3.6; // Unit3d to km
                 kmCounter += dist;
                 if (kmCounter >= updateThreshold) {
@@ -51,7 +50,7 @@ mp.events.add("render", () => {
         }
     }
 
-    mp.game.graphics.drawText("KM COUNT" + kmCounter.toFixed(2), [0.5, 0.7 ], {
+    mp.game.graphics.drawText("KM COUNT " + kmCounter.toFixed(4), [0.5, 0.7 ], {
         font: 4,
         color: [255, 255, 255, 200],
         scale: [0.4, 0.4],
