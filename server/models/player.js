@@ -28,8 +28,6 @@ class Player extends EventEmitter {
 		return this.account.status;
 	}
 	set hunger(val) {
-
-
 		this._hunger = val;
 		this.player.setVariable("hunger_val", val);
 		//updateHunger(progress)
@@ -66,7 +64,7 @@ class Player extends EventEmitter {
 			this.spawn();
 		}, 5000);
 	}
-	spawn() {
+	async spawn() {
 		let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
 		this.player.spawn(spawnPoint);
 		this.appearance.load();

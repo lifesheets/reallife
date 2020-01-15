@@ -37,6 +37,7 @@ class Account extends EventEmitter {
 							this.data = pAccount.dataValues;
 							this.loggedIn = true;
 							this.player.setVariable("loggedIn", true);
+
 							return resolve(pAccount.dataValues);
 						} else {
 							return reject(e.PASSWORD_WRONG);

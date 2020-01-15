@@ -29,7 +29,7 @@ class Vehicle extends EventEmitter {
 		}
 	}
 	setTune(data) {
-		this._tuning = Object.assign(this._tuning, data)
+		this._tuning = Object.assign(this._tuning, data);
 	}
 	create(data) {
 		Vehicles.create({
@@ -54,7 +54,7 @@ class Vehicle extends EventEmitter {
 			}
 		}).then(veh => {
 			console.log(veh.dataValues);
-			this.db_veh = veh.dataValues;
+			this.db_veh = veh;
 			this.model = this.db_veh.model;
 			this.park_position = {
 				x: this.db_veh.x,
@@ -134,6 +134,21 @@ class Vehicle extends EventEmitter {
 		this.deleteTunes();
 		this.loadTunes();
 		//todo
+	}
+	save() {
+		this.db_veh.x = this.park_position.x;
+		this.db_veh.y = this.park_position.y;
+		this.db_veh.z = this.park_position.z;
+		this.db_veh.rx = this.park_position.rx;
+		this.db_veh.ry = this.park_position.ry;
+		this.db_veh.rz = this.park_position.rz;
+		this.db_veh.data = JSON.stringify(this._tuning);
+		this.db_veh.save().then( () => {
+			console.log("saved veh");
+		}).catch(err => {
+			console.log("err saving",err);
+		})
+		//this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
 	}
 	toggleLock() {
 		let newState = !this.vehicle.locked;

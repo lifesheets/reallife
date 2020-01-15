@@ -1,10 +1,11 @@
 //var MySQL = require("../libs/mysql.js");
 var EventEmitter = require('events').EventEmitter;
-
-
+var AccountDB = require("../database").account;
+var Op = require("../database").Op;
+var e = require("../libs/enums.js");
 /*********************************************
-**********************************************
-**********************************************/
+ **********************************************
+ **********************************************/
 var values = [];
 values["father"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 42, 43, 44];
 values["mother"] = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 45];
@@ -25,23 +26,43 @@ class Appearance extends EventEmitter {
 	constructor(parent) {
 		super();
 		this.parent = parent;
-
+		this._dbentry;
 		this._data = [];
+	}
+	async init() {
+		return new Promise((resolve, reject) => {
+			AccountDB.findOne({
+				where: {
+					uid: this.parent.id
+				}
+			}).then(async (pAccount) => {
+				//console.log("account",pAccount.char)
+				this._dbentry = pAccount;
+				this._data = JSON.parse(pAccount.char);
+			});
+		})
 	}
 	reload() {
 		console.log("Realod Appearance");
 		this.parent.log("Reloaded Appearance")
 	}
 	saveData(data) {
-		console.log("char data",typeof data);
+		console.log("char data", typeof data);
 		this._data = JSON.parse(data);
+		this._dbentry.update({
+			char: JSON.stringify(this._data)
+		}).then(() => {
+			console.log("saved char");
+		}).catch(err => {
+			console.log("err",err);
+		})
 	}
-	load() {
+	async load() {
 		let self = this;
-		let data = self._data ;
+		await self.init();
+		let data = self._data;
 		if (data.gender == "Male") {
 			self.parent.player.model = mp.joaat('mp_m_freemode_01');
-
 		} else {
 			self.parent.player.model = mp.joaat('mp_f_freemode_01');
 		}
@@ -126,7 +147,6 @@ class Appearance extends EventEmitter {
 				// mixes
 				data.resemblance * 0.01, data.tone * 0.01, 0.0);
 		}
-
 	}
 }
 module.exports = Appearance;
