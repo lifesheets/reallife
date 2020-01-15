@@ -31,7 +31,7 @@ module.exports = function(sequelize) {
 			defaultValue: 0
 		},
 		char: {
-			type: Sequelize.STRING,
+			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
 		},
 		bank: {

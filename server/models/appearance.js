@@ -36,10 +36,15 @@ class Appearance extends EventEmitter {
 					uid: this.parent.id
 				}
 			}).then(async (pAccount) => {
-				//console.log("account",pAccount.char)
+				console.log("account char",pAccount.char)
 				this._dbentry = pAccount;
 				this._data = JSON.parse(pAccount.char);
-			});
+
+				return resolve();
+			}).catch(err => {
+				console.log(err);
+				return reject(err);
+			})
 		})
 	}
 	reload() {
@@ -47,7 +52,7 @@ class Appearance extends EventEmitter {
 		this.parent.log("Reloaded Appearance")
 	}
 	async saveData(data) {
-		await self.init();
+		await this.init();
 		console.log("char data", typeof data);
 		this._data = JSON.parse(data);
 		this._dbentry.update({
@@ -60,6 +65,8 @@ class Appearance extends EventEmitter {
 	}
 	async load() {
 		let self = this;
+		await this.init();
+		console.log("load char");
 		let data = self._data;
 		if (data.gender == "Male") {
 			self.parent.player.model = mp.joaat('mp_m_freemode_01');

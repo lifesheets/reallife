@@ -17,6 +17,9 @@ module.exports = function(sequelize) {
 		rx: Sequelize.FLOAT,
 		ry: Sequelize.FLOAT,
 		rz: Sequelize.FLOAT,
-		data: Sequelize.TEXT
+		data: {
+			type: Sequelize.TEXT,
+			defaultValue: JSON.stringify({})
+		}
 	});
 };
