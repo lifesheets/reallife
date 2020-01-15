@@ -41,7 +41,7 @@ module.exports = function(sequelize) {
 		locked:{
 			type: Sequelize.INTEGER,
 			defaultValue: 0
-		}
+		},
 		restrictions:{
 			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
