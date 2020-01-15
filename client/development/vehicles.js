@@ -10,7 +10,7 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 5;
+var updateThreshold = 0.5;
 var last_pos = null;
 var kmCounter = 0;
 mp.events.add("render", () => {
