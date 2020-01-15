@@ -23,11 +23,14 @@ const appearanceIndex = {
 	"chesthair": 10
 }
 class Appearance extends EventEmitter {
-	constructor(parent) {
+	async constructor(parent) {
 		super();
 		this.parent = parent;
 		this._dbentry;
 		this._data = [];
+		setTimeout(() => {
+			await this.init();
+		}, 100);
 	}
 	async init() {
 		return new Promise((resolve, reject) => {
@@ -54,7 +57,7 @@ class Appearance extends EventEmitter {
 		}).then(() => {
 			console.log("saved char");
 		}).catch(err => {
-			console.log("err",err);
+			console.log("err", err);
 		})
 	}
 	async load() {
