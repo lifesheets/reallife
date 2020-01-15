@@ -10,9 +10,10 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 0.5;
+var updateThreshold = 5;
 var last_pos = null;
 var kmCounter = 0;
+var kmTotal = 0;
 mp.events.add("render", () => {
     // tacho
     if (mp.cache["hud_ready"]) {
@@ -39,6 +40,7 @@ mp.events.add("render", () => {
             self.pos = cPos;
             if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
                 dist = dist / 3.6; // Unit3d to km
+                kmTotal += dist;
                 kmCounter += dist;
                 if (kmCounter >= updateThreshold) {
                     console.log("update km count", kmCounter);
@@ -50,7 +52,7 @@ mp.events.add("render", () => {
         }
     }
 
-    mp.game.graphics.drawText("KM COUNT " + kmCounter.toFixed(4), [0.5, 0.7 ], {
+    mp.game.graphics.drawText("KM COUNT " + kmTotal.toFixed(4), [0.5, 0.7 ], {
         font: 4,
         color: [255, 255, 255, 200],
         scale: [0.4, 0.4],
