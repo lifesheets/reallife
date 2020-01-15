@@ -10808,6 +10808,7 @@ Array.prototype.shuffle = function() {
 }
 },{}],19:[function(require,module,exports){
 var CEFHud = require("./browser.js").hud;
+var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
     //const isInvincible = entity.getVariable('isInvincible');
     //entity.setInvincible(!!isInvincible);

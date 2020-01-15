@@ -1,4 +1,5 @@
 var CEFHud = require("./browser.js").hud;
+var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
     //const isInvincible = entity.getVariable('isInvincible');
     //entity.setInvincible(!!isInvincible);
