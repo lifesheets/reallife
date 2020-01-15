@@ -191,10 +191,10 @@ body {
 
 }
 #player_hud>.cash>.actions>span.red {
-    color:rgba(125, 0, 0,1);
+    color:rgba(175, 0, 0,1);
 }
 #player_hud>.cash>.actions>span.green {
-    color:rgba(0, 125, 0,1);
+    color:rgba(0, 175, 0,1);
 }
 
 #player_hud>.cash>.actions>span::first-letter {
