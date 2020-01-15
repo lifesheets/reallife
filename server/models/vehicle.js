@@ -3,6 +3,10 @@ var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Interaction = require("../interaction");
 var Vehicles = require("../database").vehicle;
+
+
+var dirt_mul = 1000 / 15;
+
 class Vehicle extends EventEmitter {
 	constructor(owner, id, data) {
 		super();
@@ -15,7 +19,9 @@ class Vehicle extends EventEmitter {
 			rx: 0,
 			ry: 0,
 			rz: 0
-		}
+		};
+		this.kmTravel = 0;
+		this.kmClean = 0;
 		this._tuning = {};
 		this.model = "";
 		this.health = 500;
@@ -65,6 +71,12 @@ class Vehicle extends EventEmitter {
 				rz: this.db_veh.rz
 			};
 			this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
+
+
+//this.player.setVariable("hunger_val", val);
+			this.kmTravel = this.db_veh.kmTravel;
+			this.kmClean = this.db_veh.kmClean;
+
 			console.log(this._tuning);
 			this.spawn();
 		})
@@ -82,6 +94,8 @@ class Vehicle extends EventEmitter {
 		});
 		this.vehicle.interface = this;
 		this.vehicle.numberPlate = "TEST";
+		console.log("spawn set dirt to",(this.kmClean / dirt_mul))
+		this.vehicle.setVariable("dirt_level", (this.kmClean / dirt_mul))
 		this.loadTunes();
 		console.log("spawn", this.vehicle.position);
 		return this.vehicle;
@@ -150,11 +164,40 @@ class Vehicle extends EventEmitter {
 		})
 		//this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
 	}
+	update() {
+
+
+	}
 	toggleLock() {
 		let newState = !this.vehicle.locked;
 		this.vehicle.locked = newState;
 	}
 }
+
+mp.events.add("client:vehicle:update", (player,dist) => {
+	console.log("client:vehicle:update", player.name,dist);
+	//if (player.interface) {
+	//	player.interface.death(reason, killer, true);
+	//}
+	let pVeh = player.vehicle;
+	if (pVeh.interface) {
+		console.log("has interface");
+
+		pVeh.interface.kmTravel += dist;
+		pVeh.interface.kmClean += dist;
+
+		let dirt_level = (pVeh.interface.kmClean / dirt_mul) > 15 ? 15 : (pVeh.interface.kmClean / dirt_mul) ;
+		console.log("dirT level",dirt_level);
+		pVeh.setVariable("dirt_level", dirt_level)
+	}
+
+
+
+
+
+});
+
+
 class VehicleManager {
 	constructor(parent) {
 		this.parent = parent;

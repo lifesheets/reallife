@@ -591,17 +591,7 @@ mp.events.add("render", () => {
 			mp.cache["hud"] = false;
 		}
 	}
-	if (mp.players.local.isInAnyVehicle(false)) {
-		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
-		CEFHud.call("drawTacho", speed, 90, 180);
-		isTachoVisible = true;
-		//return;
-	} else {
-		if (isTachoVisible) {
-			CEFHud.call("clearTacho");
-			isTachoVisible = false;
-		}
-	}
+
 	//-
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
@@ -10817,9 +10807,64 @@ Array.prototype.shuffle = function() {
     return this;
 }
 },{}],19:[function(require,module,exports){
+var CEFHud = require("./browser.js").hud;
+mp.events.add('entityStreamIn', (entity) => {
+    //const isInvincible = entity.getVariable('isInvincible');
+    //entity.setInvincible(!!isInvincible);
+
+    if (entity.type !== 'vehicle') return;
 
 
+    entity.setDirtLevel(entity.getVariable('dirt_level'));
+});
+mp.events.addDataHandler("dirt_level", (entity, value) => {
+    if (entity.type !== 'vehicle') return;
 
+
+    entity.setDirtLevel(value);
+});
+
+var updateThreshold = 1000;
+var last_pos = null;
+var kmCounter = 0;
+mp.events.add("render", () => {
+    // tacho
+    if (mp.cache["hud_ready"]) {
+        if (mp.players.local.isInAnyVehicle(false)) {
+            let speed = mp.players.local.vehicle.getSpeed() * 3.6;
+            CEFHud.call("drawTacho", speed, 90, 180);
+            isTachoVisible = true;
+            //return;
+        } else {
+            if (isTachoVisible) {
+                CEFHud.call("clearTacho");
+                isTachoVisible = false;
+            }
+        }
+    }
+    if (mp.game.ui.isPauseMenuActive() == false) {
+        let localVeh = mp.players.local.vehicle;
+        var self = this;
+        if ((localVeh.getPedInSeat(-1) == mp.players.local.handle)) {
+            let veh_model = localVeh.model;
+            if (last_pos == null) last_pos = mp.players.local.position;
+            let cPos = mp.players.local.position;
+            let dist = mp.game.system.vdist2(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z);
+            self.pos = cPos;
+            if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
+                dist = dist / 1000
+                dist = dist / 3.6; // Unit3d to km
+                kmCounter += dist;
+                if (kmCounter >= updateThreshold) {
+                    console.log("update km count",kmCounter);
+                    mp.events.callRemote("client:vehicle:update", parseFloat(kmCounter));
+                    kmCounter = 0;
+                }
+            }
+            last_pos = cPos;
+        }
+    }
+});
 var seats = {
     0: "seat_pside_f", // passanger side front
     1: "seat_dside_r", // driver side rear
@@ -10900,7 +10945,7 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{}],20:[function(require,module,exports){
+},{"./browser.js":4}],20:[function(require,module,exports){
 (function (global){
 let enum_count = 0;
 var enums = {

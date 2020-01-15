@@ -53,17 +53,7 @@ mp.events.add("render", () => {
 			mp.cache["hud"] = false;
 		}
 	}
-	if (mp.players.local.isInAnyVehicle(false)) {
-		let speed = mp.players.local.vehicle.getSpeed() * 3.6;
-		CEFHud.call("drawTacho", speed, 90, 180);
-		isTachoVisible = true;
-		//return;
-	} else {
-		if (isTachoVisible) {
-			CEFHud.call("clearTacho");
-			isTachoVisible = false;
-		}
-	}
+
 	//-
 	//let rel_2d = mp.game.graphics.world3dToScreen2d(pos);
 	//console.log(rel_2d);
