@@ -19,11 +19,10 @@ class House extends EventEmitter {
 		this.interact_event_enter_cache = [];
 		this.interact_event_leave_cache = [];
 		this.price = data.price;
+		this.rent = 0;
 		this.owner = data.owner == undefined ? {
 			id: -1
 		} : data.owner;
-		this.type = data.type;
-		this.name = data.name
 		this.shape_enter = mp.colshapes.newSphere(this.x, this.y, this.z, 1.2, 0);
 		this.shape_leave = mp.colshapes.newSphere(this.px, this.py, this.pz, 1.2, this.dim);
 		this.view_shape = mp.colshapes.newSphere(this.x, this.y, this.z, 50, 0);
@@ -43,19 +42,30 @@ class House extends EventEmitter {
 		});
 	}
 	enterView(player) {
-		player.call("server:estate:enablemarker", [this.id, JSON.stringify({
+		let string = `
+		Haus\n
+		${this.locked ? 'Geschlossen\n' : 'Offen\n'}
+		${this.owner.id == -1 ? "Preis:$"+this.price+"\n" : ""}
+		${this.owner.id != -1 ? "Gehört:"+this.owner.name+"\n" : ""}
+		`
+		let color = [255, 255, 255, 255];
+		let text_color = [255, 255, 255, 255];
+		player.call("server:world:enablemarker", [this.id, JSON.stringify({
 			x: this.x,
 			y: this.y,
 			z: this.z,
-			price: (this.owner.id == -1 ? this.price : 0),
-			owner: (this.owner.id != -1 ? this.owner.name : ""),
-			locked: this.locked,
-			type:this.type,
-			name:this.name || ""
+			text: string,
+			marker: 25,
+			colorMarker: color,
+			colorText: text_color,
+			rotate: false,
+			dollar: this.owner.id == -1,
+			offset: 0.01,
+			font: 5 // 4
 		})]);
 	}
 	leaveView(player) {
-		player.call("server:estate:disablemarker", [this.id]);
+		player.call("server:world:disablemarker", [this.id]);
 	}
 	enterInteract(player) {
 		console.log(this);
@@ -97,8 +107,8 @@ class House extends EventEmitter {
 new House({
 	id: 1,
 	x: -61.74906539916992,
-	y:-1118.4771728515625,
-	z:26.431968688964844,
+	y: -1118.4771728515625,
+	z: 26.431968688964844,
 	px: 136.60789489746094,
 	py: -1048.853271484375,
 	pz: 57.79618835449219,
@@ -110,13 +120,14 @@ new House({
 	owner: {
 		id: -1
 	},
-	type:"house"
+	type: "house"
 })
-
 // öffentliches gebäude
 new House({
 	id: 2,
-	x: -59.16584396362305,y:-1118.68603515625,z:26.432044982910156,
+	x: -59.16584396362305,
+	y: -1118.68603515625,
+	z: 26.432044982910156,
 	px: 136.60789489746094,
 	py: -1048.853271484375,
 	pz: 57.79618835449219,
@@ -124,13 +135,15 @@ new House({
 	restrictions: {},
 	interior: 0,
 	dim: 115,
-	type:"public",
-	name:"Chaturbate Chamber"
+	type: "public",
+	name: "Chaturbate Chamber"
 })
 // unternehmen gebäude
 new House({
 	id: 3,
-	x: -56.3157844543457,y:-1118.0601806640625,z:26.43294334411621,
+	x: -56.3157844543457,
+	y: -1118.0601806640625,
+	z: 26.43294334411621,
 	px: 136.60789489746094,
 	py: -1048.853271484375,
 	pz: 57.79618835449219,
@@ -138,13 +151,15 @@ new House({
 	restrictions: {},
 	interior: 0,
 	dim: 116,
-	type:"business",
-	name:"Deluxe Motorsports"
+	type: "business",
+	name: "Deluxe Motorsports"
 })
 // geschlossen haus
 new House({
 	id: 4,
-	x: -53.390098571777344,y:-1118.302490234375,z:26.432538986206055,
+	x: -53.390098571777344,
+	y: -1118.302490234375,
+	z: 26.432538986206055,
 	px: 136.60789489746094,
 	py: -1048.853271484375,
 	pz: 57.79618835449219,
@@ -155,14 +170,16 @@ new House({
 	dim: 112,
 	owner: {
 		id: 1,
-		name:"Z8pn"
+		name: "Z8pn"
 	},
-	type:"house"
+	type: "house"
 })
 // verkauft haus
 new House({
 	id: 5,
-	x: -50.67021942138672,y:-1118.430419921875,z:26.432222366333008,
+	x: -50.67021942138672,
+	y: -1118.430419921875,
+	z: 26.432222366333008,
 	px: 136.60789489746094,
 	py: -1048.853271484375,
 	pz: 57.79618835449219,
@@ -173,13 +190,10 @@ new House({
 	dim: 111,
 	owner: {
 		id: 1,
-		name:"Z8pn"
+		name: "Z8pn"
 	},
-	type:"house"
+	type: "house"
 })
-
-
-
 var HouseManager = new class {
 	constructor() {
 		this.houses = [];

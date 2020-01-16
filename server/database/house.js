@@ -1,6 +1,6 @@
 const {Sequelize,Model,DataTypes} = require('sequelize');
 module.exports = function(sequelize) {
-	return sequelize.define('estate', {
+	return sequelize.define('house', {
 		eid:{
 			type: Sequelize.INTEGER,
 			autoIncrement: true,

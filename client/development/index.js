@@ -53,7 +53,7 @@ require("./hud.js")
 require("./vehicles.js")
 require("./animations.js")
 require("./nametags.js")
-require("./house.js")
+require("./world.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
