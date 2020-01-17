@@ -1,7 +1,7 @@
 const {Sequelize,Model,DataTypes} = require('sequelize');
 module.exports = function(sequelize) {
 	return sequelize.define('house', {
-		eid:{
+		hid:{
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true
@@ -38,11 +38,7 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			defaultValue: 0
 		},
-		locked:{
-			type: Sequelize.INTEGER,
-			defaultValue: 0
-		},
-		restrictions:{
+		data:{
 			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
 		}
