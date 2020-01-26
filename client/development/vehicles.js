@@ -50,13 +50,6 @@ mp.events.add("render", () => {
             last_pos = cPos;
         }
     }
-
-    mp.game.graphics.drawText("KM COUNT " + (kmTotal/1000).toFixed(4), [0.5, 0.7 ], {
-        font: 4,
-        color: [255, 255, 255, 200],
-        scale: [0.4, 0.4],
-        outline: true
-    });
     if (localVeh) {
         mp.game.graphics.drawText("DIRT" + localVeh.getVariable('dirt_level'), [0.5, 0.75 ], {
             font: 4,
