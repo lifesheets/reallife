@@ -536,101 +536,6 @@ mp.events.add("cef:character:edit", (setClothing = false) => {
     clearTasksRender = true;
 });
 },{"./browser.js":4}],6:[function(require,module,exports){
-var house_data = [];
-
-function draweState(id) {
-	let rhouse = house_data[id];
-	if (!rhouse) return;
-	let z = mp.game.gameplay.getGroundZFor3dCoord(rhouse.x, rhouse.y, rhouse.z, 0, false);
-	let color = [10, 160, 10, 110];
-	if (rhouse.price != 0) color = [255, 143, 5, 110];
-	if (rhouse.locked) color = [160, 10, 10, 110]
-	let marker = 25;
-	let offset = 0.01;
-	let rotate = false;
-	let scaleZ = 1.2;
-	let name = "Haus"
-	if (rhouse.type == "business") {
-		marker = 20;
-		offset = 0.7;
-		rotate = true;
-		color = [10, 160, 10, 100];
-		name = rhouse.name;
-	} else if (rhouse.type == "public") {
-		marker = 1;
-		offset = 0;
-		color = [255, 143, 5, 100]
-		scaleZ = 0.7;
-		name = rhouse.name
-	}
-	mp.game.graphics.drawMarker(marker, rhouse.x, rhouse.y, z + offset, 0, 0, 0, 0, 0, 0, 1.2, 1.2, scaleZ, color[0], color[1], color[2], color[3], false, false, 2, rotate, "", "", false);
-	if ((rhouse.price != 0) && (rhouse.owner == "") && (rhouse.type == "house")) {
-		mp.game.graphics.drawMarker(29, rhouse.x, rhouse.y, z + 0.4, 0, 0, 0, 0, 0, 0, 0.7, 0.7, 0.7, 25, 201, 2, 60, false, false, 2, true, "", "", false);
-	}
-	let dist = mp.game.system.vdist2(rhouse.x, rhouse.y, rhouse.z, mp.players.local.position.x, mp.players.local.position.y, mp.players.local.position.z);
-	let c_dist = 1 / 250 * dist;
-	let size = mp.lerp(0.4, 0.06, c_dist)
-	if (size > 0.4) {
-		size = 0.4;
-	} else if (size < 0.06) {
-		size = 0.06;
-	}
-
-
-	if (mp.raycasting.testPointToPoint(mp.players.local.position, new mp.Vector3(rhouse.x, rhouse.y, rhouse.z), mp.players.local, 1)) return;
-	if (size < 0.07) return;
-
-
-
-
-
-	mp.game.graphics.setDrawOrigin(rhouse.x, rhouse.y, z + 1.53, 0);
-	mp.game.graphics.drawText(name, [0, 0], {
-		font: 4,
-		color: [255, 255, 255, 200],
-		scale: [size, size],
-		outline: true,
-		centre: true
-	});
-	mp.game.graphics.clearDrawOrigin()
-	if ((rhouse.price != 0) && (rhouse.owner == "") && (rhouse.type == "house")) {
-		mp.game.graphics.setDrawOrigin(rhouse.x, rhouse.y, z + 1.35, 0);
-		mp.game.graphics.drawText("$" + rhouse.price, [0, 0], {
-			font: 4,
-			color: [255, 255, 255, 200],
-			scale: [size * 0.7, size * 0.7],
-			outline: true,
-			centre: true
-		});
-		mp.game.graphics.clearDrawOrigin()
-	}
-	if ((rhouse.type == "house") && (rhouse.owner != "")) {
-		mp.game.graphics.setDrawOrigin(rhouse.x, rhouse.y, z + 1.2, 0);
-		mp.game.graphics.drawText(rhouse.locked ? "Verschlossen" : "Offen", [0, 0], {
-			font: 4,
-			color: [255, 255, 255, 200],
-			scale: [size * 0.7, size * 0.7],
-			outline: true,
-			centre: true
-		});
-		mp.game.graphics.clearDrawOrigin()
-	}
-}
-mp.events.add("server:estate:enablemarker", (id, data) => {
-	if (house_data[id]) return;
-	//render_house = JSON.parse(data);
-	house_data[id] = JSON.parse(data);
-	house_data[id].event = new mp.Event('render', () => {
-		draweState(id);
-	});
-});
-mp.events.add("server:estate:disablemarker", (id) => {
-	if (!house_data[id]) return;
-	house_data[id].event.destroy();
-	house_data[id] = undefined;
-	delete house_data[id];
-});
-},{}],7:[function(require,module,exports){
 "use strict";
 var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
@@ -758,7 +663,7 @@ mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0
 mp.keys.bind(0x71, false, function() {
 	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
-},{"./browser.js":4,"./utils.js":18}],8:[function(require,module,exports){
+},{"./browser.js":4,"./utils.js":17}],7:[function(require,module,exports){
 "use strict";
 
 
@@ -814,7 +719,7 @@ require("./hud.js")
 require("./vehicles.js")
 require("./animations.js")
 require("./nametags.js")
-require("./house.js")
+require("./world.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -822,9 +727,11 @@ mp.events.add("Notifications:New", (notification_data) => {
 })
 
 
+mp.peds.new("mp_m_freemode_01", new mp.Vector3(-59.16584396362305,-1110.68603515625,26.432044982910156), 0, 0);
 
 
-},{"../../server/libs/enums.js":21,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./house.js":6,"./hud.js":7,"./libs/attachments.js":9,"./libs/skeleton.js":10,"./libs/weapon_attachments.js":12,"./login.js":13,"./nametags.js":15,"./natives.js":16,"./utils.js":18,"./vector.js":19,"./vehicles.js":20}],9:[function(require,module,exports){
+
+},{"../../server/libs/enums.js":21,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19,"./world.js":20}],8:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -1037,7 +944,7 @@ function InitAttachmentsOnJoin()
 }
 
 InitAttachmentsOnJoin();
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var Skeleton = [];
 Skeleton.SKEL_ROOT = 0;
 Skeleton.FB_R_Brow_Out_000 = 1356;
@@ -1138,7 +1045,7 @@ Skeleton.SKEL_L_Clavicle = 64729;
 Skeleton.FACIAL_facialRoot = 65068;
 Skeleton.IK_L_Foot = 65245;
 module.exports = Skeleton;
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports={
   "2725352035": {
     "HashKey": "WEAPON_UNARMED",
@@ -10367,7 +10274,7 @@ module.exports={
     "DLC": "spupgrade"
   }
 }
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const weaponData = require("./weaponData");
 
 const PistolAttachmentPos = new mp.Vector3(0.02, 0.06, 0.1);
@@ -10452,7 +10359,7 @@ for (let weapon in weaponAttachmentData) {
 }
 
 
-},{"./weaponData":11}],13:[function(require,module,exports){
+},{"./weaponData":10}],12:[function(require,module,exports){
 var natives = require("./natives.js")
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
@@ -10547,7 +10454,7 @@ mp.events.add('server:game:start', () => {
 	CEFInterface.load("empty.html");
 	CEFInterface.cursor(false);
 });
-},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":14,"./natives.js":16}],14:[function(require,module,exports){
+},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":15}],13:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
@@ -10578,7 +10485,7 @@ var obj = require("../objects.js");
 
 
 
-},{"../objects.js":17}],15:[function(require,module,exports){
+},{"../objects.js":16}],14:[function(require,module,exports){
 mp.nametags.enabled = false;
 mp.gui.chat.colors = true;
 
@@ -10637,7 +10544,7 @@ mp.events.add('render', (nametags) => {
         })
     }
 })
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var natives = {};
 mp.game.vehicle.getVehicleSeats = (veh) => mp.game.invoke("0xA7C4F2C6E744A550", veh.handle);
 mp.game.graphics.clearDrawOrigin = () => mp.game.invoke('0xFF0B610F6BE0D7AF'); // 26.07.2018 // GTA 1.44
@@ -10671,7 +10578,7 @@ natives.SET_ENTITY_ROTATION = (  entity,  pitch,  roll,  yaw,  rotationOrder,  p
 natives.GET_ENTITY_HEIGHT_ABOVE_GROUND = (  entity) => mp.game.invoke("0x1DD55701034110E5", entity); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 natives.WORLD3D_TO_SCREEN2D = ( worldX,  worldY,  worldZ,  screenX,  screenY) => mp.game.invoke("0x34E82F05DF2974F5", worldX,  worldY,  worldZ,  screenX,  screenY); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 module.exports = natives;
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (setImmediate){
 
 class objCreator {
@@ -10736,7 +10643,7 @@ mp.events.add("server:objects:delete", function(identifier) {
 
 module.exports = objCreator;
 }).call(this,require("timers").setImmediate)
-},{"timers":2}],18:[function(require,module,exports){
+},{"timers":2}],17:[function(require,module,exports){
 // https://github.com/glitchdetector/fivem-minimap-anchor
 function getMinimapAnchor() {
     let sfX = 1.0 / 20.0;
@@ -10761,7 +10668,7 @@ function getMinimapAnchor() {
 module.exports = {
     minimap_anchor: getMinimapAnchor
 }
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
     let nVector = new mp.Vector3(this.x, this.y, this.z);
     let degrees = (rz + rot) * (Math.PI / 180);
@@ -10902,7 +10809,7 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var CEFHud = require("./browser.js").hud;
 var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
@@ -11052,7 +10959,63 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{"./browser.js":4}],21:[function(require,module,exports){
+},{"./browser.js":4}],20:[function(require,module,exports){
+var marker_data = [];
+
+function drawMarker(id) {
+	let rhouse = marker_data[id];
+	if (!rhouse) return;
+	let z = mp.game.gameplay.getGroundZFor3dCoord(rhouse.x, rhouse.y, rhouse.z, 0, false);
+	let color = rhouse.colorMarker;
+	let textcolor = rhouse.colorText;
+	let rotate = rhouse.rotate;
+	let text = rhouse.text;
+	mp.game.graphics.drawMarker(rhouse.marker, rhouse.x, rhouse.y, z + rhouse.offset, 0, 0, 0, 0, 0, 0, 1.2, 1.2, 1.2, color[0], color[1], color[2], color[3], false, false, 2, rotate, "", "", false);
+	if ((rhouse.dollar)) {
+		mp.game.graphics.drawMarker(29, rhouse.x, rhouse.y, z + 0.4, 0, 0, 0, 0, 0, 0, 0.7, 0.7, 0.7, 25, 201, 2, 60, false, false, 2, true, "", "", false);
+	}
+	let dist = mp.game.system.vdist2(rhouse.x, rhouse.y, rhouse.z, mp.players.local.position.x, mp.players.local.position.y, mp.players.local.position.z);
+	let c_dist = 1 / 250 * dist;
+	let size = mp.lerp(0.4, 0.06, c_dist)
+	if (size > 0.4) {
+		size = 0.4;
+	} else if (size < 0.06) {
+		size = 0.06;
+	}
+
+
+	if (mp.raycasting.testCapsule(mp.players.local.position, new mp.Vector3(rhouse.x, rhouse.y, rhouse.z), 0.1,mp.players.local.handle, 1)) return;
+	if (size < 0.07) return;
+
+
+
+
+
+	mp.game.graphics.setDrawOrigin(rhouse.x, rhouse.y, z + 1.53, 0);
+	mp.game.graphics.drawText(text, [0, 0], {
+		font: rhouse.font,
+		color: textcolor,
+		scale: [size, size],
+		outline: true,
+		centre: true
+	});
+	mp.game.graphics.clearDrawOrigin()
+}
+mp.events.add("server:world:enablemarker", (id, data) => {
+	if (marker_data[id]) return;
+	//render_house = JSON.parse(data);
+	marker_data[id] = JSON.parse(data);
+	marker_data[id].event = new mp.Event('render', () => {
+		drawMarker(id);
+	});
+});
+mp.events.add("server:world:disablemarker", (id) => {
+	if (!marker_data[id]) return;
+	marker_data[id].event.destroy();
+	marker_data[id] = undefined;
+	delete marker_data[id];
+});
+},{}],21:[function(require,module,exports){
 (function (global){
 let enum_count = 0;
 var enums = {
@@ -11065,4 +11028,4 @@ Object.keys(enums).forEach(function(key, value) {
 })
 module.exports = enums;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[8]);
+},{}]},{},[7]);

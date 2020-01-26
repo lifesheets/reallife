@@ -61,4 +61,6 @@ mp.events.add("Notifications:New", (notification_data) => {
 })
 
 
+mp.peds.new("mp_m_freemode_01", new mp.Vector3(-59.16584396362305,-1110.68603515625,26.432044982910156), 0, 0);
+
 

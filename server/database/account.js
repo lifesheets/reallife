@@ -34,10 +34,6 @@ module.exports = function(sequelize) {
 			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
 		},
-		bank: {
-			type: Sequelize.INTEGER,
-			defaultValue: 0
-		},
 		cash: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0

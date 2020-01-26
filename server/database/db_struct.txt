@@ -1,0 +1,89 @@
+//// -- LEVEL 1
+//// -- Tables and References
+
+// Creating tables
+Table account as U {
+  uid int [pk, increment] // auto-increment
+  username varchar
+  password varchar
+  email varchar
+  hwid varchar
+  rgscId varchar
+  adminlvl int
+  char text
+  cash int
+  groupid int
+  grouprank int
+}
+
+
+Table inventory as U {
+  owner_id int [primary key]  //  primary key (owner_id, item_type)
+  item_type int [primary key]
+  item_amount int
+  data text
+}
+
+Table vehicles as U {
+  id int [primary key]
+  key_id int
+  model string
+  x float
+  y float
+  z float
+  rx float
+  ry float
+  rz float
+  data text
+}
+
+
+
+Table groups as U {
+  id int [primary key]
+  name string
+  data text
+}
+
+
+Table property as U {
+  id int [primary key]
+  price int
+  x float
+  y float
+  z float
+  dimension int
+  interior int
+  data text
+}
+
+
+
+Table business as U {
+  id int [primary key]
+  data text
+}
+
+Table bankacccounts as U {
+  id int [primary key]
+  bankroll int
+  access text
+}
+
+Ref: "account"."uid" < "inventory"."owner_id"
+
+Ref: "vehicles"."key_id" < "inventory"."data"
+
+Ref: "groups"."id" < "property"."data"
+
+Ref: "inventory"."data" < "property"."data"
+
+Ref: "account"."uid" < "groups"."data"
+
+Ref: "account"."uid" < "business"."data"
+
+Ref: "account"."uid" < "bankacccounts"."access"
+
+Ref: "business"."id" < "bankacccounts"."access"
+
+Ref: "business"."data" < "vehicles"."key_id"
