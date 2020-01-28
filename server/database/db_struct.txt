@@ -2,7 +2,7 @@
 //// -- Tables and References
 
 // Creating tables
-Table account as U {
+Table account as U  [headercolor: #3498db] {
   uid int [pk, increment] // auto-increment
   username varchar
   password varchar
@@ -12,10 +12,12 @@ Table account as U {
   adminlvl int
   char text
   cash int
-  groupid int
-  grouprank int
-}
+  spawn_x flaot
+  spawn_y float
+  spawn_z float
+  licenses text
 
+}
 
 Table inventory as U {
   owner_id int [primary key]  //  primary key (owner_id, item_type)
@@ -61,10 +63,11 @@ Table property as U {
 
 Table business as U {
   id int [primary key]
+  name string
   data text
 }
 
-Table bankacccounts as U {
+Table bankacccounts as U  [headercolor: #316896] {
   id int [primary key]
   bankroll int
   access text
@@ -87,3 +90,9 @@ Ref: "account"."uid" < "bankacccounts"."access"
 Ref: "business"."id" < "bankacccounts"."access"
 
 Ref: "business"."data" < "vehicles"."key_id"
+
+Ref: "groups"."id" < "bankacccounts"."access"
+
+Ref: "business"."id" < "inventory"."owner_id"
+
+Ref: "groups"."id" < "inventory"."owner_id"

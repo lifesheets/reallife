@@ -38,13 +38,21 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			defaultValue: 0
 		},
-		groupid: {
-			type: Sequelize.INTEGER,
+		spawn_x:{
+			type:Sequelize.FLOAT,
 			defaultValue: 0
 		},
-		group_rank: {
-			type: Sequelize.INTEGER,
+		spawn_y:{
+			type:Sequelize.FLOAT,
 			defaultValue: 0
+		},
+		spawn_z:{
+			type:Sequelize.FLOAT,
+			defaultValue: 0
+		},
+		licenses:{
+			type:Sequelize.TEXT,
+			default: JSON.stringify({})
 		}
 	});
 };
