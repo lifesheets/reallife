@@ -6,7 +6,7 @@ module.exports = function(sequelize) {
 			autoIncrement: true,
 			primaryKey: true
 		},
-		owner:{
+		key_id:{
 			type: Sequelize.INTEGER,
 			allowNull: false
 		},
@@ -20,18 +20,6 @@ module.exports = function(sequelize) {
 		data: {
 			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
-		},
-		fuel: {
-			type: Sequelize.FLOAT,
-			defaultValue: 100.0
-		},
-		kmTravel: {
-			type: Sequelize.FLOAT,
-			defaultValue: 0.0
-		},
-		kmClean: {
-			type: Sequelize.FLOAT,
-			defaultValue: 0.0
 		}
 	});
 };
