@@ -1,22 +1,32 @@
-const {Sequelize,Model,DataTypes} = require('sequelize');
+const {
+	Sequelize,
+	Model,
+	DataTypes
+} = require('sequelize');
 module.exports = function(sequelize) {
-	return sequelize.define('inventory', {
-		owner_id:{
+	return sequelize.define('storage', {
+		owner_id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true
 		},
-		type:{
+		itemid: {
 			type: Sequelize.INTEGER,
 			primaryKey: true
 		},
-		x:{
+		count: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0.00
 		},
-		data:{
+		data: {
 			type: Sequelize.TEXT,
 			defaultValue: JSON.stringify({})
 		}
+	}, {
+		hooks: {
+			afterUpdate() {
+				// Do other stuff
+				console.log("item updated");
+			}
+		}
 	});
 };
-

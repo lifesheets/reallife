@@ -4,6 +4,7 @@ var Appearance = require("./appearance.js");
 var Account = require("./account.js");
 var Interaction = require("../interaction");
 var VehicleManager = require("./vehicle.js").mgr;
+var ItemManager = require("./storage.js").mgr;
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
@@ -11,6 +12,18 @@ class Player extends EventEmitter {
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
 		this.vehicles = new VehicleManager(this);
+		this.inventory = new ItemManager(this);
+
+
+
+		this.player.account = this.account;
+		this.player.vehicles = this.vehicles;
+		this.player.inventory = this.inventory;
+		this.player.appearance = this.appearance;
+
+
+
+
 		this.cState = "auth";
 		this._money = 0;
 		this._bankmoney = 0;
@@ -55,9 +68,6 @@ class Player extends EventEmitter {
 			tPlayer.call("client:sync:playanimation", [id, dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout])
 		});
 	}
-	interact(key) {
-		this.emit("interact", key);
-	}
 	death(reason, killer, event = false) {
 		this.player.setVariable("death", true);
 		setTimeout(() => {
@@ -68,13 +78,18 @@ class Player extends EventEmitter {
 		let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
 		this.player.spawn(spawnPoint);
 		this.appearance.load();
+		this.inventory.load();
 		this.player.dimension = 0;
 		this.money = 100;
 		this.player.call("server:game:start");
 		this.player.setVariable("spawned", true);
 		this.player.setVariable("death", false);
 	}
+	interact(key) {
+		this.emit("interact", key);
+	}
 }
+
 mp.events.add("playerDeath", (player, reason, killer) => {
 	console.log("player died", player.name);
 	if (player.interface) {

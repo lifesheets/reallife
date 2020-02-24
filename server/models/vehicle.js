@@ -185,7 +185,7 @@ class VehicleManager {
 	}
 	load() {
 		if (!this.parent.account.loggedIn) return;
-		Vehicles.findAll({
+		/*Vehicles.findAll({
 			where: {
 				owner: this.parent.id
 			}
@@ -210,8 +210,8 @@ class VehicleManager {
 			this.spawnAll();
 		}).catch(err => {
 			console.log("error fetching vehs", err);
-		})
-		console.log("load veh");
+		})*/
+		console.log("TODO load veh with keys");
 	}
 	spawnAll() {
 		console.log("spawn all");

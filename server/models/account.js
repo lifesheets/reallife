@@ -1,6 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var AccountDB = require("../database").account;
-var Op = require("../database").Op;
+var Sequelize = require("../database").Sequelize;
 var e = require("../libs/enums.js");
 var bcrypt = require('bcryptjs');
 const saltSecurity = 15;
@@ -55,7 +55,7 @@ class Account extends EventEmitter {
 		return new Promise(async (resolve, reject) => {
 			AccountDB.findOne({
 				where: {
-					[Op.or]: [{
+					[Sequelize.Op.or]: [{
 						username: username
 					}, {
 						email: email
