@@ -91,4 +91,5 @@ mp.events.add('server:game:start', () => {
 	mp.game.cam.renderScriptCams(false, false, 0, true, false);
 	CEFInterface.load("empty.html");
 	CEFInterface.cursor(false);
+	mp.loggedIn = true;
 });

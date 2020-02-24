@@ -7,8 +7,7 @@ var mysql = require('mysql');
 
 
 // pass TMmzs9oo9DL6Y9Fm;
-const Op = Sequelize.Op;
-const sequelize = new Sequelize("reallife", 'root', '1234567890', {
+const sequelize = new Sequelize("reallife", 'root', '', {
 	host: '127.0.0.1',   //or 127.0.0.1
   	dialect: 'mysql',
   	logging: function () {},
@@ -16,9 +15,6 @@ const sequelize = new Sequelize("reallife", 'root', '1234567890', {
         max: 5,
         min: 0,
         idle: 10000
-    },
-    dialectOptions: {
-        socketPath: "/var/run/mysqld/mysqld.sock"
     }
 }, {
 	timestamps: false
@@ -26,9 +22,11 @@ const sequelize = new Sequelize("reallife", 'root', '1234567890', {
 
 var house = require("./house.js")(sequelize);
 var account = require("./account.js")(sequelize);
+var storage = require("./storage.js")(sequelize);
 var vehicle = require("./vehicle.js")(sequelize);
 sequelize.authenticate().then(() => {
 	sequelize.sync().then(() => {
+		mp.events.delayInitialization = false;
 		console.log('Connection has been established successfully.');
 	}).catch(err => {
 		console.error('Failed syncing Database', err);
@@ -37,8 +35,9 @@ sequelize.authenticate().then(() => {
 	console.error('Unable to connect to the database:', err);
 });
 module.exports = {
-	Op: Op,
+	Sequelize: Sequelize,
 	account: account,
 	vehicle: vehicle,
-	house: house
+	house: house,
+	storage: storage,
 }

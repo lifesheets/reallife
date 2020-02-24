@@ -301,6 +301,18 @@ mp.events.add("client:sync:playanimation", (tID, dict, name, speed, speedMultipl
 	}
 });
 },{}],4:[function(require,module,exports){
+class Binds{
+	 constructor(event,key) {
+	 	this.key = key;
+	 	this.event = event;
+
+	 	mp.keys.bind(this.key, false, () => {
+		    mp.events.call(this.event);
+		});
+	 }
+}
+module.exports = Binds;
+},{}],5:[function(require,module,exports){
 const absolute_path = "package://reallife/cef/views/";
 class CEFBrowser {
     constructor(url) {
@@ -368,7 +380,7 @@ module.exports = {
     inventory:new CEFBrowser("empty.html"),
     class:CEFBrowser
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var values = [];
 values["father"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 42, 43, 44];
 values["mother"] = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 45];
@@ -535,7 +547,7 @@ mp.events.add("cef:character:edit", (setClothing = false) => {
     }
     clearTasksRender = true;
 });
-},{"./browser.js":4}],6:[function(require,module,exports){
+},{"./browser.js":5}],7:[function(require,module,exports){
 "use strict";
 var CEFHud = require("./browser.js").hud;
 var getMinimapAnchor = require("./utils.js").minimap_anchor;
@@ -663,7 +675,7 @@ mp.events.add("server:interaction:request", (key, string, duration, x = 0, y = 0
 mp.keys.bind(0x71, false, function() {
 	mp.events.call("server:interaction:request", 70, "Tasche durchsuchen", 1)
 });
-},{"./browser.js":4,"./utils.js":17}],7:[function(require,module,exports){
+},{"./browser.js":5,"./utils.js":19}],8:[function(require,module,exports){
 "use strict";
 
 
@@ -720,6 +732,7 @@ require("./vehicles.js")
 require("./animations.js")
 require("./nametags.js")
 require("./world.js")
+require("./inventory.js")
 var natives = require("./natives.js")
 var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
@@ -731,7 +744,145 @@ mp.peds.new(mp.game.joaat('mp_m_freemode_01'), new mp.Vector3(-59.16584396362305
 
 
 
-},{"../../server/libs/enums.js":21,"./animations.js":3,"./browser.js":4,"./character_creator.js":5,"./hud.js":6,"./libs/attachments.js":8,"./libs/skeleton.js":9,"./libs/weapon_attachments.js":11,"./login.js":12,"./nametags.js":14,"./natives.js":15,"./utils.js":17,"./vector.js":18,"./vehicles.js":19,"./world.js":20}],8:[function(require,module,exports){
+},{"../../server/libs/enums.js":23,"./animations.js":3,"./browser.js":5,"./character_creator.js":6,"./hud.js":7,"./inventory.js":9,"./libs/attachments.js":10,"./libs/skeleton.js":11,"./libs/weapon_attachments.js":13,"./login.js":14,"./nametags.js":16,"./natives.js":17,"./utils.js":19,"./vector.js":20,"./vehicles.js":21,"./world.js":22}],9:[function(require,module,exports){
+var Binds = require("./binds.js");
+var CEFInventory = require("./browser.js").inventory;
+CEFInventory.load("inventory/index.html");
+mp.events.add("cef:inventory:ready", () => {
+	mp.cache["inventory_ready"] = true;
+});
+var sample_inventory = [{
+	image: "../../source/img/melone.png",
+	name: "Melone",
+	count: 100,
+	type: "Nahrung",
+	weight: 0.1
+}, {
+	image: "../../source/img/eisen.png",
+	name: "Eisen",
+	count: 21,
+	type: "Rohstoff",
+	weight: 0.4
+}, {
+	image: "../../source/img/m4.png",
+	name: "M4 Sturmgewehr",
+	count: 1,
+	id: "SN8472095",
+	type: "Waffe",
+	weight: 1.3
+}, {
+	image: "../../source/img/m4.png",
+	name: "M4 Sturmgewehr",
+	count: 1,
+	id: "SN8472094",
+	type: "Waffe",
+	weight: 1.3
+}, {
+	image: "../../source/img/ak47.png",
+	name: "Ak47 Sturmgewehr",
+	count: 1,
+	id: "SN8472093",
+	type: "Waffe",
+	weight: 1.3
+}]
+//let rucksack = new StorageHandler("#character_storage", "Rucksack", 1)
+//rucksack.toggle(true);
+//rucksack.weight = 50;
+//let inventar = new StorageHandler("#character_storage", "Inventar")
+//inventar.weight = 250;
+//let kofferraum = new StorageHandler("body", "Kofferraum")
+//kofferraum.weight = 550;
+//addUnit(parent,selector,options,max_rows)
+//
+var storage_units = [];
+var visibleStorage = [];
+class storage {
+	constructor(key, parent, selector, options = null, max_rows = 0) {
+		this.maxRows = max_rows;
+		this.items = [];
+		this.name = selector;
+		this._max_weight = 100;
+		this.type = "storage"
+		this.selector = selector;
+		this.parent = parent;
+		this._condition = () => {
+			return false;
+		};
+		this.event = `bind_${this.selector}`;
+		this.bind = new Binds(this.event, key);
+		this.key = key;
+		this.toggled = false;
+		CEFInventory.call("addUnit", parent, selector, options, max_rows);
+		mp.events.add(this.event, () => {
+			this.toggle();
+		});
+		storage_units[this.selector.toLowerCase()] = this;
+	}
+	toggle() {
+		console.log("load",!this.toggled)
+		this.toggled = !this.toggled;
+		CEFInventory.call("toggleStorage", this.selector, this.toggled);
+		console.log("toggle", this.toggled)
+		if (this.toggled) {
+			visibleStorage.push(this.name);
+		} else {
+			visibleStorage.splice(visibleStorage.indexOf(this.name), 1);
+		}
+		if (visibleStorage.length > 0) {
+			CEFInventory.cursor(true);
+		} else {
+			CEFInventory.cursor(false);
+		}
+	}
+	set weight(w = 100) {
+		this._max_weight = w;
+		CEFInventory.call("editStorageMaxWeight", this.selector, this._max_weight);
+		console.log("_max_weight", this._max_weight)
+	}
+	set condition(condition_func) {
+		this._condition = condition_func;
+	}
+	load(items) {
+		console.log("load")
+		//this._condition = condition_func;
+		this.items = items;
+		CEFInventory.call("loadStorage", this.selector, this.items);
+	}
+}
+
+var backpack;
+var inventory;
+var storageSpace;
+mp.events.add("cef:inventory:ready", () => {
+	backpack = new storage(73, "#character_storage", "Rucksack", null, 1)
+	backpack.weight = 100;
+	inventory = new storage(73, "#character_storage", "Inventar")
+	inventory.weight = 400;
+	storageSpace = new storage(73, "body", "Kofferraum")
+	storageSpace.weight = 200;
+	inventory.load(sample_inventory)
+		console.log("created")
+});
+
+
+
+mp.events.add("cef:inventory:use", (target,items) => {
+	if (!mp.loggedIn) return;
+
+
+});
+mp.events.add("server:inventory:load", (target,items) => {
+	if (!mp.loggedIn) return;
+	console.log("server:inventory:load",items);
+	if (storage_units[target.toLowerCase()]) {
+		storage_units[target.toLowerCase()].load(items);;
+	}
+});
+/*CEFHud.call("addUnit", "#character_storage", "Rucksack", null,1);
+CEFHud.call("addUnit", "#character_storage", "Inventar", null,0);
+CEFHud.call("addUnit", "body", "Kofferraum", null,0);
+CEFHud.call("editStorageMaxWeight","Kofferraum", null,0);*/
+},{"./binds.js":4,"./browser.js":5}],10:[function(require,module,exports){
 mp.attachmentMngr = 
 {
 	attachments: {},
@@ -944,7 +1095,7 @@ function InitAttachmentsOnJoin()
 }
 
 InitAttachmentsOnJoin();
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Skeleton = [];
 Skeleton.SKEL_ROOT = 0;
 Skeleton.FB_R_Brow_Out_000 = 1356;
@@ -1045,7 +1196,7 @@ Skeleton.SKEL_L_Clavicle = 64729;
 Skeleton.FACIAL_facialRoot = 65068;
 Skeleton.IK_L_Foot = 65245;
 module.exports = Skeleton;
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports={
   "2725352035": {
     "HashKey": "WEAPON_UNARMED",
@@ -10274,7 +10425,7 @@ module.exports={
     "DLC": "spupgrade"
   }
 }
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 const weaponData = require("./weaponData");
 
 const PistolAttachmentPos = new mp.Vector3(0.02, 0.06, 0.1);
@@ -10359,7 +10510,7 @@ for (let weapon in weaponAttachmentData) {
 }
 
 
-},{"./weaponData":10}],12:[function(require,module,exports){
+},{"./weaponData":12}],14:[function(require,module,exports){
 var natives = require("./natives.js")
 var CEFInterface = require("./browser.js").interface;
 var CEFNotification = require("./browser.js").notification;
@@ -10453,8 +10604,9 @@ mp.events.add('server:game:start', () => {
 	mp.game.cam.renderScriptCams(false, false, 0, true, false);
 	CEFInterface.load("empty.html");
 	CEFInterface.cursor(false);
+	mp.loggedIn = true;
 });
-},{"./browser.js":4,"./character_creator.js":5,"./maps/container.js":13,"./natives.js":15}],13:[function(require,module,exports){
+},{"./browser.js":5,"./character_creator.js":6,"./maps/container.js":15,"./natives.js":17}],15:[function(require,module,exports){
 var obj = require("../objects.js");
 
 
@@ -10485,7 +10637,7 @@ var obj = require("../objects.js");
 
 
 
-},{"../objects.js":16}],14:[function(require,module,exports){
+},{"../objects.js":18}],16:[function(require,module,exports){
 mp.nametags.enabled = false;
 mp.gui.chat.colors = true;
 
@@ -10544,7 +10696,7 @@ mp.events.add('render', (nametags) => {
         })
     }
 })
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var natives = {};
 mp.game.vehicle.getVehicleSeats = (veh) => mp.game.invoke("0xA7C4F2C6E744A550", veh.handle);
 mp.game.graphics.clearDrawOrigin = () => mp.game.invoke('0xFF0B610F6BE0D7AF'); // 26.07.2018 // GTA 1.44
@@ -10578,7 +10730,7 @@ natives.SET_ENTITY_ROTATION = (  entity,  pitch,  roll,  yaw,  rotationOrder,  p
 natives.GET_ENTITY_HEIGHT_ABOVE_GROUND = (  entity) => mp.game.invoke("0x1DD55701034110E5", entity); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 natives.WORLD3D_TO_SCREEN2D = ( worldX,  worldY,  worldZ,  screenX,  screenY) => mp.game.invoke("0x34E82F05DF2974F5", worldX,  worldY,  worldZ,  screenX,  screenY); // GET_ENTITY_HEIGHT_ABOVE_GROUND
 module.exports = natives;
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (setImmediate){
 
 class objCreator {
@@ -10643,7 +10795,7 @@ mp.events.add("server:objects:delete", function(identifier) {
 
 module.exports = objCreator;
 }).call(this,require("timers").setImmediate)
-},{"timers":2}],17:[function(require,module,exports){
+},{"timers":2}],19:[function(require,module,exports){
 // https://github.com/glitchdetector/fivem-minimap-anchor
 function getMinimapAnchor() {
     let sfX = 1.0 / 20.0;
@@ -10668,7 +10820,7 @@ function getMinimapAnchor() {
 module.exports = {
     minimap_anchor: getMinimapAnchor
 }
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
     let nVector = new mp.Vector3(this.x, this.y, this.z);
     let degrees = (rz + rot) * (Math.PI / 180);
@@ -10809,7 +10961,7 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var CEFHud = require("./browser.js").hud;
 var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
@@ -10952,7 +11104,7 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{"./browser.js":4}],20:[function(require,module,exports){
+},{"./browser.js":5}],22:[function(require,module,exports){
 var marker_data = [];
 
 function drawMarker(id) {
@@ -11008,7 +11160,7 @@ mp.events.add("server:world:disablemarker", (id) => {
 	marker_data[id] = undefined;
 	delete marker_data[id];
 });
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){
 let enum_count = 0;
 var enums = {
@@ -11016,9 +11168,10 @@ var enums = {
     EMAIL_ALREADY_IN_USE:enum_count++,
     EMAIL_USERNAME_IN_USE:enum_count++
 }
+
 Object.keys(enums).forEach(function(key, value) {
 	global[key] = enums[key];
 })
 module.exports = enums;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[7]);
+},{}]},{},[8]);

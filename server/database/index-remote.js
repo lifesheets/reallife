@@ -24,7 +24,7 @@ const sequelize = new Sequelize("reallife", 'root', '1234567890', {
 	timestamps: false
 });
 
-var estate = require("./estate.js")(sequelize);
+var house = require("./house.js")(sequelize);
 var account = require("./account.js")(sequelize);
 var vehicle = require("./vehicle.js")(sequelize);
 sequelize.authenticate().then(() => {
@@ -40,5 +40,5 @@ module.exports = {
 	Op: Op,
 	account: account,
 	vehicle: vehicle,
-	estate: estate
+	house: house
 }
