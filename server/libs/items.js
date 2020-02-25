@@ -15,7 +15,31 @@ var classes = {
 	"Waffen": [WEAPON_M4],
 	"Nahrung": [FOOD_MELON],
 }
-classes.getClass = function(item) {
-	return 0
+
+
+var weights = [];
+weights[WEAPON_M4] = 1.3;
+weights[FOOD_MELON] = 0.2;
+
+function getWeight(item) {
+	return weights[item] || 1;
 }
-module.exports = {items:items,classes:classes};
+
+
+classes.getClass = function(itemid) {
+
+	return Object.keys(classes).find(e => {
+		return classes[e].indexOf(itemid) > -1;
+	});
+}
+names.getName = function(item) {
+	return Object.keys(names).find(e => {
+		return names[e] == item.itemid;
+	});
+}
+names.getID = function(name) {
+	return names.find((e,i) => {
+		return i == name;
+	});
+}
+module.exports = {items:items,classes:classes,names:names,weights:getWeight};

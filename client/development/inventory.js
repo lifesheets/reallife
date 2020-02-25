@@ -114,7 +114,7 @@ mp.events.add("cef:inventory:ready", () => {
 	storageSpace = new storage(73, "body", "Kofferraum")
 	storageSpace.weight = 200;
 	inventory.load(sample_inventory)
-		console.log("created")
+	console.log("created")
 });
 
 
@@ -122,9 +122,10 @@ mp.events.add("cef:inventory:ready", () => {
 mp.events.add("cef:inventory:use", (target,items) => {
 	if (!mp.loggedIn) return;
 
-
+	console.log("items",items);
 });
 mp.events.add("server:inventory:load", (target,items) => {
+	console.log("mp.loggedIn",mp.loggedIn);
 	if (!mp.loggedIn) return;
 	console.log("server:inventory:load",items);
 	if (storage_units[target.toLowerCase()]) {

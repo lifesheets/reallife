@@ -1202,6 +1202,20 @@ if (typeof mp == "undefined") {
 		id: "SN8472093",
 		type: "Waffe",
 		weight: 1.3
+	}, {
+		image: "../../source/img/assault_rifle.png",
+		name: "Assault Sturmgewehr",
+		count: 1,
+		id: "SN8472091",
+		type: "Waffe",
+		weight: 1.3
+	}, {
+		image: "../../source/img/heavy-revolver.png",
+		name: "Heave Revolver",
+		count: 1,
+		id: "SN847202",
+		type: "Waffe",
+		weight: 1.3
 	}])
 	kofferraum.toggle(true)
 }
