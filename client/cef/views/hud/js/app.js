@@ -6,6 +6,20 @@ window.onkeyup = function(e) {
 window.onkeydown = function(e) {
     keys[e.keyCode] = true;
 }
+
+function lerp(value1, value2, amount) {
+    amount = amount < 0 ? 0 : amount;
+    amount = amount > 1 ? 1 : amount;
+    return value1 + (value2 - value1) * amount;
+}
+Math.clamp = function(value, min, max) {
+    if (value < min) {
+        return min;
+    } else if (value > max) {
+        return max;
+    }
+    return value;
+};
 const aspects = {
     width: 150,
     height: 150
@@ -184,14 +198,71 @@ function percentToRadians(percentage, offset = 270) {
 }
 var engine_image = new Image();
 engine_image.src = "./css/engine.svg"
+var heading_delta = undefined;
+var speed_delta = undefined;
 
-function clearTacho() {
+
+
+
+
+    let mul = 0;
+function drawTacho(speed, heading) {
+    console.log("heading", heading);
+    let transform = "";
+    if (heading_delta == undefined) heading_delta = heading;
+    if (speed_delta == undefined) speed_delta = speed;
+    let diffX = heading_delta - heading;
+    if (diffX < 0) {
+        let xdeg = lerp(0, 12, 1 / 15 * ((diffX*-1)*10))
+        transform = `rotateY(-${xdeg}deg)`
+    } else {
+        let xdeg = lerp(0, 12, 1 / 15* ((diffX)*10))
+        transform = `rotateY(${xdeg}deg)`
+    }
+    if (speed > speed_delta){
+        mul+=1;
+        let ydeg = lerp(0, 25, 1 / 30* mul)
+        transform += `rotateX(${ydeg}deg)`
+    } else {
+        mul -= 1;
+    }
+    console.log("speed",speed);
+    console.log("speed_delta",speed_delta);
+    speed_delta = speed;
+
+
+
+
+//rotateX(25deg)
+    heading_delta = heading;
+    $("#tacho").css('transform', transform);
+    //transform: rotateX(25deg) rotateY(0deg);
+    // perspective: 15vh;
+    // transform
+    let context = document.getElementById("tacho_canvas").getContext('2d');
+    let width = $("#tacho_canvas").width();
+    let height = $("#tacho_canvas").height();
+    let centerX = width / 2;
+    let centerY = height / 2;
+    context.beginPath();
+    context.fillStyle = `rgba(220, 220, 220,0.8)`;
+    context.font = (0.1 * (width + height)) + 'px Technology';
+    context.textAlign = "center";
+    context.textBaseline = 'middle';
+    context.shadowBlur = 15;
+    context.shadowColor = "rgba(0,0,0,1)";
+    context.fillText(Math.floor(speed), centerX, centerY);
+    context.closePath();
+}
+
+function clearTacho1() {
+    let context = document.getElementById("tacho_canvas").getContext('2d');
     let width = $("#tacho_canvas").width();
     let height = $("#tacho_canvas").height();
     context.clearRect(0, 0, width, height);
 }
 
-function drawTacho(speed, fuel = 0, maxSpeed = 250) {
+function drawTacho1(speed, fuel = 0, maxSpeed = 250) {
     let context = document.getElementById("tacho_canvas").getContext('2d');
     let width = $("#tacho_canvas").width();
     let height = $("#tacho_canvas").height();
@@ -437,7 +508,6 @@ function updateCash(nCash) {
             $("#hand_cash").html("$" + formatMoney(stepValue, 0, ",", "."));
         }
     });
-
     cur_cash = nCash;
 }
 

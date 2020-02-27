@@ -11,6 +11,7 @@ class Account extends EventEmitter {
 		this.player = this.parent.player;
 		this.data = false;
 		this.loggedIn = false;
+		this.available = true;
 	}
 	get id() {
 		return this.data.uid ? this.data.uid : -1;
@@ -19,7 +20,9 @@ class Account extends EventEmitter {
 		return this.loggedIn ? this.loggedIn : false;
 	}
 	async login(username, password) {
-		console.log("register route",username,password);
+		if (!this.available) return;
+		console.log("register route", username, password);
+		this.available = false;
 		return new Promise((resolve, reject) => {
 			AccountDB.findOne({
 				where: {
@@ -27,31 +30,33 @@ class Account extends EventEmitter {
 				}
 			}).then(pAccount => {
 				//console.log("Account exists and found",pAccount);
+				this.available = true;
 				if (pAccount == null) {
 					console.log("account not exists", pAccount);
 					return reject("account not exists");
 				} else {
-					console.log("account exists" );
+					console.log("account exists");
 					bcrypt.compare(password, pAccount.dataValues.password).then((res) => {
 						if (res == true) {
 							this.data = pAccount.dataValues;
 							this.loggedIn = true;
 							this.player.setVariable("loggedIn", true);
-
 							return resolve(pAccount.dataValues);
 						} else {
 							return reject(e.PASSWORD_WRONG);
-
 						}
 					});
 				}
 			}).catch(err => {
+				this.available = true;
 				console.log("[ERR]Error", err);
 			})
 		})
 	}
 	async register(username, password, email) {
-		console.log("register route",username,password,email);
+		if (!this.available) return;
+		console.log("register route", username, password, email);
+		this.available = false;
 		return new Promise(async (resolve, reject) => {
 			AccountDB.findOne({
 				where: {
@@ -79,16 +84,20 @@ class Account extends EventEmitter {
 						console.log("Account created", e.dataValues);
 						this.data = e.dataValues;
 						this.loggedIn = true;
+						this.available = true;
 						return resolve(e.dataValues);
 					}).catch((err) => {
 						console.log("Error Creating account", err);
+						this.available = true;
 						return reject(err);
 					})
 				} else {
 					console.log("account exists", pAccount.dataValues);
+					this.available = true;
 					return reject(e.EMAIL_USERNAME_IN_USE);
 				}
 			}).catch(err => {
+				this.available = true;
 				console.log("[ERR]Err", err);
 				/*bcrypt.hash(password, saltSecurity).then((pwHash) => {
 

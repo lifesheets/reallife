@@ -291,10 +291,17 @@ body {
 }
 #tacho {
     position: absolute;
-    transform: translate(-100%, 0%) rotate3d(0, 1, 0, 0deg);
-    left: 100%;
+    left: calc(50% - 19vh);
     margin: auto;
     bottom: 0%;
-    width: 28vh;
-    height: 28vh;
+    width: 38vh;
+    height: 14vh;
+
+    background: rgba(150,150,100,0.9);
+
+    transition: all 100ms linear;
+        /* transform: m-style: preserve-3d; */
+    transform: rotateX(25deg) rotateY(0deg);
+    perspective: 15vh;
+
 }

@@ -10979,17 +10979,22 @@ var updateThreshold = 500;
 var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
+var lastSpeed = 0;
 mp.events.add("render", () => {
     // tacho
     if (mp.cache["hud_ready"]) {
         if (mp.players.local.isInAnyVehicle(false)) {
-            let speed = mp.players.local.vehicle.getSpeed() * 3.6;
-            CEFHud.call("drawTacho", speed, 90, 180);
-            isTachoVisible = true;
+            let speed = (mp.players.local.vehicle.getSpeed() * 3.6).toFixed(10);
+            //if (lastSpeed != speed) {
+
+                CEFHud.call("drawTacho", speed, mp.players.local.vehicle.getHeading());
+                isTachoVisible = true;
+              //  lastSpeed = speed;
+            //}
             //return;
         } else {
             if (isTachoVisible) {
-                CEFHud.call("clearTacho");
+                //CEFHud.call("clearTacho");
                 isTachoVisible = false;
             }
         }

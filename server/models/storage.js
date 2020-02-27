@@ -8,6 +8,7 @@ var items = require("../libs/items.js").items;
 var classes = require("../libs/items.js").classes;
 var itemnames = require("../libs/items.js").names;
 var weight = require("../libs/items.js").weights;
+var unique = require("../libs/items.js").unique;
 var id_count = 0;
 
 function* getUID() {
@@ -50,31 +51,77 @@ function* getUID() {
 	type: "Waffe",
 	weight: 1.3
 }]*/
+class SubItem extends EventEmitter {
+	constructor(subData, parent) {
+		this.data = subData;
+		this.parent = parent;
+		console.log("SubItem of Parent", parent.uid, "SubData", subData);
+	}
+}
 class Item extends EventEmitter {
-	constructor(db_handle) {
-		if (!db_handle) throw new Error("Item has no handle");
+	constructor(db_handle, data) {
+		console.log("db_handle", db_handle);
+		console.log("data", data);
+		if ((!db_handle) && (!data)) throw new Error("Item has no handle/data");
 		super();
 		this.uid = getUID().next().value; // unique stack id for instance
-		this.db_handle = db_handle;
+		if (!db_handle && data) {
+			this.create(data);
+		}
+		this.last_saved = 0;
+		this.db_handle = db_handle || undefined;
+		this.cache = undefined;
 		console.log("this.uid", this.uid);
 	}
-	save() {
-		if (this.db_handle) this.db_handle.save();
-		return new Error("no db handle");
+	get isItem() {
+		return true;
+	}
+	get created() {
+		return this.db_handle != undefined;
+	}
+	set db(d) {
+		this.db_handle = d;
 	}
 	get db() {
 		return this.db_handle;
 	}
+	async destroy() {
+		// todo selfdescuct
+		return true;
+	}
+	create(data) {
+		StorageItems.create({
+			"owner_id": data.owner_id,
+			"itemid": data.itemid,
+			"count": data.count,
+			"data": JSON.stringify(data.data)
+		}).then(gItem => {
+			this.db = gItem;
+			return gItem;
+		}).catch(err => {
+			return new Error("Error creating Item", err);
+			return false;
+		})
+	}
+	async save() {
+		if (this.db_handle) {
+			this.last_saved = Date.now();
+			await this.db_handle.save();
+			return;
+		}
+		return new Error("no db handle");
+	}
 	get itemid() {
-		console.log("this.db_handle", this.db_handle.itemid)
 		return this.db_handle.itemid
 	}
+	get class() {
+		let c = classes.getClass(this.itemid);
+		return c
+	}
 	get name() {
-		console.log("this.db_handle", this.db_handle.itemid)
 		return itemnames.getName(this.db_handle);
 	}
 	get data() {
-		console.log("this.db_handle.data", this.db_handle.data)
 		return JSON.parse(this.db_handle.data);
 	}
 	set data(d) {
@@ -92,60 +139,41 @@ class Item extends EventEmitter {
 	}
 	validate(change_to) {
 		if (!change_to) change_to = this;
-		let data_length = change_to.data.length;
-		console.log("data_length", data_length);
-		console.log("this.count", this.count);
-		if (data_length != this.count) {
-			return false;
-		}
+		if (this.itemid != change_to.itemid) return false;
 		return true;
 	}
-	merge(object) {
+	async merge(object) {
+		if (!this.validate(object)) return;
+		console.log("merge with", object);
+		this.count += object.count;
+		this.data = this.data.concat(object.data);
+		if (object.isItem) {
+			console.log("Is item");
+			await object.destroy();
+		}
 		console.log("merge", object);
-		this.save();
+		await this.save();
 	}
 	use() {}
 	parse() {}
-
-
 	update() {
 		//if ()
-
-
 	}
 	minify() {
 		if (!this.validate()) return;
-		let m = [];
 		console.log(typeof this.data);
-		if (Array.isArray(this.data)) {
-			this.data.forEach(e => {
-				console.log("weight", this.weight);
-				let c = {};
-				c.name = this.name;
-				c.count = 1;
-				c.type = classes.getClass(this.itemid);
-				if (e.id) {
-					c.id = e.id;
-				}
-				c.weight = this.weight;
-				c.uid = this.uid;
-				c.data = e;
-				m.push(c)
-			})
-		} else {
-			let c = {};
-			c.name = this.name;
-			c.count = this.count;
-			c.type = classes.getClass(this.itemid);
-			if (this.data.id) {
-				c.id = this.data.id;
-			}
-			c.weight = this.weight;
-			c.uid = this.uid;
-			c.data = this.data;
-			m.push(c)
+		let c = {};
+		c.name = this.name;
+		c.count = this.count;
+		c.type = classes.getClass(this.itemid);
+		c.weight = this.weight;
+		c.uid = this.uid;
+		if (this.data.length > 1) {
+			c.data = JSON.stringify(this.data);
+		} else if (this.data.length == 1) {
+			c.id = this.data[0].id;
 		}
-		return m;
+		return c;
 	}
 }
 class ItemManager {
@@ -153,13 +181,15 @@ class ItemManager {
 		this.parent = parent;
 		this.player = parent.player;
 		this._items = [];
-		console.log("Player ItemManager constructor")
+		console.log("ItemManager constructor")
 	}
 	getHandle(item) {
-		let handle = this._items.find((e) => {
+		return this._items.find(e => {
 			return e.uid == item.uid;
 		})
-		return handle
+	}
+	remove(uid) {
+		//todo remove item by uid
 	}
 	get items() {
 		return this._items;
@@ -167,49 +197,40 @@ class ItemManager {
 	get render_items() {
 		let ritems = [];
 		this.items.forEach(item => {
-			let minified = item.minify();
-			minified.forEach(e => {
-				ritems.push(e);
-			})
+			if (item.created) {
+				ritems.push(item.minify());
+			}
 		});
 		return ritems;
+	}
+	getItemByID(itemid) {
+		return this._items.find(e => {
+			return e.itemid == itemid;
+		})
 	}
 	modifyItem(tomerge) {
 		console.log("TODO MODIFY ITEM");
 	}
 	async addItem(iData) {
+		if (iData.itemid == undefined) throw new Error("itemid not defined");
 		iData.owner_id = this.parent.id;
-		StorageItems.findOne({
-			where: {
-				owner_id: iData.owner_id,
-				itemid: iData.itemid
-			}
-		}).then(pItem => {
-			console.log("pItem", pItem != null);
-			if (pItem == null) {
-				StorageItems.create({
-					"owner_id": iData.owner_id,
-					"itemid": iData.itemid,
-					"count": iData.count,
-					"data": JSON.stringify(iData.data)
-				}).then((gItem) => {
-					let cItem = new Item(gItem);
-					this._items.push(cItem);
-					console.log("cItem", cItem);
-					return cItem;
-				})
-			} else {
-				let cItem = this.getHandle(pItem);
-				if (!cItem) {
-					cItem = new Item(pItem);
-					this._items.push(cItem);
-				}
-				cItem.merge(iData);
-				console.log("mergin items", cItem, iData);
-				//pAccount
-				return cItem;
-			}
-		});
+		let pItem = this.getItemByID(iData.itemid);
+		let cItem;
+		if (!unique(classes.getClass(iData.itemid)) && pItem) {
+			// merge items;
+			cItem = await pItem.merge(iData)
+		} else {
+			// create new
+			console.log("create");
+			cItem = new Item(undefined, iData);
+			this._items.push(cItem);
+		}
+		console.log("added item",iData);
+		return cItem;
+	}
+	sync() {
+		if (!this.player) return;
+		this.player.call("server:inventory:load", ["Inventar", this.render_items])
 	}
 	load() {
 		if (!this.parent.account.loggedIn) return;
@@ -221,13 +242,15 @@ class ItemManager {
 			this._items = [];
 			console.log("items", items);
 			items.forEach(i => {
-				let cItem = new Item(i);
+				let cItem = new Item(i, undefined);
 				this._items.push(cItem);
 			})
 			console.log(this._items);
 			//server:inventory:load
 			//server:inventory:load
-			this.player.call("server:inventory:load", ["Inventar", this.render_items])
+			if (this.player) {
+				this.player.call("server:inventory:load", ["Inventar", this.render_items])
+			}
 		}).catch(err => {
 			console.log("error fetching items", err);
 		})
@@ -241,14 +264,13 @@ mp.events.addCommand("list", (player, fullText, ...args) => {
 		console.log(item.minify())
 	})
 });
-mp.events.addCommand("addItem", (player, fullText, ...args) => {
-	player.interface.inventory.addItem({
+mp.events.addCommand("a", async (player, fullText, ...args) => {
+	await player.interface.inventory.addItem({
 		count: 1,
-		itemid: WEAPON_M4,
-		data: [{
-			id: Math.random() * 100
-		}]
+		itemid: parseInt(args[0]),
+		data: []
 	});
+	player.interface.inventory.sync();
 });
 /*DEBUG*/
 module.exports = {

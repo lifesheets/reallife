@@ -81,9 +81,9 @@ var ContextHandler = new class extends EventTarget{
 	}
 	deleteDropable(selector) {
 		selector = selector.replace("#", "");
-		console.log("deleteDropable", selector)
+		//console.log("deleteDropable", selector)
 		if (this._registeredTargets[selector]) {
-			console.log("dropable exists and is registered");
+			//console.log("dropable exists and is registered");
 			this._registeredTargets[selector] = null;
 			delete this._registeredTargets[selector];
 		}
@@ -171,10 +171,10 @@ var ContextHandler = new class extends EventTarget{
 		});
 	}
 	action(what) {
-		console.log("do action", what);
+		//console.log("do action", what);
 		let item = this._contextItemData;
 		if (item) {
-			console.log("item", item);
+			//console.log("item", item);
 			//mp.trigger("Storage:Action", what, this._origin, item.id)
 
 			this.emit("onItemAction", {
@@ -201,10 +201,10 @@ var ContextHandler = new class extends EventTarget{
 		lastInteraction = Date.now();
 	}
 	closeOutOfBounds(event) {
-		console.log("event", event);
-		console.log("parents", $(event.target));
+		//console.log("event", event);
+		//console.log("parents", $(event.target));
 		if ($(event.target).hasClass("option")) {
-			console.log("Is Option")
+			//console.log("Is Option")
 		} else {
 			this.close();
 		}
@@ -235,7 +235,7 @@ var ContextHandler = new class extends EventTarget{
 			top: event.clientY,
 			left: event.clientX
 		})
-		console.log(this.getOptions(item_data));
+		//console.log(this.getOptions(item_data));
 		this.contextmenu_Div.html(this.getOptions(item_data))
 		this.contextmenu_Div.show();
 		setTimeout(() => {
@@ -374,9 +374,9 @@ var DragHandler = new class {
 	}
 	deleteDropable(selector) {
 		selector = selector.replace("#", "");
-		console.log("deleteDropable", selector)
+		//console.log("deleteDropable", selector)
 		if (this._registeredTargets[selector]) {
-			console.log("dropable exists and is registered");
+			//console.log("dropable exists and is registered");
 			this._registeredTargets[selector] = null;
 			delete this._registeredTargets[selector];
 		}
@@ -399,7 +399,7 @@ var DragHandler = new class {
 			left: 0
 		}
 		//}
-		console.log("event", $(event.currentTarget).parents("body"))
+		//console.log("event", $(event.currentTarget).parents("body"))
 		$(this._sampleItem).html($(item).html());
 		$(this._sampleItem).addClass("drag")
 		$(this._sampleItem).css({
@@ -414,11 +414,11 @@ var DragHandler = new class {
 		this._sampleShadow.css({
 			'display': "block"
 		});
-		console.log("Prep");
+		//console.log("Prep");
 	}
 	Handle(event, item, origin) {
 		let self = this;
-		console.log("receive Handle Job", event, item, origin)
+		//console.log("receive Handle Job", event, item, origin)
 		let cursor = {
 			top: event.clientY,
 			left: event.clientX
@@ -428,13 +428,13 @@ var DragHandler = new class {
 		// item mouse offset
 		//let offset_top = cursor.top - ($(item).offset().top - this.delta_offset.top);
 		//let offset_left = cursor.left - ($(item).offset().left - this.delta_offset.left);
-		console.log("offset_top", offset_top);
-		console.log("offset_left", offset_left);
+		//console.log("offset_top", offset_top);
+		//console.log("offset_left", offset_left);
 		this._item_data = $(item).data("item");
-		console.log("itemData", this._item_data)
+		//console.log("itemData", this._item_data)
 		this._offset.top = offset_top;
 		this._offset.left = offset_left;
-		console.log($(item).attr("style"));
+		//console.log($(item).attr("style"));
 		$(this._sampleItem).html($(item).html());
 		this._dragging = true;
 		$(this._sampleItem).addClass("drag")
@@ -443,10 +443,10 @@ var DragHandler = new class {
 			'left': ($(item).offset().left - this.delta_offset.left) + "px",
 			'opacity': "1"
 		});
-		console.log("origin", origin);
+		//console.log("origin", origin);
 		let remainCount = 0;
-		console.log("isCTRL", controlDown) // Half
-		console.log("isShift", shiftDown) // One
+		//console.log("isCTRL", controlDown) // Half
+		//console.log("isShift", shiftDown) // One
 		if ((this._item_data.count > 1) && (shiftDown)) {
 			remainCount = this._item_data.count - 1;
 			this._item_data.count = 1;
@@ -455,12 +455,12 @@ var DragHandler = new class {
 			remainCount = Math.ceil(this._item_data.count / 2);
 			this._item_data.count = Math.floor(this._item_data.count / 2);
 		}
-		console.log("remainCount", remainCount);
+		//console.log("remainCount", remainCount);
 		if (remainCount != 0) {
 			origin.modifyItem(this._item_data, {
 				count: Math.floor(remainCount)
 			})
-			console.log("x");
+			//console.log("x");
 			$(this._sampleItem).find(".c").html(this._item_data.count)
 		} else {
 			origin.removeItem(this._item_data)
@@ -544,7 +544,7 @@ var StorageHandler = class extends EventTarget {
 	        <div class="items"></div>
 	        <div class="weight"></div>
 	    </div>`)
-		console.log("this.element", this.element);
+		//console.log("this.element", this.element);
 		this._rows = 0;
 		this._cells = 0;
 		this._wasDown = 0;
@@ -559,8 +559,8 @@ var StorageHandler = class extends EventTarget {
 			}
 			let offset_top = cursor.top - $(event.currentTarget).offset().top;
 			let offset_left = cursor.left - $(event.currentTarget).offset().left;
-			console.log("offset_top", offset_top);
-			console.log("offset_left", offset_left);
+			//console.log("offset_top", offset_top);
+			//console.log("offset_left", offset_left);
 			$(document).find(".storage").each(function(t, e) {
 				$(e).css({
 					"z-index": 1
@@ -584,7 +584,7 @@ var StorageHandler = class extends EventTarget {
 				cTarget = $(event.currentTarget).parents(".item")[0];
 			}
 			if (cTarget) {
-				console.log("f");
+				//console.log("f");
 				let data = $(cTarget).data("item");
 				if (data) {
 					//ContextHandler.open(event, cTarget, self._rawSelector);
@@ -601,9 +601,9 @@ var StorageHandler = class extends EventTarget {
 			if (ContextHandler.busy == true) return;
 			if (DragHandler.busy == true) return;
 			event.preventDefault();
-			console.log(event);
+			//console.log(event);
 			if (event.button != 0) return;
-			console.log("mousedown check3");
+			//console.log("mousedown check3");
 			let cTarget = event.currentTarget;
 			if ($(event.currentTarget).hasClass("item") == false) {
 				cTarget = $(event.currentTarget).parents(".item")[0];
@@ -640,8 +640,8 @@ var StorageHandler = class extends EventTarget {
 					}
 				}
 				let uEvent = (event) => {
-					console.log("event");
-					console.log("clek");
+					//console.log("event");
+					//console.log("clek");
 					if (this._wasDown == 0) {
 						this._wasDown = 1;
 						this.emit("onItemClick", {
@@ -661,7 +661,7 @@ var StorageHandler = class extends EventTarget {
 				$(window).mouseup(uEvent);
 			}
 			//onItemDragStart
-			console.log(cTarget);
+			//console.log(cTarget);
 		});
 		DragHandler.registerDropable(this, this.name.toLowerCase());
 		ContextHandler.registerDropable(this, this.name.toLowerCase());
@@ -707,25 +707,46 @@ var StorageHandler = class extends EventTarget {
 		$(window).mousemove(lEvent);
 	}
 	cells() {
+		//console.log("cells");
 		let body = $("#" + this.name.toLowerCase() + " .grid");
 		let window_width = $("#" + this.name.toLowerCase()).width();
 		let window_height = $("#" + this.name.toLowerCase()).height();
-		let max_rows = Math.ceil(window_height / cell_size);
-		console.log("max_rows", max_rows);
+		//if (this.native_height) {
+		//	window_height = this.native_height;
+		//}
+		console.log("height",this.name,window_height);
+		//console.log("window_height",window_height);
+		let max_height_rounds = Math.ceil(window_height / cell_size);
+		//console.log("max_rows", max_rows);
+		//console.log("cell_size", cell_size);
 		let cell_count = Math.ceil(window_width / cell_size);
 		this.cell_count = cell_count;
-		console.log("cell_count", cell_count);
+		//console.log("cell_count", cell_count);
+
+
+		$(body).html("");
 		$("html").attr("style", "--cell_width:" + cell_size + "px")
-		body.html("");
 		//this.items.length = 1;
-		let mRows = this.maxRows != 0 ? this.maxRows : (((this.items.length / cell_count) >= max_rows) && (this.maxRows == 0)) ? (Math.ceil((this.items.length + 1) / cell_count)) : max_rows;
+		console.log("max_rows",this.name,max_height_rounds);
+		console.log("this.maxRows",this.name,this.maxRows);
+		console.log("this.items",this.name,this.items.length,this.items);
+		console.log("cell_count",this.name,cell_count);
+		let mRows = this.maxRows != 0 ? this.maxRows : (Math.ceil((this.items.length + 1) / cell_count));
+
+		if ((max_height_rounds-1) > mRows) {
+			mRows = max_height_rounds-1;
+		}
+
+
+		//console.log("mRows",mRows);
 		if (mRows <= 0) mRows = 1;
 		this._rows = mRows;
+		console.log("this._rows",this.name,this._rows);
 		this._cells = cell_count;
 		let largest_row = this.items.find(e => {
 			return e.row > this._rows;
 		});
-		console.log("largest_row", largest_row);
+		//console.log("largest_row", largest_row);
 		if (largest_row != undefined) {
 			this._rows = largest_row.row;
 		}
@@ -734,6 +755,8 @@ var StorageHandler = class extends EventTarget {
 				$(body).append("<div class='cell' data-cell='" + cell + "' data-row='" + row + "' ></div>")
 			}
 		}
+		//this.native_height = window_height;
+		//console.log("native height",this.native_height);
 	}
 	removeItemBySlot(gCell, gRow) {
 		let isOccupied = this.items.findIndex(item => {
@@ -784,10 +807,10 @@ var StorageHandler = class extends EventTarget {
 			};
 			dimensions = $(slot).width();
 		}
-		console.log("top_left", top_left);
+		//console.log("top_left", top_left);
 		let position = top_left;
 		position.top += (gRow - 1) * dimensions;
-		console.log("top", position);
+		//console.log("top", position);
 		return position
 	}
 	getAbsoluteBySlot(gCell, gRow) {
@@ -839,10 +862,12 @@ var StorageHandler = class extends EventTarget {
 		return c;
 	}
 	drawweight() {
+		//console.log("drawweight");
 		let w = $("#" + this.name.toLowerCase() + " .weight");
 		$(w).width((100 / this.max_weight * this.cur_weight) + "%")
 	}
 	render() {
+		//console.log("render");
 		let body = $("#" + this.name.toLowerCase() + " .items");
 		this.cells();
 		this.drawweight();
@@ -888,6 +913,7 @@ var StorageHandler = class extends EventTarget {
 		}));
 	}
 	canFit(cell, row, item_data) {
+		//console.log("canFit",cell, row, item_data);
 		let name = generateName(item_data);
 		if (this.isSlotFree(cell, row)) return true;
 		let slot = this.getSlot(cell, row);
@@ -896,43 +922,46 @@ var StorageHandler = class extends EventTarget {
 		return false;
 	}
 	hasItem(data) {
+		//console.log("hasItem",data);
 		let slot = this.items.find(item => {
 			return generateName(item) == generateName(data);
 		})
 		return slot !== undefined ? slot : false;
 	}
 	addItem(item_data) {
+		//console.log("addItem",item_data);
 		let item_origin = this.hasItem(item_data);
 		if (item_origin) {
-			console.log("item_data", item_data);
-			console.log("item_origin", item_origin);
+			//console.log("item_data", item_data);
+			//console.log("item_origin", item_origin);
 			item_origin.count += item_data.count;
 		} else {
-			console.log("new item");
+			//console.log("new item");
 			if (this.canFit(item_data.cell, item_data.row, item_data)) {
 				this.items.push(item_data);
 			} else {
 				return false;
 			}
 		}
-		console.log("addItem", true)
+		//console.log("addItem", true)
 		this.render();
 		return true;
 	}
 	removeItem(item_data) {
+		//console.log("removeItem",item_data);
 		let isOccupied = this.items.findIndex(item => {
 			return item.cell !== undefined && item.row !== undefined && item.cell == item_data.cell && item.row == item_data.row && generateName(item) == generateName(item_data) && item.count == item_data.count;
 		})
 		this.items.splice(isOccupied, 1)
-		console.log((this.items.length / this.cell_count) <= this._rows)
+		//console.log((this.items.length / this.cell_count) <= this._rows)
 		if ((this.items.length / this.cell_count) <= this._rows) {
 			this.cells();
-			console.log("render new cells");
+			//console.log("render new cells");
 		}
 		this.render();
 	}
 	modifyItem(item_data, mod) {
-		console.log("modifyItem(item_data,mod)", item_data, mod);
+		//console.log("modifyItem(item_data,mod)", item_data, mod);
 		let item_origin = this.hasItem(item_data);
 		if (item_origin) {
 			Object.assign(item_origin, mod);
@@ -940,21 +969,24 @@ var StorageHandler = class extends EventTarget {
 		};
 	}
 	async load(items = []) {
+		//console.log("load",items);
 		let self = this;
 		this.items = items;
-		console.log("items", this.items);
+		//console.log("items", this.items);
 		let cell_count = Math.ceil($("#" + this.name.toLowerCase()).width() / cell_size);
 		this.cell_count = cell_count;
 		if ((this.items.length > cell_count * this.maxRows) && (this.maxRows != 0)) {
-			console.log("splice")
+			//console.log("splice")
 			this.items.splice(7, this.items.length)
 		}
-		console.log("this.selector", this.name);
-		console.log("this.items", this.items);
+		//console.log("this.selector", this.name);
+		//console.log("this.items", this.items);
 		this.render();
 		//this.toggle();
 	}
+
 	toggle(toggled = false) {
+		//console.log("toggle",toggled);
 		this._toggled = toggled;
 		$("#" + this.name.toLowerCase()).css({
 			"display": this._toggled ? "block" : "none"
@@ -974,19 +1006,19 @@ var StorageHandler = class extends EventTarget {
 var CustomStorageHandler = class extends StorageHandler {
 	constructor(selector, name, options) {
 		super(selector, name, 0);
-		console.log(this);
+		//console.log(this);
 	}
 	render() {}
 	cells() {}
 }
 // Initialise Waves with the config
 document.addEventListener("init", function(e) {
-	console.log("event", e)
+	//console.log("event", e)
 });
 document.addEventListener("onItemClick", function(e) {
-	console.log("event", e)
+	//console.log("event", e)
 	let target = e.detail.target;
-	console.log($(target).find("img"));
+	//console.log($(target).find("img"));
 	let item_data = $(target).data("item");
 	let position = e.detail.eventData.originalEvent;
 	jQuery({
@@ -1011,7 +1043,7 @@ document.addEventListener("onItemClick", function(e) {
 					});
 				},
 				done: function() {
-					console.log("trigger item use", item_data);
+					//console.log("trigger item use", item_data);
 					//mp.trigger("cef:inventory:ready", item_data);
 				},
 				duration: 50
@@ -1021,33 +1053,33 @@ document.addEventListener("onItemClick", function(e) {
 	}, 'linear');
 });
 document.addEventListener("onItemDragStart", function(e) {
-	console.log("onItemDragStart", e)
+	//console.log("onItemDragStart", e)
 	DragHandler.Handle(e.detail.eventData, e.detail.target, e.detail.origin);
 	//DragHandler
 });
 document.addEventListener("onItemMouseDown", function(e) {
-	console.log("onItemMouseDown", e)
+	//console.log("onItemMouseDown", e)
 	DragHandler.prep(e.detail.eventData, e.detail.target, e.detail.origin);
 	//DragHandler
 });
 document.addEventListener("onItemDragCancel", function(e) {
-	console.log("onItemDragCancel", e)
+	//console.log("onItemDragCancel", e)
 	DragHandler.clear();
 	//DragHandler
 });
 document.addEventListener("onItemContextMenu", function(e) {
-	console.log("onItemContextMenu", e)
+	//console.log("onItemContextMenu", e)
 	//DragHandler
 	ContextHandler.open(e.detail.eventData, e.detail.target, e.detail.origin)
 });
 document.addEventListener("onItemDrop", function(e) {
-	console.log("onItemDrop", e)
+	//console.log("onItemDrop", e)
 });
 document.addEventListener("onItemClick", function(e) {
-	console.log("onItemClick", e)
+	//console.log("onItemClick", e)
 });
 document.addEventListener("onItemAction", function(e) {
-	console.log("onItemAction", onItemAction)
+	//console.log("onItemAction", onItemAction)
 });
 //let eqip = new CustomStorageHandler("body", "Equipment",{
 //	style:"width:300px;height:500px",
@@ -1085,7 +1117,7 @@ function editStorageMaxWeight(selector, max_weight) {
  */
 function loadStorage(selector, items) {
 	if (registeredContainers[selector]) {
-		console.log("load items", items);
+		//console.log("load items", items);
 		registeredContainers[selector].load(items);
 	}
 }
@@ -1100,9 +1132,9 @@ function toggleStorage(selector, state) {
 	}
 }
 var inventory;
-console.log(typeof mp);
+//console.log(typeof mp);
 if (typeof mp == "undefined") {
-	console.log("undefined1")
+	//console.log("undefined1")
 	/*	let rucksack = new StorageHandler("#character_storage", "Rucksack", 1)
 		rucksack.toggle(true);
 		rucksack.weight = 50;*/

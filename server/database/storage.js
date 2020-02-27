@@ -6,12 +6,10 @@ const {
 module.exports = function(sequelize) {
 	return sequelize.define('storage', {
 		owner_id: {
-			type: Sequelize.INTEGER,
-			primaryKey: true
+			type: Sequelize.STRING
 		},
 		itemid: {
-			type: Sequelize.INTEGER,
-			primaryKey: true
+			type: Sequelize.INTEGER
 		},
 		count: {
 			type: Sequelize.INTEGER,
