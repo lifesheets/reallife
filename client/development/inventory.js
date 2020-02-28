@@ -61,18 +61,14 @@ class storage {
 		this._condition = () => {
 			return false;
 		};
-		this.event = `bind_${this.selector}`;
-		this.bind = new Binds(this.event, key);
 		this.key = key;
+		this.id = undefined;
 		this.toggled = false;
 		CEFInventory.call("addUnit", parent, selector, options, max_rows);
-		mp.events.add(this.event, () => {
-			this.toggle();
-		});
 		storage_units[this.selector.toLowerCase()] = this;
 	}
 	toggle() {
-		console.log("load",!this.toggled)
+		console.log("load", !this.toggled)
 		this.toggled = !this.toggled;
 		CEFInventory.call("toggleStorage", this.selector, this.toggled);
 		console.log("toggle", this.toggled)
@@ -86,6 +82,10 @@ class storage {
 		} else {
 			CEFInventory.cursor(false);
 		}
+	}
+	set title(t) {
+		this._title = t;
+		CEFInventory.call("editTitle", this.selector, this._title);
 	}
 	set weight(w = 100) {
 		this._max_weight = w;
@@ -102,32 +102,42 @@ class storage {
 		CEFInventory.call("loadStorage", this.selector, this.items);
 	}
 }
-
 var backpack;
 var inventory;
 var storageSpace;
-mp.events.add("cef:inventory:ready", () => {
-	backpack = new storage(73, "#character_storage", "Rucksack", null, 1)
-	backpack.weight = 100;
-	inventory = new storage(73, "#character_storage", "Inventar")
-	inventory.weight = 400;
-	storageSpace = new storage(73, "body", "Kofferraum")
-	storageSpace.weight = 200;
-	inventory.load(sample_inventory)
+backpack = new storage("#character_storage", "backpack", null, 1)
+backpack.weight = 100;
+backpack.title = "begpek";
+inventory = new storage("#character_storage", "inventory")
+inventory.weight = 400;
+inventory.title = "Inventar";
+storageSpace = new storage("body", "storage")
+storageSpace.weight = 200;
+storageSpace.title = "Lager";
+var disabled = [];
+mp.events.add("server:inventory:init", (id) => {
 	console.log("created")
 });
-
-
-
-mp.events.add("cef:inventory:use", (target,items) => {
-	if (!mp.loggedIn) return;
-
-	console.log("items",items);
+mp.events.add("server:inventory:set", (selector, title, id,state = false) => {
+	//storage_units
+	if (storage_units[selector.toLowerCase()]) {
+		storage_units[selector.toLowerCase()].title = title;
+		storage_units[selector.toLowerCase()].id = id;
+		disabled[selector.toLowerCase()] = !state;
+	}
 });
-mp.events.add("server:inventory:load", (target,items) => {
-	console.log("mp.loggedIn",mp.loggedIn);
+
+
+
+
+mp.events.add("cef:inventory:use", (target, items) => {
 	if (!mp.loggedIn) return;
-	console.log("server:inventory:load",items);
+	console.log("items", items);
+});
+mp.events.add("server:inventory:load", (target, items) => {
+	console.log("mp.loggedIn", mp.loggedIn);
+	if (!mp.loggedIn) return;
+	console.log("server:inventory:load", items);
 	if (storage_units[target.toLowerCase()]) {
 		storage_units[target.toLowerCase()].load(items);;
 	}

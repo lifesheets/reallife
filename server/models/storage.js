@@ -51,6 +51,7 @@ function* getUID() {
 	type: "Waffe",
 	weight: 1.3
 }]*/
+
 class SubItem extends EventEmitter {
 	constructor(subData, parent) {
 		this.data = subData;
@@ -172,10 +173,17 @@ class Item extends EventEmitter {
 			c.data = JSON.stringify(this.data);
 		} else if (this.data.length == 1) {
 			c.id = this.data[0].id;
+			c.data = JSON.stringify(this.data[0]);
 		}
 		return c;
 	}
 }
+class Clothing extends Item{
+	get isItem() {
+		return false;
+	}
+}
+
 class ItemManager {
 	constructor(parent) {
 		this.parent = parent;
@@ -249,7 +257,11 @@ class ItemManager {
 			//server:inventory:load
 			//server:inventory:load
 			if (this.player) {
-				this.player.call("server:inventory:load", ["Inventar", this.render_items])
+
+				this.player.call("server:inventory:set", ["inventory","Inventar",this.parent.id,true])
+				this.player.call("server:inventory:set", ["equipment","Ausrüstung",this.parent.id,true])
+				this.player.call("server:inventory:load", ["inventory", this.render_items])
+
 			}
 		}).catch(err => {
 			console.log("error fetching items", err);
