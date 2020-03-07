@@ -2,6 +2,13 @@ var Animations = require("../libs/animations.js");
 var Interaction = require("../interaction");
 var Vehicle = require("../models/vehicle.js").vehicle;
 var WebHooks = require('node-webhooks')
+var getKeyID = require("../libs/utils.js").getKeyID;
+var getUID = require("../libs/utils.js").getUID;
+var items = require("../libs/items.js").items;
+console.log(getUID.next());
+console.log(getUID.next());
+console.log(getKeyID.next());
+console.log(getKeyID.next());
 var webHooks = new WebHooks({
 	db: './webHooksDB.json', // json file that store webhook URLs
 	httpSuccessCodes: [200, 201, 202, 203, 204], //optional success http status codes
@@ -57,23 +64,20 @@ mp.events.addCommand("rgb", (player, fullText, ...args) => {
 	veh.interface.reloadTunings();
 	veh.interface.save();
 });
-
 mp.events.addCommand("color", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	let f = parseInt(args[0]);
 	let s = parseInt(args[1]);
-	console.log(f,s);
+	console.log(f, s);
 	veh.interface.setTune({
 		"color": {
-			first:f,
-			second:s
+			first: f,
+			second: s
 		}
 	});
 	veh.interface.reloadTunings();
 	veh.interface.save();
 });
-
-
 mp.events.addCommand("neon", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	let r = parseInt(args[0]);
@@ -82,9 +86,9 @@ mp.events.addCommand("neon", (player, fullText, ...args) => {
 	console.log(r, g, b);
 	veh.interface.setTune({
 		"neon": {
-			r:r,
-			g:g,
-			b:b
+			r: r,
+			g: g,
+			b: b
 		}
 	});
 	veh.interface.reloadTunings();
@@ -94,22 +98,21 @@ mp.events.addCommand("tune", (player, fullText, ...args) => {
 	let veh = player.vehicle;
 	let type = parseInt(args[0]);
 	let index = parseInt(args[1]);
-	console.log(type,index);
+	console.log(type, index);
 	veh.interface.setTune({
 		[`mod_${type}`]: {
-			type:type,
-			index:index
+			type: type,
+			index: index
 		}
 	});
 	veh.interface.reloadTunings();
 	veh.interface.save();
 });
-
-
-mp.events.addCommand("veh", (player, fullText, ...args) => {
+mp.events.addCommand("aveh", async (player, fullText, ...args) => {
 	let pos = player.position;
 	let model = args[0];
-	var veh = new Vehicle(player, null, {
+	if (!mp.joaat(model)) return;
+	var veh = new Vehicle(null, null, {
 		"model": model,
 		"x": pos.x,
 		"y": pos.y,
@@ -118,5 +121,17 @@ mp.events.addCommand("veh", (player, fullText, ...args) => {
 		"ry": 0,
 		"rz": 0
 	})
+	veh.on("created", async () => {
+		console.log("created veh");
+		await player.interface.inventory.addItem({
+			count: 1,
+			itemid: items.KEY_VEHICLE,
+			data: [{
+				key_id: veh.key
+			}]
+		});
+		player.interface.inventory.sync();
+		console.log("sync inventory");
+	});
 	console.log("create veh");
 });
