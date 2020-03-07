@@ -3,12 +3,49 @@ var Animations = require("../libs/animations.js");
 var Appearance = require("./appearance.js");
 var Interaction = require("../interaction");
 var Vehicles = require("../database").vehicle;
+var getKeyID = require("../libs/utils.js").getKeyID;
+var iClass = require("../libs/items.js").classes;
+var items = require("../libs/items.js").items;
 var dirt_mul = (30 * 1000) / 15;
+var veh_index = [];
+
+
+
+var WorldVehicles = new class {
+	constructor( ){
+		this._vehicles = [];
+	}
+	has(key_id) {
+		return this._vehicles.find(e => {
+			return e.key == key_id;
+		})
+	}
+	add(key_id = null,id = null, data) {
+		let veh = new Vehicle(key_id ,id , data);
+		this._vehicles.push(veh)
+		return veh;
+	}
+	register(vehicle) {
+		this._vehicles.push(vehicle)
+	}
+	remove(){
+
+	}
+}
+
+
+
+
+
+
+
+
+
 class Vehicle extends EventEmitter {
-	constructor(owner, id, data) {
+	constructor(key_id = null,id = null, data) {
 		super();
-		this.owner = owner;
 		this.id = id;
+		this.key_id = key_id;
 		this.park_position = {
 			x: 0,
 			y: 0,
@@ -30,13 +67,17 @@ class Vehicle extends EventEmitter {
 		} else {
 			this.create(data);
 		}
+		WorldVehicles.register(this);
+	}
+	get key() {
+		return this.key_id;
 	}
 	setTune(data) {
 		this._tuning = Object.assign(this._tuning, data);
 	}
 	create(data) {
 		Vehicles.create({
-			"owner": this.owner.interface.id,
+			"key_id": getKeyID.next().value,
 			"model": data.model,
 			"x": data.x,
 			"y": data.y,
@@ -48,6 +89,7 @@ class Vehicle extends EventEmitter {
 		}).then((mVeh) => {
 			this.id = mVeh.id;
 			this.load();
+
 		})
 	}
 	load() {
@@ -59,6 +101,7 @@ class Vehicle extends EventEmitter {
 			console.log(veh.dataValues);
 			this.db_veh = veh;
 			this.model = this.db_veh.model;
+			this.key_id = this.db_veh.key_id;
 			this.park_position = {
 				x: this.db_veh.x,
 				y: this.db_veh.y,
@@ -69,8 +112,8 @@ class Vehicle extends EventEmitter {
 			};
 			this._tuning = this.db_veh.data ? JSON.parse(this.db_veh.data) : {};
 			//this.player.setVariable("hunger_val", val);
-			this.kmTravel = this.db_veh.kmTravel;
-			this.kmClean = this.db_veh.kmClean;
+			//this.kmTravel = this.db_veh.kmTravel;
+			//this.kmClean = this.db_veh.kmClean;
 			console.log(this._tuning);
 			this.spawn();
 		})
@@ -87,12 +130,27 @@ class Vehicle extends EventEmitter {
 			heading: this.park_position.rz
 		});
 		this.vehicle.interface = this;
-		this.vehicle.numberPlate = "TEST";
-		console.log("spawn set dirt to", (this.kmClean / dirt_mul))
-		this.vehicle.setVariable("dirt_level", (this.kmClean / dirt_mul))
+		this.vehicle.numberPlate = this.key_id;
+		//console.log("spawn set dirt to", (this.kmClean / dirt_mul))
+		//this.vehicle.setVariable("dirt_level", (this.kmClean / dirt_mul))
+		this.vehicle.setVariable("uid", this.id)
+		this.vehicle.setVariable("key_id", this.key_id)
+
+
+
+
+		veh_index[this.id] = this;
+
+
 		this.loadTunes();
 		console.log("spawn", this.vehicle.position);
+		this.emit("created");
 		return this.vehicle;
+	}
+	fuel() {
+		//this._lastKM = 0;
+		//kmTravel
+
 	}
 	respawn() {
 		this.vehicle.destroy();
@@ -163,6 +221,14 @@ class Vehicle extends EventEmitter {
 		let newState = !this.vehicle.locked;
 		this.vehicle.locked = newState;
 	}
+	toggleEngine() {
+		let newState = !this.vehicle.engine;
+		this.vehicle.engine = newState;
+
+		this.vehicle.setVariable("vehicle:engine:status", this.vehicle.engine)
+
+		//vehicle:engine:status
+	}
 }
 mp.events.add("client:vehicle:update", (player, dist) => {
 	console.log("client:vehicle:update", player.name, dist);
@@ -176,15 +242,63 @@ mp.events.add("client:vehicle:update", (player, dist) => {
 		pVeh.setVariable("dirt_level", dirt_level)
 	}
 });
+mp.events.add("client:vehicle:engine", (player) => {
+	console.log("client:vehicle:engine", player.name);
+	// seat player.seat;
+	//let veh_index = veh_index[this.id]
+	let pVeh = player.vehicle;
+	console.log("pVeh",pVeh);
+	if (pVeh.interface) {
+		console.log("has interface");
+		pVeh.interface.toggleEngine();
+	} else {
+
+		let newState = !pVeh.engine;
+		pVeh.engine = newState;
+		pVeh.setVariable("vehicle:engine:status", pVeh.engine)
+	}
+});
+mp.events.add("vehicle:seatbelt:toggle", (player) => {
+	console.log("vehicle:seatbelt:toggle", player.name);
+	player.setVariable("vehicle:seatbelt:status",!player.getVariable("vehicle:seatbelt:status"))
+});
+
+
 class VehicleManager {
 	constructor(parent) {
 		this.parent = parent;
 		this.player = parent.player;
 		this.loadedVehs = [];
 		this.vehicles = [];
+
+
+
+		/* Laod when Inventory is there*/
+		this.parent.inventory.once("server:inventory:load",() => {
+			console.log("server:inventory:load")
+			this.load();
+		})
+		this._keys = [];
+	}
+	set keys(keys) {
+		this._keys = keys;
 	}
 	load() {
 		if (!this.parent.account.loggedIn) return;
+		if (!this.parent.inventory.loaded) return;
+		console.log("VehicleManager load");
+		if (this.player != undefined) {
+			let key = this.parent.inventory.getItemByID(items.KEY_VEHICLE)
+			if (!key) return new Error("key not defined");
+			this._keys = key.subItems.map(e => {
+				return e.key_id;
+			})
+
+			console.log("this._keys",this._keys);
+		}
+
+
+
 		/*Vehicles.findAll({
 			where: {
 				owner: this.parent.id

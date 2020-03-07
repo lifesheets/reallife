@@ -12,40 +12,6 @@ var unique = require("../libs/items.js").unique;
 var getKeyID = require("../libs/utils.js").getKeyID;
 var getUID = require("../libs/utils.js").getUID;
 
-/*var sample_inventory = [{
-	image: "../../source/img/melone.png",
-	name: "Melone",
-	count: 100,
-	type: "Nahrung",
-	weight: 0.1
-}, {
-	image: "../../source/img/eisen.png",
-	name: "Eisen",
-	count: 21,
-	type: "Rohstoff",
-	weight: 0.4
-}, {
-	image: "../../source/img/m4.png",
-	name: "M4 Sturmgewehr",
-	count: 1,
-	id: "SN8472095",
-	type: "Waffe",
-	weight: 1.3
-}, {
-	image: "../../source/img/m4.png",
-	name: "M4 Sturmgewehr",
-	count: 1,
-	id: "SN8472094",
-	type: "Waffe",
-	weight: 1.3
-}, {
-	image: "../../source/img/ak47.png",
-	name: "Ak47 Sturmgewehr",
-	count: 1,
-	id: "SN8472093",
-	type: "Waffe",
-	weight: 1.3
-}]*/
 class SubItem extends EventEmitter {
 	constructor(subData, parent) {
 		this.data = subData;
@@ -124,16 +90,19 @@ class Item extends EventEmitter {
 		this.last_saved = 0;
 		this.db_handle = db_handle || undefined;
 		this.cache = undefined;
-		this.subItems = [];
+		this._subItems = [];
 		this.initiated = false;
 		console.log("this.uid", this.uid);
 	}
 	init() {
 		if (!this.db_handle) return;
-		this.subItems = this.data.map((e, i) => {
+		this._subItems = this.data.map((e, i) => {
 			return new SubItem(e, this);
 		})
 		this.initiated = true;
+	}
+	get subItems() {
+		return this._subItems;
 	}
 	get isItem() {
 		return true;
@@ -244,11 +213,13 @@ class Item extends EventEmitter {
 		return c;
 	}
 }
-class ItemManager {
+class ItemManager extends EventEmitter{
 	constructor(parent) {
+		super();
 		this.parent = parent;
 		this.player = parent.player;
 		this._items = [];
+		this.loaded = false;
 		console.log("ItemManager constructor")
 	}
 	getHandle(item) {
@@ -293,6 +264,7 @@ class ItemManager {
 		let cItem;
 		if (!unique(iClass.getClass(iData.itemid)) && pItem) {
 			// merge items;
+			console.log("merge");
 			cItem = await pItem.merge(iData)
 		} else {
 			// create new
@@ -322,12 +294,13 @@ class ItemManager {
 			})
 			console.log(this._items);
 			//server:inventory:load
-			//server:inventory:load
 			if (this.player) {
 				this.player.call("server:inventory:set", ["inventory", "Inventar", this.parent.id, true])
 				this.player.call("server:inventory:set", ["equipment", "Ausrüstung", this.parent.id, true])
 				this.player.call("server:inventory:load", ["inventory", this.render_items])
 			}
+			this.loaded = true;
+			this.emit("server:inventory:load");
 		}).catch(err => {
 			console.log("error fetching items", err);
 		})
