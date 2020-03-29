@@ -20,7 +20,7 @@ const sequelize = new Sequelize("reallife", 'root', '', {
 	timestamps: false
 });
 
-var house = require("./house.js")(sequelize);
+var property = require("./property.js")(sequelize);
 var account = require("./account.js")(sequelize);
 var storage = require("./storage.js")(sequelize);
 var vehicle = require("./vehicle.js")(sequelize);
@@ -38,6 +38,6 @@ module.exports = {
 	Sequelize: Sequelize,
 	account: account,
 	vehicle: vehicle,
-	house: house,
+	property: property,
 	storage: storage,
 }

@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var HouseDB = require("../database").house;
+var HouseDB = require("../database").property;
 class House extends EventEmitter {
 	constructor(id,x,y,z,px,py,pz,dim,interior,data) {
 		super();
