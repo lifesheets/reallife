@@ -7,7 +7,7 @@
 
 
 */
-
+mp.discord.update('Playing on Freeroam', 'Playing as Ronald McDonald')
 mp.enums = require("../../server/libs/enums.js")
 
 
@@ -60,8 +60,4 @@ var CEFNotification = require("./browser.js").notification;
 mp.events.add("Notifications:New", (notification_data) => {
 	CEFNotification.call("notify", notification_data)
 })
-
-
-mp.peds.new(mp.game.joaat('mp_m_freemode_01'), new mp.Vector3(-59.16584396362305,-1110.68603515625,26.432044982910156), 0, 0);
-
 

@@ -203,95 +203,83 @@ var speed_delta = undefined;
 let mul = 0;
 var maxRPM = 9000;
 
-function drawTacho(speed, rpm, heading) {
+function clearTacho() {
+	let context = document.getElementById("tacho_canvas").getContext('2d');
+	let width = $("#tacho_canvas").width();
+	let height = $("#tacho_canvas").height();
+	context.clearRect(0, 0, width, height);
+}
+var toggled = false;
+var generic_offset = 150;
+var opacity_boot = 1;
+var drawn = false;
+
+function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbelt = false, kmCounter = 0) {
 	console.log("heading", heading);
-	let transform = "";
-	if (heading_delta == undefined) heading_delta = heading;
-	if (speed_delta == undefined) speed_delta = speed;
-	let diffX = heading_delta - heading;
-	if (diffX < 0) {
-		let xdeg = lerp(0, 12, 1 / 15 * ((diffX * -1) * 10))
-		transform = `rotateY(-${xdeg}deg)`
-	} else {
-		let xdeg = lerp(0, 12, 1 / 15 * ((diffX) * 10))
-		transform = `rotateY(${xdeg}deg)`
-	}
-	if (speed > speed_delta) {
-		mul += 1;
-		let ydeg = lerp(0, 25, 1 / 30 * mul)
-		transform += `rotateX(${ydeg}deg)`
-	} else {
-		mul -= 1;
-	}
-	console.log("speed", speed);
-	console.log("speed_delta", speed_delta);
-	speed_delta = speed;
-	heading_delta = heading;
-	$("#tacho").css('transform', transform);
-	//transform: rotateX(25deg) rotateY(0deg);
-	// perspective: 15vh;
-	// transform
 	let context = document.getElementById("tacho_canvas").getContext('2d');
 	let width = $("#tacho_canvas").width();
 	let height = $("#tacho_canvas").height();
 	let centerX = (width / 2);
-	let centerY = (height / 2) + height / 10;
-	let radius = height / 1.8;
+	let centerY = (height / 2);
+	let radius = height / 2.1;
+	let factor = (width + height);
 	let line_size = height / height * 9;
 	context.clearRect(0, 0, width, height);
 	context.imageSmoothingEnabled = true;
 	context.webkitImageSmoothingEnabled = true;
 	context.imageSmoothingQuality = "high";
-	// RPM Bg
+	// Total BG
 	{
-		let arc_ = (58 / 100 * 90);
-		let offset = 150;
-		let startAngle = offset * (Math.PI / 180);
-		let endAngle = ((360 / 100 * arc_) + offset) * (Math.PI / 180);
+		/*Background*/
 		context.beginPath();
-		context.arc(centerX, centerY, radius - line_size / 2, startAngle, endAngle, false);
+		context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+		context.lineWidth = 15;
+		context.shadowBlur = 5;
+		context.shadowColor = "rgba(0,0,0,0.5)";
+		//context.fillStyle = 'rgba(0, 0, 0,0.5)';
+		grd = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+		// Add colors
+		grd.addColorStop(0.000, 'rgba(0, 0, 0,0.5)');
+		grd.addColorStop(0.100, 'rgba(0, 0, 0,0.25)');
+		grd.addColorStop(1.000, 'rgba(20, 20, 20,0.4)');
+		// Fill with gradient
+		context.fillStyle = grd;
+		// context.fillStyle = 'rgba(0, 0, 0,0.3)';
+		context.fill();
+		context.closePath();
+	}
+	// Background Circle
+	{
+		context.beginPath();
+		context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
 		context.lineWidth = line_size / 1.2;
 		context.shadowBlur = 5;
 		context.shadowColor = "rgba(0,0,0,0.5)";
-		context.strokeStyle = 'rgba(50, 50, 50,0.2)';
+		let gradient = context.createRadialGradient(centerX, centerY, factor * 0.03, centerX, centerY, factor);
+		gradient.addColorStop(0, '#2d2b38');
+		gradient.addColorStop(0.9, '#262430');
+		gradient.addColorStop(1, 'rgba(0,0,0,0.5)');
+		context.strokeStyle = gradient;
 		context.stroke();
 		context.closePath();
 	}
-	// RPM Dial
+	//Speed Measurements
 	{
-		let mRPM = 100 / maxRPM * rpm;
-		let arc_ = (58 / 100 * 90) / 100 * (mRPM);
-		let offset = 150;
-		let startAngle = offset * (Math.PI / 180);
-		let endAngle = ((360 / 100 * arc_) + offset) * (Math.PI / 180);
-		context.beginPath();
-		context.arc(centerX, centerY, radius - line_size / 2, startAngle, endAngle, false);
-		context.lineWidth = line_size / 1.4;
-		context.shadowBlur = 5;
-		context.shadowColor = "rgba(0,0,0,0.5)";
-		//grd = context.createRadialGradient(centerX, centerY, startAngle, centerX,  centerY, endAngle);
-		var grd = context.createLinearGradient(0, 200, 230, 1);
-		// Add colors
-		grd.addColorStop(0.8, 'rgba(21, 202, 72,1)');
-		grd.addColorStop(1, 'rgba(255, 0, 0,0.8)');
-		//grd.addColorStop(0, 'rgba(212, 255, 0,1)');
-		//context.strokeStyle = `rgba(100, 50, 50,1)`;
-		context.strokeStyle = grd;
-		context.stroke();
-		context.closePath();
-	}
-	//RPM Measurements
-	{
-		let offset = 150;
 		let measureCount = 0;
-		for (let iTick = 0; iTick < maxRPM; iTick += 1000) {
-			let cur_speed_arc = 55 / maxRPM * iTick;
+		let toAdd = 20;
+		let max = 240;
+		for (let iTick = 0; iTick <= max; iTick += toAdd) {
+			let cur_speed_arc = 55 / 200 * iTick;
 			var endDegrees = 150 + (360 * (cur_speed_arc / 100));
 			let iTickRad = degreesToRadians(endDegrees);
-			let x = centerX + (radius * 0.8) * Math.cos(iTickRad);
-			let y = centerY + (radius * 0.8) * Math.sin(iTickRad);
-			let mul = 0.020387359836901122;
-			context.font = (mul * (width + height)) + 'px sans-serif';
+			let x = centerX + (radius * 0.85) * Math.cos(iTickRad);
+			let y = centerY + (radius * 0.85) * Math.sin(iTickRad);
+			let mul = 0.024387359836901122;
+			if (measureCount > 80) {
+				mul = 0.024387359836901122
+				toAdd = 20;
+			}
+			context.font = (mul * factor) + 'px Technology';
 			context.fillStyle = '#f0f1f0';
 			context.textAlign = "center";
 			context.textBaseline = 'middle';
@@ -300,223 +288,278 @@ function drawTacho(speed, rpm, heading) {
 			context.shadowColor = "rgba(0,0,0,1)";
 			context.fillText(measureCount, x, y);
 			context.stroke();
-			measureCount += 1;
+			measureCount += Math.floor(toAdd);
 		}
-		// x1000 text
+	}
+	// Icons
+	{
+		// Engine
+		{
+			context.beginPath();
+			context.fillStyle = (engine == false) ? `rgba(220, 220, 220,0.2)` : `rgba(100, 250, 100,0.7)`;
+			context.font = (0.045 * (width + height)) + 'px Glyphter';
+			context.textAlign = "center";
+			context.textBaseline = 'middle';
+			let iTickRad = degreesToRadians(180);
+			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
+			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
+			context.fillText('\u0042', x, y);
+			context.closePath();
+		}
+		// Light
+		{
+			context.beginPath();
+			context.fillStyle = (light == false) ? `rgba(220, 220, 220,0.2)` : `rgba(10, 170, 255,0.7)`;
+			context.font = (0.045 * (width + height)) + 'px Glyphter';
+			context.textAlign = "center";
+			context.textBaseline = 'middle';
+			let iTickRad = degreesToRadians(0);
+			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
+			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
+			context.fillText('\u0044', x, y);
+			context.closePath();
+		}
+		// Seatbelt
+		{
+			context.beginPath();
+			context.fillStyle = (seatbelt == false) ? `rgba(220, 220, 220,0.2)` : `rgba(250, 20, 20,0.7)`;
+			context.font = (0.045 * (width + height)) + 'px Glyphter';
+			context.textAlign = "center";
+			context.textBaseline = 'middle';
+			if (seatbelt == true) {
+				context.shadowBlur = 10;
+				context.shadowColor = "rgba(250, 20, 20,0.7)";
+			}
+			let iTickRad = degreesToRadians(140);
+			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
+			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
+			context.fillText('\u0042', x, y);
+			context.closePath();
+		}
+	}
+	// Fuel
+	{
+		let height_offset = factor * 0.1;
+		let fuel_arc_start = 120;
+		// Fuel Arc BG
+		// RPM Bg
+				context.shadowBlur = 0;
+				context.shadowColor = "rgba(0, 0, 0,0)";
+		{
+			let startAngle = (fuel_arc_start - 88) * (Math.PI / 180);
+			let endAngle = (fuel_arc_start + 25) * (Math.PI / 180);
+			context.beginPath();
+			context.arc(centerX, centerY + height_offset - (factor * 0.01), (radius * 0.4), startAngle, endAngle, false);
+			//context.lineWidth = line_size * 7;
+			//context.strokeStyle = 'rgba(10, 10, 10,0.3)';
+			context.fillStyle = 'rgba(10, 10, 10,0.3)';
+			context.lineTo(centerX, centerY + height_offset - (factor * 0.01));
+			context.fill();
+			//context.stroke();
+			context.closePath();
+			// Icons Fuel
+			{
+				context.beginPath();
+				context.fillStyle = `rgba(220, 220, 220,0.7)`;
+				context.font = (0.022 * (width + height)) + 'px Glyphter';
+				context.textAlign = "center";
+				context.textBaseline = 'middle';
+				let iTickRad = degreesToRadians(90);
+				let x = centerX + (radius * 0.6) * Math.cos(iTickRad);
+				let y = centerY + (radius * 0.6) * Math.sin(iTickRad);
+				context.fillText('\u0043', x, y);
+				context.closePath();
+			}
+			// Left E
+			{
+				let angle = (fuel_arc_start + 3) * (Math.PI / 180);
+				let x = centerX + (radius * 0.32) * Math.cos(angle);
+				let y = (centerY + height_offset - (factor * 0.01)) + (radius * 0.32) * Math.sin(angle);
+				let mul = 0.030387359836901122;
+				context.font = (mul * (width + height)) + 'px Technology';
+				context.fillStyle = 'rgba(230,230,230,0.9)';
+				context.textAlign = "center";
+				context.textBaseline = 'middle';
+				context.beginPath();
+				context.shadowBlur = 10;
+				context.shadowColor = "rgba(0,0,0,1)";
+				context.fillText("E", x, y);
+				context.stroke();
+			}
+			// Right F
+			{
+				let angle = (fuel_arc_start - 67) * (Math.PI / 180);
+				let x = centerX + (radius * 0.32) * Math.cos(angle);
+				let y = (centerY + height_offset - (factor * 0.01)) + (radius * 0.32) * Math.sin(angle);
+				let mul = 0.030387359836901122;
+				context.font = (mul * (width + height)) + 'px Technology';
+				context.fillStyle = 'rgba(230,230,230,0.9)';
+				context.textAlign = "center";
+				context.textBaseline = 'middle';
+				context.beginPath();
+				context.shadowBlur = 10;
+				context.shadowColor = "rgba(0,0,0,1)";
+				context.fillText("F", x, y);
+				context.stroke();
+			} {
+				let interval = 20;
+				for (let iTick = 20; iTick <= 100; iTick += interval) {
+					let iTickRad = degreesToRadians((fuel_arc_start - 90) + iTick);
+					let fx = centerX + (radius * 0.40) * Math.cos(iTickRad);
+					let fy = (centerY + height_offset - (factor * 0.01)) + (radius * 0.40) * Math.sin(iTickRad);
+					let x = centerX + (radius * 0.37) * Math.cos(iTickRad);
+					let y = (centerY + height_offset - (factor * 0.01)) + (radius * 0.37) * Math.sin(iTickRad);
+					context.beginPath();
+					context.lineWidth = line_size / 3;
+					context.moveTo(fx, fy);
+					context.lineTo(x, y);
+					context.shadowBlur = 10;
+					context.shadowColor = "rgba(0,0,0,1)";
+					context.strokeStyle = 'rgba(150,150,150,0.8)';
+					if (iTick > 80) context.strokeStyle = 'rgba(170,20,20,0.8)';
+					context.stroke();
+					context.closePath();
+				}
+			}
+		}
+		// Needle
+		{
+			let iTickRad = degreesToRadians(fuel_arc_start - lerp(-25, 90, 1 / 100 * fuel));
+			let tx1 = centerX + (factor * 0.01) * Math.cos(iTickRad + 0.5);
+			let ty1 = (centerY + height_offset) + (factor * 0.01) * Math.sin(iTickRad + 0.5);
+			let tx2 = centerX + (factor * 0.01) * Math.cos(iTickRad - 0.5);
+			let ty2 = (centerY + height_offset) + (factor * 0.01) * Math.sin(iTickRad - 0.5);
+			let x = centerX + (radius * 0.3) * Math.cos(iTickRad);
+			let y = (centerY + height_offset) + (radius * 0.3) * Math.sin(iTickRad);
+			context.shadowBlur = 5;
+			context.shadowColor = `rgba(159,0,0,${opacity_boot})`;
+			context.beginPath();
+			context.lineWidth = line_size / 3;
+			context.moveTo(tx1, ty1);
+			context.lineTo(x, y); //<
+			context.lineTo(tx2, ty2);
+			context.strokeStyle = `rgba(219, 38, 29,${opacity_boot})`;
+			context.stroke();
+			context.fillStyle = `rgba(219, 90, 29,0.3)`;
+			context.fill();
+			context.closePath();
+		}
+		// Fuel Needle Center
+		{
+			context.beginPath();
+			context.arc(centerX, centerY + height_offset, factor * 0.02, 0, 2 * Math.PI, false);
+			context.shadowBlur = 5;
+			context.shadowColor = "rgba(0,0,0,0.7)";
+			let gradient = context.createRadialGradient(centerX, centerY, factor * 0.03, centerX, centerY, factor * 0.01);
+			gradient.addColorStop(0, '#2d2b38');
+			gradient.addColorStop(0.9, '#262430');
+			gradient.addColorStop(1, 'rgba(0,0,0,0.5)');
+			context.fillStyle = gradient;
+			context.fill();
+			context.closePath();
+			// inner arc
+			context.beginPath();
+			context.arc(centerX, centerY + height_offset, factor * 0.007, 0, 2 * Math.PI, false);
+			context.fillStyle = '#191724';
+			context.fill();
+			context.closePath();
+		}
+	}
+	// Needle
+	{
+		let iTickRad = degreesToRadians(generic_offset + speed);
+		let tx1 = centerX + (factor * 0.025) * Math.cos(iTickRad + 0.3);
+		let ty1 = centerY + (factor * 0.025) * Math.sin(iTickRad + 0.3);
+		let tx2 = centerX + (factor * 0.025) * Math.cos(iTickRad - 0.3);
+		let ty2 = centerY + (factor * 0.025) * Math.sin(iTickRad - 0.3);
+		let x = centerX + (radius * 0.9) * Math.cos(iTickRad);
+		let y = centerY + (radius * 0.9) * Math.sin(iTickRad);
+		context.shadowBlur = 5;
+		context.shadowColor = `rgba(159,0,0,${opacity_boot})`;
 		context.beginPath();
-		context.fillStyle = '#f0f1f0';
-		context.font = (0.020387359836901122 * (width + height)) + 'px sans-serif';
-		context.textAlign = "center";
-		context.textBaseline = 'middle';
-		context.shadowBlur = 10;
-		context.shadowColor = "rgba(0,0,0,1)";
-		context.fillText("x1000", centerX, centerY - height / 3.5);
+		context.moveTo(tx1, ty1);
+		context.lineTo(x, y); //
+		context.lineTo(tx2, ty2);
+		context.lineWidth = line_size / 4;
+		context.strokeStyle = `rgba(219, 38, 29,${opacity_boot})`;
+		context.stroke();
+		context.fillStyle = `rgba(219, 90, 29,0.3)`;
+		context.fill();
 		context.closePath();
 	}
-	context.beginPath();
-	context.fillStyle = `rgba(220, 220, 220,0.8)`;
-	context.font = (0.1 * (width + height)) + 'px Square';
-	context.textAlign = "center";
-	context.textBaseline = 'middle';
-	context.shadowBlur = 15;
-	context.shadowColor = "rgba(0,0,0,1)";
-	context.fillText(Math.floor(speed), centerX + height / 4, centerY + height / 6);
-	context.closePath();
+	// Dial Center Bg
+	{
+		context.beginPath();
+		context.arc(centerX, centerY, factor * 0.03, 0, 2 * Math.PI, false);
+		context.shadowBlur = 5;
+		context.shadowColor = "rgba(0,0,0,0.7)";
+		let gradient = context.createRadialGradient(centerX, centerY, factor * 0.03, centerX, centerY, factor * 0.01);
+		gradient.addColorStop(0, '#2d2b38');
+		gradient.addColorStop(0.9, '#262430');
+		gradient.addColorStop(1, 'rgba(0,0,0,0.5)');
+		context.fillStyle = gradient;
+		context.fill();
+		context.closePath();
+		// inner arc
+		context.beginPath();
+		context.arc(centerX, centerY, factor * 0.01, 0, 2 * Math.PI, false);
+		context.fillStyle = '#191724';
+		context.fill();
+		context.closePath();
+	}
+
+		{
+			let interval = 2;
+			let max = 260;
+			for (let iTick = 0; iTick < speed ; iTick += interval) {
+
+
+				let iTickRad = degreesToRadians(150 + iTick);
+				let fx = centerX + (radius * 0.95) * Math.cos(iTickRad);
+				let fy = centerY + (radius * 0.95) * Math.sin(iTickRad);
+
+				let x = centerX + (radius*0.98) * Math.cos(iTickRad);
+				let y = centerY + (radius*0.98) * Math.sin(iTickRad);
+
+				context.beginPath();
+				context.lineWidth = line_size/4 ;
+				context.moveTo(fx, fy);
+				context.lineTo(x, y);
+				context.strokeStyle = 'rgba(250,10,10,0.5)';
+				context.stroke();
+				context.closePath();
+			}
+		}
 }
-    let cSpeed = 120;
-    let cFuel = 100;
-    let cRPM = 100;
-    setInterval( () => {
-        cSpeed += 1;
-        cRPM += 100;
-        if (cSpeed > 220) cSpeed = 0;
-        if (cRPM > 9000) cRPM = 0;
 
-        drawTacho(cSpeed, cRPM, 0)
-    },100);
-
-
-
-
-function clearTacho1() {
-	let context = document.getElementById("tacho_canvas").getContext('2d');
-	let width = $("#tacho_canvas").width();
-	let height = $("#tacho_canvas").height();
-	context.clearRect(0, 0, width, height);
+function startEngine() {
+	let cSpeed = 0;
+	let cFuel = 50;
+	let m1 = false;
+	let m2 = false;
+	let engine = true;
+	let km = 0;
+	let seatbelt = false;
+	drawTacho2(cSpeed, cFuel, 220);
+	setTimeout(() => {
+		setInterval(() => {
+			cSpeed = (m2 == false) ? cSpeed - 1 : cSpeed + 1;
+			cFuel = (m1 == false) ? cFuel - 0.2 : cFuel + 0.2;
+			//if (cFuel < 0) cFuel = 0;
+			if (cFuel < 0) m1 = true;
+			if (cFuel > 100) m1 = false;
+			if (cSpeed < 0) {
+				m2 = true;
+				engine = true
+			};
+			if (cSpeed > 250) {
+				m2 = false;
+				engine = false
+			};
+			drawTacho2(cSpeed, cFuel, 220, true, engine, seatbelt, km)
+		}, 10);
+	}, 1000);
 }
-
-function drawTacho1(speed, fuel = 0, maxSpeed = 250) {
-	let context = document.getElementById("tacho_canvas").getContext('2d');
-	let width = $("#tacho_canvas").width();
-	let height = $("#tacho_canvas").height();
-	//console.log(width, height);
-	let radius = width / 2.2;
-	let line_size = width / width * 7;
-	context.globalAlpha = 1;
-	let centerX = width / 2;
-	let centerY = height / 2;
-	context.clearRect(0, 0, width, height);
-	context.imageSmoothingEnabled = true;
-	context.webkitImageSmoothingEnabled = true;
-	context.imageSmoothingQuality = "high";
-	/*    context.beginPath();
-	    context.globalAlpha = 1;
-	    let start = 90 * (Math.PI / 180);
-	    let end = ((360 / 100 * speed) + 90) * (Math.PI / 180);
-	    context.arc(centerX, centerY, radius, start, end, false);
-	    context.lineWidth = 15;
-	    context.shadowBlur = 5;
-	    context.shadowColor = "rgba(0,0,0,0.5)";
-	    context.strokeStyle = "rgba(222, 0, 0,0.8)";
-	    context.stroke();
-	    context.closePath();
-	*/
-	/*Background*/
-	let arc_ = 100;
-	context.beginPath();
-	let start = 90 * (Math.PI / 180);
-	let end = ((360 / 100 * arc_) + 90) * (Math.PI / 180);
-	context.arc(centerX, centerY, radius - line_size, start, end, false);
-	context.lineWidth = 15;
-	context.shadowBlur = 5;
-	context.shadowColor = "rgba(0,0,0,0.5)";
-	//context.fillStyle = 'rgba(0, 0, 0,0.5)';
-	grd = context.createRadialGradient(centerX, centerY, 5.000, centerX, centerY, radius);
-	// Add colors
-	grd.addColorStop(0.000, 'rgba(0, 0, 0,0)');
-	grd.addColorStop(0.500, 'rgba(0, 0, 0,0.2)');
-	grd.addColorStop(1.000, 'rgba(20, 20, 20,0.4)');
-	// Fill with gradient
-	context.fillStyle = grd;
-	// context.fillStyle = 'rgba(0, 0, 0,0.3)';
-	context.fill();
-	context.closePath();
-	/*Background Arc*/
-	context.beginPath();
-	let startAngle = 45 * (Math.PI / 180);
-	let endAngle = 135 * (Math.PI / 180);
-	context.arc(centerX, centerY, radius - line_size / 2, startAngle, endAngle, true);
-	context.lineWidth = line_size;
-	context.shadowBlur = 5;
-	context.shadowColor = "rgba(0,0,0,0.5)";
-	context.strokeStyle = `rgba(50, 50, 50,0.4)`;
-	context.stroke();
-	context.closePath();
-	/*Speed Measurements
-    let measureCount = 0;
-
-
-
-    for (let iTick = 0; iTick < maxSpeed + 20; iTick += 20) {
-            let cur_speed_arc = 75 / maxSpeed * iTick;
-            var endDegrees = 135 + (360 * (cur_speed_arc / 100));
-
-
-            let iTickRad = degreesToRadians(endDegrees);
-            let x = centerX + (radius/1.21) * Math.cos(iTickRad);
-            let y = centerY + (radius/1.21) * Math.sin(iTickRad);
-            let mul = 0.018387359836901122;
-            if (measureCount > 200) mul = 0.016387359836901122
-            context.font = (mul * (width + height)) + 'px sans-serif';
-            context.fillStyle = '#f0f1f0';
-            context.textAlign = "center";
-            context.textBaseline = 'middle';
-
-            context.beginPath();
-            context.fillText(measureCount, x, y);
-            context.stroke();
-            measureCount += 20;
-    }
-*/
-	/*Orange Arc*/
-	if (speed > maxSpeed) speed = maxSpeed;
-	let cur_speed_arc = 75 / maxSpeed * speed;
-	var startDegrees = 135;
-	var endDegrees = startDegrees + 360 * (cur_speed_arc / 100);
-	// Degrees to radians
-	startAngle = startDegrees / 180 * Math.PI;
-	endAngle = endDegrees / 180 * Math.PI;
-	context.beginPath();
-	context.arc(centerX, centerY, radius - line_size / 2, startAngle, endAngle, false);
-	context.lineWidth = line_size;
-	context.strokeStyle = `rgba(222, 110, 0,0.7)`;
-	context.stroke();
-	context.closePath();
-	/*White Bar*/
-	cur_speed_arc = 75 / maxSpeed * speed;
-	let speed_degrees_start = startDegrees + 360 * ((cur_speed_arc - 0.15) / 100);
-	let speed_degrees_end = startDegrees + 360 * ((cur_speed_arc + 0.15) / 100);
-	startAngle = speed_degrees_start / 180 * Math.PI;
-	endAngle = speed_degrees_end / 180 * Math.PI;
-	context.beginPath();
-	context.arc(centerX, centerY, radius - line_size * 2, startAngle, endAngle, false);
-	context.lineWidth = line_size * 4;
-	context.strokeStyle = `rgba(255, 255, 255,0.9)`;
-	context.stroke();
-	context.closePath();
-	/*
-	.icon-engine:before{content:'\0041';}
-	.icon-fuel:before{content:'\0042';}
-	.icon-light:before{content:'\0043';}
-
-	*/
-	//engine.svg
-	/*Fuel Arc BG*/
-	startDegrees = 145;
-	endDegrees = startDegrees + 360 * (20 / 100);
-	startAngle = startDegrees / 180 * Math.PI;
-	endAngle = endDegrees / 180 * Math.PI;
-	context.beginPath();
-	context.arc(centerX - radius * 0.2, centerY, radius / 1.8, startAngle, endAngle, false);
-	context.lineWidth = line_size;
-	context.strokeStyle = `rgba(20, 20, 20,0.5)`;
-	context.stroke();
-	context.closePath();
-	/*Fuel Arc*/
-	cur_speed_arc = 20 / 100 * fuel;
-	startDegrees = 145;
-	endDegrees = startDegrees + 360 * (cur_speed_arc / 100);
-	startAngle = startDegrees / 180 * Math.PI;
-	endAngle = endDegrees / 180 * Math.PI;
-	context.beginPath();
-	context.arc(centerX - radius * 0.2, centerY, radius / 1.8, startAngle, endAngle, false);
-	context.lineWidth = line_size;
-	var gradient1 = context.createLinearGradient(0, 800, 0, 0);
-	gradient1.addColorStop(0.2, "red");
-	gradient1.addColorStop(1.0, "green");
-	context.strokeStyle = gradient1; //`rgba(110, 110, 110,0.7)`;
-	context.stroke();
-	context.closePath();
-	context.beginPath();
-	context.fillStyle = `rgba(220, 220, 220,0.8)`;
-	context.font = (0.035 * (width + height)) + 'px Glyphter';
-	context.textAlign = "center";
-	context.textBaseline = 'middle';
-	context.fillText('\u0043', (centerX - radius / 1.7), centerY);
-	context.closePath();
-	context.beginPath();
-	context.fillStyle = `rgba(220, 220, 220,0.8)`;
-	context.font = (0.1 * (width + height)) + 'px Technology';
-	context.textAlign = "center";
-	context.textBaseline = 'middle';
-	context.shadowBlur = 15;
-	context.shadowColor = "rgba(0,0,0,1)";
-	context.fillText(Math.floor(speed), centerX, centerY);
-	context.closePath();
-}
-/*
-    let cSpeed = 0;
-    let cFuel = 100;
-    drawTacho(0,20,200)
-    setInterval( () => {
-        cSpeed += 0.3;
-        cFuel -= 0.3;
-        if (cSpeed > 220) cSpeed = 0;
-        if (cFuel < 0) cFuel = 100;
-
-        drawTacho(cSpeed,cFuel,220)
-    },10);
-*/
 //clearInteraction(65)
 Date.prototype.timeNow = function() {
 	return ((this.getHours() < 10) ? "0" : "") + this.getHours() + ":" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ":" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
@@ -632,5 +675,6 @@ function init(minimap) {
 	})*/
 }
 $(document).ready(function(event) {
-	//mp.trigger("cef:hud:ready");
+	mp.trigger("cef:hud:ready");
+	//startEngine()
 });

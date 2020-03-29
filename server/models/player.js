@@ -11,17 +11,14 @@ class Player extends EventEmitter {
 		this.player = player;
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
-		this.inventory = new ItemManager(this);
 		this.vehicles = new VehicleManager(this);
-
+		this.inventory = new ItemManager(this);
 
 
 		this.player.account = this.account;
 		this.player.vehicles = this.vehicles;
 		this.player.inventory = this.inventory;
 		this.player.appearance = this.appearance;
-
-
 
 
 		this.cState = "auth";

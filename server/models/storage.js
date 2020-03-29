@@ -35,8 +35,7 @@ class SubItem extends EventEmitter {
 		drawable: this.data.drawable,
 		texture: this.data.texture,
 		palette: this.data.palette
-	}
-	*/
+	}*/
 	get componentVariation() {
 		if (this.type != iClass.CLOTHES) return new Error("SubItem invalid type", this.type);
 		return {
@@ -49,8 +48,7 @@ class SubItem extends EventEmitter {
 	/* Item Data for Weapon Components
 	{
 		hash:"MODEL HASH"
-	}
-	*/
+	}*/
 	get weaponComponents() {
 		if (this.type != iClass.WEAPON) return new Error("SubItem invalid type", this.type);
 		return this.data.map(e => {

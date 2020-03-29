@@ -15,21 +15,34 @@ var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
 var lastSpeed = 0;
+var lastRPM = 0;
+var last_seatbelt = false;
+var c_seatbelt = false;
+var last_update = Date.now();
 mp.events.add("render", () => {
     // tacho
     if (mp.cache["hud_ready"]) {
         if (mp.players.local.isInAnyVehicle(false)) {
-            let speed = (mp.players.local.vehicle.getSpeed() * 3.6).toFixed(10);
-            //if (lastSpeed != speed) {
-
-                CEFHud.call("drawTacho", speed, mp.players.local.vehicle.getHeading());
+            let speed = (mp.players.local.vehicle.getSpeed() * 3.6);
+            if ((lastSpeed != speed)) {
+                let seatbelt_blink = false;
+                if ((speed > 20) && (c_seatbelt == false)) {
+                    if ((last_update + 500) < Date.now()) {
+                        last_update = Date.now();
+                        last_seatbelt = !last_seatbelt;
+                    }
+                        seatbelt_blink = last_seatbelt;
+                } else {
+                    seatbelt_blink = false;
+                }
+                CEFHud.call("drawTacho2", speed, 45, mp.players.local.vehicle.getHeading(), false, mp.players.local.vehicle.getIsEngineRunning(), seatbelt_blink);
                 isTachoVisible = true;
-              //  lastSpeed = speed;
-            //}
+                lastSpeed = speed;
+            }
             //return;
         } else {
             if (isTachoVisible) {
-                //CEFHud.call("clearTacho");
+                CEFHud.call("clearTacho");
                 isTachoVisible = false;
             }
         }
@@ -41,7 +54,7 @@ mp.events.add("render", () => {
             let veh_model = localVeh.model;
             if (last_pos == null) last_pos = mp.players.local.position;
             let cPos = mp.players.local.position;
-            let dist = mp.game.system.vdist(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z) ;
+            let dist = mp.game.system.vdist(cPos.x, cPos.y, cPos.z, last_pos.x, last_pos.y, last_pos.z);
             self.pos = cPos;
             if (dist < 7500 && dist > 0) { // !! Anpassen damit es nicht mehr so schnell hoch springt !!
                 kmTotal += dist;
@@ -56,14 +69,53 @@ mp.events.add("render", () => {
         }
     }
     if (localVeh) {
-        mp.game.graphics.drawText("DIRT" + localVeh.getVariable('dirt_level'), [0.5, 0.75 ], {
+        mp.game.graphics.drawText("DIRT" + localVeh.getVariable('dirt_level'), [0.5, 0.75], {
             font: 4,
             color: [255, 255, 255, 200],
             scale: [0.4, 0.4],
             outline: true
         });
     }
-
+});
+mp.events.addDataHandler("vehicle:seatbelt:status", (entity, value, oldValue) => {
+    //mp.gui.chat.push("Seatbelt  " + seatbelt)
+    console.log("seatbelt", value)
+    c_seatbelt = value;
+    //Tacho.setSeatbelt(seatbelt);
+    mp.players.local.setConfigFlag(32, value ? true : false);
+})
+mp.events.addDataHandler("vehicle:engine:status", (entity, value, oldValue) => {
+    console.log("vehicle:engine:status", value)
+    if (entity != mp.players.local.vehicle) return;
+    if (!mp.players.local.vehicle) return;
+    mp.players.local.vehicle.setEngineOn(value, true, true);
+});
+mp.events.add('playerEnterVehicle', (vehicle, seat) => {
+    if (vehicle != null) {
+        vehicle.freezePosition(false);
+        if (vehicle.getVariable("vehicle:engine:status") == true) {
+            vehicle.setEngineOn(true, true, true);
+        } else {
+            vehicle.setEngineOn(false, true, true);
+        }
+    }
+});
+// Engine
+//client:vehicle:engine
+mp.keys.bind(0x58, false, () => {
+    //client:vehicle:engine
+    if (mp.players.local.vehicle) {
+        mp.events.callRemote("client:vehicle:engine");
+        //mp.players.local.vehicle
+    }
+});
+//vehicle:seatbelt:toggle
+mp.keys.bind(0x4C, false, () => {
+    //client:vehicle:engine
+    if (mp.players.local.vehicle) {
+        mp.events.callRemote("vehicle:seatbelt:toggle");
+        //mp.players.local.vehicle
+    }
 });
 var seats = {
     0: "seat_pside_f", // passanger side front
@@ -85,6 +137,7 @@ var seats = {
     16: "seat_pside_r7", // passanger side rear7
 }
 mp.game.controls.useDefaultVehicleEntering = false;
+// Passanger Enter
 mp.keys.bind(0x47, false, () => {
     if (mp.players.local.vehicle === null) {
         if (mp.gui.cursor.visible) return;

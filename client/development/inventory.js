@@ -50,7 +50,7 @@ var sample_inventory = [{
 var storage_units = [];
 var visibleStorage = [];
 class storage {
-	constructor(key, parent, selector, options = null, max_rows = 0) {
+	constructor(parent, selector, options = null, max_rows = 0) {
 		this.maxRows = max_rows;
 		this.items = [];
 		this.name = selector;
@@ -61,7 +61,6 @@ class storage {
 		this._condition = () => {
 			return false;
 		};
-		this.key = key;
 		this.id = undefined;
 		this.toggled = false;
 		CEFInventory.call("addUnit", parent, selector, options, max_rows);
@@ -132,12 +131,12 @@ mp.events.add("server:inventory:set", (selector, title, id,state = false) => {
 
 mp.events.add("cef:inventory:use", (target, items) => {
 	if (!mp.loggedIn) return;
-	console.log("items", items);
+	//console.log("items", items);
 });
 mp.events.add("server:inventory:load", (target, items) => {
 	console.log("mp.loggedIn", mp.loggedIn);
 	if (!mp.loggedIn) return;
-	console.log("server:inventory:load", items);
+	//console.log("server:inventory:load", items);
 	if (storage_units[target.toLowerCase()]) {
 		storage_units[target.toLowerCase()].load(items);;
 	}

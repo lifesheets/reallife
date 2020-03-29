@@ -28,9 +28,7 @@ var WorldVehicles = new class {
 	register(vehicle) {
 		this._vehicles.push(vehicle)
 	}
-	remove(){
-
-	}
+	remove() {}
 }
 
 
