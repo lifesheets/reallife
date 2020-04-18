@@ -8,7 +8,7 @@ Date.prototype.yyyymmdd = function() {
 };
 var fs = require('fs');
 var path = require('path');
-
+ 
 var ncp = require('ncp').ncp;
 var watch = require('node-watch');
 var prependFile = require('prepend-file');
