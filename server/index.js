@@ -16,3 +16,4 @@ mp.events.add("playerReady", player => {
 	player.call("server:account:init");
 });
 
+
