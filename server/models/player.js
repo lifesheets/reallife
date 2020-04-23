@@ -31,7 +31,7 @@ class Player extends EventEmitter {
 	}
 	get id() {
 		if (!this.account.loggedIn) return;
-		return this.account.id;
+		return this.account.uid;
 	}
 	get status() {
 		if (!this.account.status) return;
