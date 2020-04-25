@@ -11,13 +11,13 @@ class Player extends EventEmitter {
 		this.player = player;
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
-		this.inventory = new ItemManager(this);
-		this.vehicles = new VehicleManager(this);
+		//this.inventory = new ItemManager(this);
+		//this.vehicles = new VehicleManager(this);
 
 
 		this.player.account = this.account;
-		this.player.inventory = this.inventory;
-		this.player.vehicles = this.vehicles;
+		//this.player.inventory = this.inventory;
+		//this.player.vehicles = this.vehicles;
 		this.player.appearance = this.appearance;
 
 
@@ -31,7 +31,7 @@ class Player extends EventEmitter {
 	}
 	get id() {
 		if (!this.account.loggedIn) return;
-		return this.account.id;
+		return this.account.uid;
 	}
 	get status() {
 		if (!this.account.status) return;

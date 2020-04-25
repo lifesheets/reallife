@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var AccountDB = require("../database").account;
+var UserDB = require("../database").user;
 var Sequelize = require("../database").Sequelize;
 var e = require("../libs/enums.js");
 var bcrypt = require('bcryptjs');
@@ -9,12 +9,13 @@ class Account extends EventEmitter {
 		super();
 		this.parent = parent;
 		this.player = this.parent.player;
-		this.data = false;
+		this.db = false;
 		this.loggedIn = false;
 		this.available = true;
 	}
-	get id() {
-		return this.data.uid ? this.data.uid : -1;
+	get uid( ){
+		if ((!this.db) || (!this.ready)) return "-";
+		return this.db.uid;
 	}
 	get status() {
 		return this.loggedIn ? this.loggedIn : false;
@@ -24,7 +25,7 @@ class Account extends EventEmitter {
 		console.log("register route", username, password);
 		this.available = false;
 		return new Promise((resolve, reject) => {
-			AccountDB.findOne({
+			UserDB.findOne({
 				where: {
 					username: username
 				}
@@ -36,12 +37,12 @@ class Account extends EventEmitter {
 					return reject("account not exists");
 				} else {
 					console.log("account exists");
-					bcrypt.compare(password, pAccount.dataValues.password).then((res) => {
+					bcrypt.compare(password, pAccount.password).then((res) => {
 						if (res == true) {
-							this.data = pAccount.dataValues;
+							this.db = pAccount;
 							this.loggedIn = true;
 							this.player.setVariable("loggedIn", true);
-							return resolve(pAccount.dataValues);
+							return resolve(pAccount);
 						} else {
 							return reject(e.PASSWORD_WRONG);
 						}
@@ -58,7 +59,7 @@ class Account extends EventEmitter {
 		console.log("register route", username, password, email);
 		this.available = false;
 		return new Promise(async (resolve, reject) => {
-			AccountDB.findOne({
+			UserDB.findOne({
 				where: {
 					[Sequelize.Op.or]: [{
 						username: username
@@ -74,25 +75,25 @@ class Account extends EventEmitter {
 					//if (!this.player.rgscId) return reject("rgscId not valid");
 					let pass_hash = await bcrypt.hash(password, 12);
 					console.log("account not exists", pAccount, "passhash", pass_hash);
-					AccountDB.create({
+					UserDB.create({
 						username: username,
 						password: pass_hash,
 						email: email,
-						hwid: this.player.serial,
-						rgscId: "no" //this.player.rgscId
+						hardwareID: this.player.serial,
+						rSocialClubID: "no" //this.player.rgscId
 					}).then((e) => {
-						console.log("Account created", e.dataValues);
-						this.data = e.dataValues;
+						console.log("Account created", e);
+						this.db = e;
 						this.loggedIn = true;
 						this.available = true;
-						return resolve(e.dataValues);
+						return resolve(e);
 					}).catch((err) => {
 						console.log("Error Creating account", err);
 						this.available = true;
 						return reject(err);
 					})
 				} else {
-					console.log("account exists", pAccount.dataValues);
+					console.log("account exists", pAccount);
 					this.available = true;
 					return reject(e.EMAIL_USERNAME_IN_USE);
 				}
