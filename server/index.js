@@ -6,6 +6,7 @@ require("./models/index.js")
 require("./world/index.js")
 var interaction = require("./interaction/index.js")
 var Account = require("./models/account.js")
+require("./development/devtools.js")
 
 
 //let acc = new Account(undefined);
