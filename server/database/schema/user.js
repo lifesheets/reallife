@@ -86,7 +86,7 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: true
         },
         char: {
-            type: Sequelize.TEXT,
+            type: DataTypes.TEXT,
             defaultValue: JSON.stringify({})
         },
         createdAt: {

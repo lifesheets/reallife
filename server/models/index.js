@@ -1,2 +1,2 @@
-require("./house.js")
+//require("./house.js")
 require("./player.js")
