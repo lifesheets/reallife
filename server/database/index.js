@@ -7,7 +7,7 @@ var mysql = require('mysql');
 
  
 // pass TMmzs9oo9DL6Y9Fm;
-const sequelize = new Sequelize("reallife", 'root', '', {
+const sequelize = new Sequelize("reallife", 'ragemp', 'RGj2sVmBtxLdJ90L', {
 	host: '127.0.0.1',   //or 127.0.0.1
   	dialect: 'mysql',
   	logging: function () {},
