@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('sanction', {
-    user_uid: {
+    user_id: { // user id
       type: DataTypes.INTEGER(11),
       allowNull: false
     },
@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: false
     },
-    typ: {
+    type: {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },

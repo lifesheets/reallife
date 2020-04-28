@@ -2,12 +2,12 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('license', {
-    id: {
+    permid: { // permission ID
       type: DataTypes.INTEGER(11),
       allowNull: false
     },
-    User_uid: {
-      type: DataTypes.INTEGER(11),
+    uid: { // user id
+       type: DataTypes.INTEGER(11),
       allowNull: false
     }
   }, {
