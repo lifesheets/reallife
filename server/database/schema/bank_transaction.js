@@ -2,17 +2,17 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('bank_transaction', {
-    id: {
+    transactionid: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    Bank_account: {
+    bank_account: {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },
-    Bank_account_typ: {
+    bank_account_typ: {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },

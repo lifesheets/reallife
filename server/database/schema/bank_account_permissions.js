@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('bank_account_right', {
-    Bank_account_id: {
+  return sequelize.define('bank_account_permissions', {
+    bank_account_id: {
       type: DataTypes.INTEGER(11),
       allowNull: false
     },
@@ -16,6 +16,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '1'
     }
   }, {
-    tableName: 'bank_account_right'
+    tableName: 'bank_account_permissions'
   });
 };
