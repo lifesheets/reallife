@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 var UserDB = require("../database").user;
 var Op = require("../database").Op;
 var e = require("../libs/enums.js");
+var LogManager = require("./logs.js");
 /*********************************************
  **********************************************
  **********************************************/
@@ -26,12 +27,25 @@ class Appearance extends EventEmitter {
 	constructor(parent) {
 		super();
 		this.parent = parent;
-		this.db = false;
-		this._data = [];
+		this.player = parent.player;
+		this.account = parent.account;
+		this.logger = new LogManager("Appearance",this.player.name);
+		this.char = [];
 	}
 	async init() {
 		return new Promise((resolve, reject) => {
-			UserDB.findOne({
+
+			this.logger.log("checking Char over Account Instance");
+			if (this.account.this.char.char.length > 0) {
+				try {
+					this.char = JSON.parse(this.account.this.char.char)
+					return resolve();
+				} catch(err) {
+					return reject(err);
+				}
+
+			}
+			/*UserDB.findOne({
 				where: {
 					uid: this.parent.id
 				}
@@ -44,7 +58,7 @@ class Appearance extends EventEmitter {
 			}).catch(err => {
 				console.log(err);
 				return reject(err);
-			})
+			})*/
 		})
 	}
 	reload() {
@@ -54,9 +68,9 @@ class Appearance extends EventEmitter {
 	async saveData(data) {
 		await this.init();
 		console.log("char data", typeof data);
-		this._data = JSON.parse(data);
-		this.db.update({
-			char: JSON.stringify(this._data)
+		this.char = JSON.parse(data);
+		this.account.char.update({
+			char: JSON.stringify(this.char)
 		}).then(() => {
 			console.log("saved char");
 		}).catch(err => {
@@ -66,92 +80,91 @@ class Appearance extends EventEmitter {
 	async load() {
 		await this.init();
 		console.log("load char");
-		let data = self._data;
-		if (data.gender == "Male") {
+		if (this.char.gender == "Male") {
 			this.parent.player.model = mp.joaat('mp_m_freemode_01');
 		} else {
 			this.parent.player.model = mp.joaat('mp_f_freemode_01');
 		}
 		/*appearanceIndex*/
-		if (data.makeup) {
+		if (this.char.makeup) {
 			let index = appearanceIndex["makeup"];
-			let overlayID = (data.makeup == 0) ? 255 : data.makeup - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.makeup_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.makeup == 0) ? 255 : this.char.makeup - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.makeup_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.ageing) {
+		if (this.char.ageing) {
 			let index = appearanceIndex["ageing"];
-			let overlayID = (data.ageing == 0) ? 255 : data.ageing - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.ageing_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.ageing == 0) ? 255 : this.char.ageing - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.ageing_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.blemishes) {
+		if (this.char.blemishes) {
 			let index = appearanceIndex["blemishes"];
-			let overlayID = (data.blemishes == 0) ? 255 : data.blemishes - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.blemishes_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.blemishes == 0) ? 255 : this.char.blemishes - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.blemishes_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.facial_hair) {
+		if (this.char.facial_hair) {
 			let index = appearanceIndex["facial_hair"];
-			let overlayID = (data.facial_hair == 0) ? 255 : data.facial_hair - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.facial_hair_opacity) * 0.01, data.facial_hair_color /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.facial_hair == 0) ? 255 : this.char.facial_hair - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.facial_hair_opacity) * 0.01, this.char.facial_hair_color /*ColorOverlay*/ , 0]);
 		}
-		if (data.eyebrows) {
+		if (this.char.eyebrows) {
 			let index = appearanceIndex["eyebrows"];
-			let overlayID = (data.eyebrows == 0) ? 255 : data.eyebrows - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.eyebrows_opacity) * 0.01, data.eyebrows_color /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.eyebrows == 0) ? 255 : this.char.eyebrows - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.eyebrows_opacity) * 0.01, this.char.eyebrows_color /*ColorOverlay*/ , 0]);
 		}
-		if (data.blush) {
+		if (this.char.blush) {
 			let index = appearanceIndex["blush"];
-			let overlayID = (data.blush == 0) ? 255 : data.blush - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.blush_opacity) * 0.01, data.blush_color /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.blush == 0) ? 255 : this.char.blush - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.blush_opacity) * 0.01, this.char.blush_color /*ColorOverlay*/ , 0]);
 		}
-		if (data.complexion) {
+		if (this.char.complexion) {
 			let index = appearanceIndex["complexion"];
-			let overlayID = (data.complexion == 0) ? 255 : data.complexion - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.complexion_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.complexion == 0) ? 255 : this.char.complexion - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.complexion_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.lipstick) {
+		if (this.char.lipstick) {
 			let index = appearanceIndex["lipstick"];
-			let overlayID = (data.lipstick == 0) ? 255 : data.lipstick - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.lipstick_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.lipstick == 0) ? 255 : this.char.lipstick - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.lipstick_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.freckles) {
+		if (this.char.freckles) {
 			let index = appearanceIndex["freckles"];
-			let overlayID = (data.freckles == 0) ? 255 : data.freckles - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.freckles_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.freckles == 0) ? 255 : this.char.freckles - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.freckles_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.chesthair) {
+		if (this.char.chesthair) {
 			let index = appearanceIndex["chesthair"];
-			let overlayID = (data.chesthair == 0) ? 255 : data.chesthair - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.chesthair_opacity) * 0.01, data.chesthair_color /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.chesthair == 0) ? 255 : this.char.chesthair - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.chesthair_opacity) * 0.01, this.char.chesthair_color /*ColorOverlay*/ , 0]);
 		}
-		if (data.sundamage) {
+		if (this.char.sundamage) {
 			let index = appearanceIndex["sundamage"];
-			let overlayID = (data.sundamage == 0) ? 255 : data.sundamage - 1;
-			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(data.sundamage_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
+			let overlayID = (this.char.sundamage == 0) ? 255 : this.char.sundamage - 1;
+			this.parent.player.setHeadOverlay(index, [overlayID, /*Opacity*/ parseInt(this.char.sundamage_opacity) * 0.01, 0 /*ColorOverlay*/ , 0]);
 		}
-		if (data.facial) {
-			data.facial.forEach((feature, i) => {
+		if (this.char.facial) {
+			this.char.facial.forEach((feature, i) => {
 				this.parent.player.setFaceFeature(parseInt(feature.index), parseFloat(feature.val) * 0.01);
 			})
 		}
-		if (data.hair != undefined) {
-			this.parent.player.setClothes(2, data.hair, 0, 2);
-			this.parent.player.setHairColor(data.hair_color, data.hair_highlight_color);
-			// self.parent.player.setEyeColor(data.eyeColor);
-			this.parent.player.eyeColor = parseInt(data.eyeColor);
-			/*self.parent.player.setHeadOverlayColor(1, 1, data.facial_hair_color, 0);
-			self.parent.player.setHeadOverlayColor(2, 1, data.eyebrows_color, 0);
-			self.parent.player.setHeadOverlayColor(5, 2, data.blush_color, 0);
-			self.parent.player.setHeadOverlayColor(8, 2, data.lipstick, 0);
-			self.parent.player.setHeadOverlayColor(10, 1, data.chesthair_color, 0);*/
+		if (this.char.hair != undefined) {
+			this.parent.player.setClothes(2, this.char.hair, 0, 2);
+			this.parent.player.setHairColor(this.char.hair_color, this.char.hair_highlight_color);
+			// self.parent.player.setEyeColor(this.char.eyeColor);
+			this.parent.player.eyeColor = parseInt(this.char.eyeColor);
+			/*self.parent.player.setHeadOverlayColor(1, 1, this.char.facial_hair_color, 0);
+			self.parent.player.setHeadOverlayColor(2, 1, this.char.eyebrows_color, 0);
+			self.parent.player.setHeadOverlayColor(5, 2, this.char.blush_color, 0);
+			self.parent.player.setHeadOverlayColor(8, 2, this.char.lipstick, 0);
+			self.parent.player.setHeadOverlayColor(10, 1, this.char.chesthair_color, 0);*/
 		}
-		if ((data.fatherIndex != undefined) && (data.motherIndex != undefined) && (data.tone != undefined) && (data.resemblance != undefined)) {
+		if ((this.char.fatherIndex != undefined) && (this.char.motherIndex != undefined) && (this.char.tone != undefined) && (this.char.resemblance != undefined)) {
 			this.parent.player.setHeadBlend(
 				// shape
-				values["mother"][data.motherIndex], values["father"][data.fatherIndex], 0,
+				values["mother"][this.char.motherIndex], values["father"][this.char.fatherIndex], 0,
 				// skin
-				values["mother"][data.motherIndex], values["father"][data.fatherIndex], 0,
+				values["mother"][this.char.motherIndex], values["father"][this.char.fatherIndex], 0,
 				// mixes
-				data.resemblance * 0.01, data.tone * 0.01, 0.0);
+				this.char.resemblance * 0.01, this.char.tone * 0.01, 0.0);
 		}
 	}
 }
