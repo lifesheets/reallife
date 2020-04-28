@@ -6,15 +6,16 @@ var items = {
 	KEY_PROPERTY: items_count++,
 	CLOTHING_JACKET: items_count++
 }
+global["ITEM"] = [];
 Object.keys(items).forEach(function(key, value) {
-	global[key] = items[key];
+	global["ITEM"][key] = items[key];
 })
 var names = {
-	"WEAPON_M4": WEAPON_M4,
-	"FOOD_MELON": FOOD_MELON,
-	"KEY_PROPERTY": KEY_PROPERTY,
-	"KEY_VEHICLE": KEY_VEHICLE,
-	"JACKET": CLOTHING_JACKET,
+	"WEAPON_M4": ITEM.WEAPON_M4,
+	"FOOD_MELON": ITEM.FOOD_MELON,
+	"KEY_PROPERTY": ITEM.KEY_PROPERTY,
+	"KEY_VEHICLE": ITEM.KEY_VEHICLE,
+	"JACKET": ITEM.CLOTHING_JACKET,
 }
 
 let classes_count = 0;
@@ -24,25 +25,41 @@ const c = {
 	KEYS: classes_count++,
 	CLOTHING: classes_count++
 }
-
+global["ITEMCLASS"] = [];
 Object.keys(c).forEach(function(key, value) {
-	global[key] = c[key];
+	global["ITEMCLASS"][key] = c[key];
 })
+
 var classGroups = {
-	[c.WEAPON]: [WEAPON_M4],
-	[c.FOOD]: [FOOD_MELON],
-	[c.KEYS]:[KEY_PROPERTY,KEY_VEHICLE],
-	[c.CLOTHING]:[CLOTHING_JACKET]
+	[ITEMCLASS.WEAPON]: [ITEM.WEAPON_M4],
+	[ITEMCLASS.FOOD]: [ITEM.FOOD_MELON],
+	[ITEMCLASS.KEYS]:[ITEM.KEY_PROPERTY,ITEM.KEY_VEHICLE],
+	[ITEMCLASS.CLOTHING]:[ITEM.CLOTHING_JACKET]
 }
+
+
+
+const getClass = function(itemid) {
+	return Object.keys(classGroups).find(e => {
+		return classGroups[e].indexOf(itemid) > -1;
+	});
+}
+
+
+
+
+
+
+
+
 var weights = [];
-weights[WEAPON_M4] = 1.3;
-weights[FOOD_MELON] = 0.2;
-weights[KEY_PROPERTY] = 0.1;
-weights[KEY_VEHICLE] = 0.1;
-weights[CLOTHING_JACKET] = 0.2;
+weights[ITEM.WEAPON_M4] = 1.3;
+weights[ITEM.FOOD_MELON] = 0.2;
+weights[ITEM.KEY_PROPERTY] = 0.1;
+weights[ITEM.KEY_VEHICLE] = 0.1;
+weights[ITEM.CLOTHING_JACKET] = 0.2;
 
-
-var unique_items = [c.KEYS,c.WEAPON]
+var unique_items = [ITEMCLASS.KEYS,ITEMCLASS.WEAPON]
 
 function getWeight(item) {
 	return weights[item] || 1;
@@ -50,25 +67,33 @@ function getWeight(item) {
 function isClassUnique(classs) {
 	return unique_items.indexOf(classs) > -1;
 }
-c.getClass = function(itemid) {
-	return Object.keys(classGroups).find(e => {
-		return classGroups[e].indexOf(itemid) > -1;
-	});
-}
-names.getName = function(item) {
+const getName = function(item) {
 	return Object.keys(names).find(e => {
 		return names[e] == item.itemid;
 	});
 }
-names.getID = function(name) {
+const getID = function(name) {
 	return names.find((e, i) => {
 		return i == name;
 	});
 }
+
+
+let type_count = 0;
+const _types = {
+	PLAYER: type_count++,
+	PROPERTY: type_count++
+}
+
+Object.keys(_types).forEach(function(key, value) {
+	global["TYPE_" + key] = _types[key];
+})
 module.exports = {
 	items: items,
-	classes: c,
-	names: names,
+	getClass: getClass,
+	getName: getName,
+	getIDByName: getName,
 	weights: getWeight,
 	unique: isClassUnique,
+	ownerTypes: _types,
 };
