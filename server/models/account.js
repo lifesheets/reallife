@@ -20,6 +20,12 @@ class Account extends EventEmitter {
 	get status() {
 		return this.loggedIn ? this.loggedIn : false;
 	}
+	get data() {
+		return this.db;
+	}
+	save() {
+		return this.db.save();
+	}
 	async login(username, password) {
 		if (!this.available) return;
 		console.log("register route", username, password);
@@ -80,7 +86,7 @@ class Account extends EventEmitter {
 						password: pass_hash,
 						email: email,
 						hardwareID: this.player.serial,
-						rSocialClubID: "no" //this.player.rgscId
+						rSocialClubID: this.player.rgscId
 					}).then((e) => {
 						console.log("Account created", e);
 						this.db = e;
