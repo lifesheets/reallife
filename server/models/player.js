@@ -5,30 +5,42 @@ var Account = require("./account.js");
 var Interaction = require("../interaction");
 var VehicleManager = require("./vehicle.js").mgr;
 var ItemManager = require("./storage.js").mgr;
+var LogManager = require("./logs.js");
+
+
 class Player extends EventEmitter {
 	constructor(player) {
 		super();
 		this.player = player;
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
+		this.logger = new LogManager("Player",player.name);
 		//this.inventory = new ItemManager(this);
 		//this.vehicles = new VehicleManager(this);
-
 
 		this.player.account = this.account;
 		//this.player.inventory = this.inventory;
 		//this.player.vehicles = this.vehicles;
 		this.player.appearance = this.appearance;
 
-
-		this.cState = "auth";
 		this._money = 0;
 		this._bankmoney = 0;
 		this._group = 0;
 		this._damageLog = [];
 
 		this._hunger = 0;
+		this.type = "player";
+
 	}
+	get authState() {
+		if (!this.account.loggedIn) return 0;
+		if (!this.account.uid) return 0;
+
+		return 1;
+	}	
+
+
+
 	get id() {
 		if (!this.account.loggedIn) return;
 		return this.account.uid;
@@ -53,12 +65,7 @@ class Player extends EventEmitter {
 	get money() {
 		return this._money;
 	}
-	set state(v) {
-		this.cState = v;
-	}
-	get state() {
-		return this.cState;
-	}
+
 	playAnimSync(dict, name, speed, speedMultiplier, duration, flag, playbackRate, lockX, lockY, lockZ, timeout = 0) {
 		let id = this.player.id;
 		mp.players.forEachInRange(this.player.position, 200, (tPlayer) => {
@@ -81,6 +88,8 @@ class Player extends EventEmitter {
 		this.player.call("server:game:start");
 		this.player.setVariable("spawned", true);
 		this.player.setVariable("death", false);
+
+		this.logger.log("Spawning")
 	}
 	interact(key) {
 		this.emit("interact", key);
