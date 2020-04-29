@@ -6,6 +6,7 @@ var Interaction = require("../interaction");
 var VehicleManager = require("./vehicle.js").mgr;
 var ItemManager = require("./storage.js").mgr;
 var LogManager = require("./logs.js");
+var e =  require("../libs/items.js");
 
 
 class Player extends EventEmitter {
@@ -15,11 +16,11 @@ class Player extends EventEmitter {
 		this.account = new Account(this);
 		this.appearance = new Appearance(this);
 		this.logger = new LogManager("Player",player.name);
-		//this.inventory = new ItemManager(this);
+		this.inventory = new ItemManager(this);
 		//this.vehicles = new VehicleManager(this);
 
 		this.player.account = this.account;
-		//this.player.inventory = this.inventory;
+		this.player.inventory = this.inventory;
 		//this.player.vehicles = this.vehicles;
 		this.player.appearance = this.appearance;
 
@@ -29,22 +30,22 @@ class Player extends EventEmitter {
 		this._damageLog = [];
 
 		this._hunger = 0;
-		this.type = "player";
+		this.type = TYPE.PLAYER;
 
+	}
+	get id() {
+		if (!this.account.loggedIn) return;
+		return this.account.user_id;
 	}
 	get authState() {
 		if (!this.account.loggedIn) return 0;
-		if (!this.account.uid) return 0;
+		if (!this.account.user_id) return 0;
 
 		return 1;
 	}	
 
 
 
-	get id() {
-		if (!this.account.loggedIn) return;
-		return this.account.uid;
-	}
 	get status() {
 		if (!this.account.status) return;
 		return this.account.status;
