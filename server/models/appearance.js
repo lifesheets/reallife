@@ -36,9 +36,9 @@ class Appearance extends EventEmitter {
 		return new Promise((resolve, reject) => {
 
 			this.logger.log("checking Char over Account Instance");
-			if (this.account.this.char.char.length > 0) {
+			if (this.account.data.char.length > 0) {
 				try {
-					this.char = JSON.parse(this.account.this.char.char)
+					this.char = JSON.parse(this.account.data.char)
 					return resolve();
 				} catch(err) {
 					return reject(err);
@@ -69,7 +69,7 @@ class Appearance extends EventEmitter {
 		await this.init();
 		console.log("char data", typeof data);
 		this.char = JSON.parse(data);
-		this.account.char.update({
+		this.account.data.update({
 			char: JSON.stringify(this.char)
 		}).then(() => {
 			console.log("saved char");
