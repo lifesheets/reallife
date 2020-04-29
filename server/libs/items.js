@@ -40,9 +40,9 @@ var classGroups = {
 
 
 const getClass = function(itemid) {
-	return Object.keys(classGroups).find(e => {
+	return parseInt(Object.keys(classGroups).find(e => {
 		return classGroups[e].indexOf(itemid) > -1;
-	});
+	}));
 }
 
 
@@ -59,11 +59,11 @@ weights[ITEM.KEY_PROPERTY] = 0.1;
 weights[ITEM.KEY_VEHICLE] = 0.1;
 weights[ITEM.CLOTHING_JACKET] = 0.2;
 
-var unique_items = [ITEMCLASS.KEYS,ITEMCLASS.WEAPON]
 
 function getWeight(item) {
 	return weights[item] || 1;
 }
+var unique_items = [ITEMCLASS.WEAPON,ITEMCLASS.KEYS];
 function isClassUnique(classs) {
 	return unique_items.indexOf(classs) > -1;
 }
@@ -84,9 +84,9 @@ const _types = {
 	PLAYER: type_count++,
 	PROPERTY: type_count++
 }
-
+global["TYPE"] = [];
 Object.keys(_types).forEach(function(key, value) {
-	global["TYPE_" + key] = _types[key];
+	global["TYPE"][key] = _types[key];
 })
 module.exports = {
 	items: items,

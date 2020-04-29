@@ -1,4 +1,4 @@
-mp.events.delayInitialization = true;
+mp.events.delayInitialization = false;
 var db = require("./database");
 require("./libs/attachments.js")
 require("./logic/index.js")
