@@ -15,7 +15,7 @@ mp.events.add("client:account:login", (player, username, password) => {
 	player.interface.account.login(username, password).then(e => {
 		//console.log("e", e);
 		player.call("server:game:start");
-		player.interface.vehicles.load();
+		//player.interface.vehicles.load();
 		player.interface.spawn();
 	}).catch(e => {
 		console.log("err", e);
@@ -38,7 +38,7 @@ mp.events.add("client:account:register", (player, username, password, email) => 
 	player.interface.account.register(username, password, email).then(e => {
 		//console.log("e", e);
 		player.interface.state = "register";
-		player.dimension = e.uid;
+		player.dimension = e.user_id;
 		player.call("server:intro:start");
 	}).catch(e => {
 		player.call("server:account:msg", [{

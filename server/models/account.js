@@ -12,10 +12,11 @@ class Account extends EventEmitter {
 		this.db = false;
 		this.loggedIn = false;
 		this.available = true;
+		this.ready = false;
 	}
-	get uid( ){
-		if ((!this.db) || (!this.ready)) return "-";
-		return this.db.uid;
+	get user_id( ){
+		if ((!this.db) || (!this.loggedIn)) return "-1";
+		return this.db.user_id;
 	}
 	get status() {
 		return this.loggedIn ? this.loggedIn : false;
