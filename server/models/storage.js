@@ -13,11 +13,17 @@ class Item extends EventEmitter {
     constructor(db_handle, data = false) {
         super();
         //this.uid = getUID.next().value; // runtime-unique stack id for instance
+        console.log(db_handle.id);
+        console.log(db_handle.data);
         this.db = db_handle;
         this.ready = false;
+        this._key_id = 125;
         if (this.db_handle == null) {
             this.create(data);
+        } else {
+            this.init();
         }
+        console.log("item constructor")
     }
     get id() {
         if ((!this.db) || (!this.ready)) return -1;
@@ -32,7 +38,15 @@ class Item extends EventEmitter {
     get db() {
         return this.db_handle;
     }
-    get ísUnique() {
+    get data() {
+        let f = JSON.parse(JSON.parse(this.db.data));
+        return f;
+    }
+    set data(d) {
+        console.log("d", d)
+        this.db.data = JSON.stringifyIfObject(d);
+    }
+    get isUnique() {
         if ((!this.db) || (!this.ready)) return "-";
         return (unique(getClass(data.type)));
     }
@@ -57,13 +71,6 @@ class Item extends EventEmitter {
     }
     get name() {
         return getName(this.db);
-    }
-    get data() {
-        return JSON.parse(this.db.data);
-    }
-    set data(d) {
-        console.log("d", d)
-        this.db.data = JSON.stringify(d);
     }
     get weight() {
         return weight(this.type)
@@ -114,6 +121,7 @@ class Item extends EventEmitter {
     }
     init() {
         this.ready = true;
+        console.log("item init");
     }
     async destroy(target = null) {
         console.log("destroy target", target);
@@ -124,10 +132,10 @@ class Item extends EventEmitter {
         if (!this.db) return new Error("No Db Handle");
         // TODO PARSE
         return JSON.stringify({
-        	id:this.id,
-        	type:this.type,
-        	class:this.class,
-        	count:this.count
+            id: this.id,
+            type: this.type,
+            class: this.class,
+            count: this.count
         }) // TODO
     }
     get componentVariation() {
@@ -146,7 +154,7 @@ class Item extends EventEmitter {
     }
     /* Item Data for Weapon Components
     {
-    	hash:"MODEL HASH"
+        hash:"MODEL HASH"
     }
     */
     get weaponComponents() {
@@ -165,18 +173,36 @@ class Item extends EventEmitter {
         return 0;
     }
     get key_id() {
+        console.log("first");
         if (getClass(this.type) != ITEMCLASS.KEYS) return new Error("Item invalid type", this.type);
-        if (!this.data.key_id) return new Error("Item has no key_id type", this.type);
-        return this.data.key_id;
+        console.log("sec this.data", this.data);
+        let d = this.data;
+        console.log("this.data.key_id", this.data)
+        if (!this.data.key_id) return new Error("Item has no key_id type");
+        return this.data["key_id"];
+    }
+    get vehicle_id() {
+        console.log("first");
+        if (getClass(this.type) != ITEMCLASS.KEYS) return new Error("Item invalid type", this.type);
+        if (!this.data.vehicle_id) return new Error("Item has no vehicle_id type", this.type);
+        return this.data.vehicle_id;
     }
 }
 class ItemManager extends EventEmitter {
     constructor(parent) {
         super();
-        this.parent = parent;
-        this.player = parent.player;
+        this.parent = parent || {};
+        this.player = this.parent.player || undefined;
+        this.type = this.parent.type || TYPE.GLOBAL;
+        this.id = this.parent.id
+        console.log("this.type", this.type);
         this._items = [];
         this.loaded = false;
+        if (this.type != TYPE.PLAYER) {
+            this.load();
+        } else {
+            this.id = this.parent.id
+        }
         console.log("ItemManager constructor")
     }
     getHandle(item) {
@@ -200,13 +226,13 @@ class ItemManager extends EventEmitter {
         return ritems;
     }
     getItemsByClass(classId) {
-        return this._items.find(e => {
+        return this._items.filter(e => {
             return e.class == classId;
         })
     }
     getItemByID(itemid) {
         return this._items.find(e => {
-            return e.itemid == itemid;
+            return e.id == itemid;
         })
     }
     modifyItem(tomerge) {
@@ -236,22 +262,33 @@ class ItemManager extends EventEmitter {
         this.player.call("server:storage:load", [this.parent.id, this.render_items])
     }
     load() {
-        if ((!this.parent.account.loggedIn) && (this.parent.type == "player")) return;
+        if ((this.parent.type == TYPE.PLAYER) && (!this.parent.account.loggedIn)) return;
+        console.log("owner_id", this.parent.id)
+        console.log("type", this.type)
+        console.log("this.parent", this.parent);
         Promise.all([
             Unique_ItemDB.findAll({
                 where: {
                     owner_id: this.parent.id,
-                    owner_type: this.parent.type
+                    owner_type: this.type
                 }
             }),
             Common_ItemDB.findAll({
                 where: {
                     owner_id: this.parent.id,
-                    owner_type: this.parent.type
+                    owner_type: this.type
                 }
             })
         ]).then(([commonItems, uniqueItems]) => {
             console.log("items", commonItems, uniqueItems)
+            this._items = [];
+            console.log("items", items);
+            [...commonItems, ...uniqueItems].forEach(i => {
+                let cItem = new Item(i, undefined);
+                this._items.push(cItem);
+            })
+            console.log("server:storage:load fire")
+            this.emit("server:storage:load", this.parent.id);
         }).catch(err => {
             console.log("error fetching items", err);
         })
