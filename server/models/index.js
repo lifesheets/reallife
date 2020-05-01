@@ -1,3 +1,5 @@
 //require("./house.js")
 require("./logs.js")
+require("./vehicle.js")
 require("./player.js")
+require("./world_entity.js")

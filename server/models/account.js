@@ -47,6 +47,7 @@ class Account extends EventEmitter {
 					bcrypt.compare(password, pAccount.password).then((res) => {
 						if (res == true) {
 							this.db = pAccount;
+							this.parent.id = this.db.user_id;
 							this.loggedIn = true;
 							this.player.setVariable("loggedIn", true);
 							return resolve(pAccount);
@@ -91,6 +92,7 @@ class Account extends EventEmitter {
 					}).then((e) => {
 						console.log("Account created", e);
 						this.db = e;
+						this.parent.id = this.db.user_id;
 						this.loggedIn = true;
 						this.available = true;
 						return resolve(e);
