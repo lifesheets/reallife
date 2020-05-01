@@ -1,5 +1,15 @@
+var EventEmitter = require('events').EventEmitter;
 var _getRandomInt = function(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+JSON.stringifyIfObject = function stringifyIfObject(obj){
+    if(typeof obj == "object")
+        return JSON.stringify(obj);
+    else{
+        alert("found already stringified object")
+        return obj;
+    }
 }
 
 module.exports.timeout = (interval = 1000, checkFunc, max = 10000) => {
@@ -45,6 +55,8 @@ function* getKeyID() {
 }
 getKeyID.prototype.add = (id)=> {
 	key_cache[id] = true;
+	console.log(key_cache);
 	return key_cache[id];
 };
 module.exports.getKeyID = getKeyID();
+module.exports.events = new EventEmitter();
