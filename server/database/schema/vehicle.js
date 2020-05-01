@@ -203,6 +203,10 @@ module.exports = function(sequelize, DataTypes) {
     color2_b: {
       type: DataTypes.INTEGER(11),
       allowNull: true
+    },
+    data: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     tableName: 'vehicle'

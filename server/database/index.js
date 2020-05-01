@@ -5,6 +5,7 @@ const {
 } = require('sequelize');
 var mysql = require('mysql');
 
+var e = require("../libs/utils.js").events;
  
 // pass TMmzs9oo9DL6Y9Fm;
 //const sequelize = new Sequelize("reallife", 'ragemp', 'RGj2sVmBtxLdJ90L', {
@@ -32,7 +33,8 @@ var bank_accountDB = require("./schema/bank_account.js")(sequelize,DataTypes);
 var bank_transactionDB = require("./schema/bank_transaction.js")(sequelize,DataTypes);
 sequelize.authenticate().then(() => {
 	sequelize.sync().then(() => {
-		//mp.events.delayInitialization = false;
+		mp.events.delayInitialization = false;
+		e.emit("DatabaseConnected")
 		console.log('Connection has been established successfully.');
 	}).catch(err => {
 		console.error('Failed syncing Database', err);
