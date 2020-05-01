@@ -82,7 +82,9 @@ const getID = function(name) {
 let type_count = 0;
 const _types = {
 	PLAYER: type_count++,
-	PROPERTY: type_count++
+	PROPERTY: type_count++,
+	GLOBAL: type_count++,
+	FACTION: type_count++
 }
 global["TYPE"] = [];
 Object.keys(_types).forEach(function(key, value) {
