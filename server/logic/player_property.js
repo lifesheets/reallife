@@ -18,6 +18,18 @@ webHooks.add('commentDiscord', 'https://discordapp.com/api/webhooks/665736383800
 }).catch(function(err) {
 	console.log(err)
 });
+
+
+
+
+
+
+
+
+
+
+
+
 mp.events.addCommand("cash", (player, fullText, ...args) => {
 	let cash = args[0];
 	player.interface.money = parseInt(cash);
@@ -51,7 +63,7 @@ mp.events.addCommand("rgb", (player, fullText, ...args) => {
 	let g = parseInt(args[1]);
 	let b = parseInt(args[2]);
 	console.log(r, g, b);
-	veh.interface.setTune({
+	veh.interface.tune({
 		"rgb": {
 			r1: r,
 			g1: g,
@@ -69,7 +81,7 @@ mp.events.addCommand("color", (player, fullText, ...args) => {
 	let f = parseInt(args[0]);
 	let s = parseInt(args[1]);
 	console.log(f, s);
-	veh.interface.setTune({
+	veh.interface.tune({
 		"color": {
 			first: f,
 			second: s
@@ -84,7 +96,7 @@ mp.events.addCommand("neon", (player, fullText, ...args) => {
 	let g = parseInt(args[1]);
 	let b = parseInt(args[2]);
 	console.log(r, g, b);
-	veh.interface.setTune({
+	veh.interface.tune({
 		"neon": {
 			r: r,
 			g: g,
@@ -99,7 +111,7 @@ mp.events.addCommand("tune", (player, fullText, ...args) => {
 	let type = parseInt(args[0]);
 	let index = parseInt(args[1]);
 	console.log(type, index);
-	veh.interface.setTune({
+	veh.interface.tune({
 		[`mod_${type}`]: {
 			type: type,
 			index: index
