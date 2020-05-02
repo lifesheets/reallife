@@ -13,8 +13,14 @@ class Item extends EventEmitter {
     constructor(db_handle, data = false) {
         super();
         //this.uid = getUID.next().value; // runtime-unique stack id for instance
-        console.log(db_handle.id);
-        console.log(db_handle.data);
+        if (db_handle) {
+            console.log(db_handle.id);
+            console.log(JSON.parse(db_handle.data).key_id);
+            console.log(JSON.stringify({
+                "key_id": 1543,
+                "vehicle_id": 1
+            }));
+        }
         this.db = db_handle;
         this.ready = false;
         this._key_id = 125;
@@ -24,6 +30,22 @@ class Item extends EventEmitter {
             this.init();
         }
         console.log("item constructor")
+    }
+    get pos_cell() {
+        if ((!this.db) || (!this.ready)) return -1;
+        return this.db.pos_cell;
+    }
+    get pos_row() {
+        if ((!this.db) || (!this.ready)) return -1;
+        return this.db.pos_row;
+    }
+    set pos_cell(e) {
+        if ((!this.db) || (!this.ready)) return -1;
+        this.db.pos_cell = e;
+    }
+    set pos_row(e) {
+        if ((!this.db) || (!this.ready)) return -1;
+        this.db.pos_row = e;
     }
     get id() {
         if ((!this.db) || (!this.ready)) return -1;
@@ -39,7 +61,7 @@ class Item extends EventEmitter {
         return this.db_handle;
     }
     get data() {
-        let f = JSON.parse(JSON.parse(this.db.data));
+        let f = JSON.parse(this.db.data);
         return f;
     }
     set data(d) {
@@ -128,15 +150,18 @@ class Item extends EventEmitter {
         // todo selfdescuct
         return true;
     }
-    parse() {
+    minify() {
         if (!this.db) return new Error("No Db Handle");
         // TODO PARSE
-        return JSON.stringify({
+        return {
             id: this.id,
             type: this.type,
             class: this.class,
-            count: this.count
-        }) // TODO
+            count: this.count,
+            pos_x: this.pos_x,
+            pos_y: this.pos_y,
+            data: this.data
+        } // TODO
     }
     get componentVariation() {
         if (getClass(this.type) != ITEMCLASS.CLOTHING) return new Error("Item invalid type", this.type);
@@ -193,9 +218,12 @@ class ItemManager extends EventEmitter {
         super();
         this.parent = parent || {};
         this.player = this.parent.player || undefined;
-        this.type = this.parent.type || TYPE.GLOBAL;
+        this.type = this.parent.type;
         this.id = this.parent.id
         console.log("this.type", this.type);
+        console.log("this.PLAYER", this.type == TYPE.PLAYER);
+        console.log("this.GLOBAL", this.type == TYPE.GLOBAL);
+        console.log("this.PROPERTY", this.type == TYPE.PROPERTY);
         this._items = [];
         this.loaded = false;
         if (this.type != TYPE.PLAYER) {
@@ -223,7 +251,7 @@ class ItemManager extends EventEmitter {
                 ritems.push(item.parse());
             }
         });
-        return ritems;
+        return JSON.stringify(ritems);
     }
     getItemsByClass(classId) {
         return this._items.filter(e => {
@@ -251,7 +279,7 @@ class ItemManager extends EventEmitter {
         } else {
             // create new
             console.log("create");
-            cItem = new Item(undefined, iData);
+            cItem = new Item(null, iData);
             this._items.push(cItem);
         }
         console.log("added item", iData);
@@ -265,7 +293,6 @@ class ItemManager extends EventEmitter {
         if ((this.parent.type == TYPE.PLAYER) && (!this.parent.account.loggedIn)) return;
         console.log("owner_id", this.parent.id)
         console.log("type", this.type)
-        console.log("this.parent", this.parent);
         Promise.all([
             Unique_ItemDB.findAll({
                 where: {
@@ -288,7 +315,7 @@ class ItemManager extends EventEmitter {
                 this._items.push(cItem);
             })
             console.log("server:storage:load fire")
-            this.emit("server:storage:load", this.parent.id);
+            this.emit("server:storage:load", this.parent.id, this.type);
         }).catch(err => {
             console.log("error fetching items", err);
         })
@@ -339,14 +366,17 @@ mp.events.addCommand("common", async (player) => {
     player.interface.inventory.sync();
 });
 mp.events.addCommand("unique", async (player) => {
+    console.log(player.interface);
     await player.interface.inventory.addItem({
-        type: ITEM.WEAPON_M4,
+        type: ITEM.KEY_VEHICLE,
         owner_id: player.interface.id,
         owner_type: player.interface.type,
         pos_cell: -1,
         pos_row: -1,
-        data: {},
-        count: 15
+        data: {
+            key_id: 1500,
+            vehicle_id: 1
+        }
     });
     player.interface.inventory.sync();
 });
