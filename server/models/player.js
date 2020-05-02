@@ -22,10 +22,10 @@ class Player extends EventEmitter {
         this.appearance = new Appearance(this);
         this.logger = new LogManager("Player", player.name);
         this.inventory = new ItemManager(this);
-        //this.vehicles = new VehicleManager(this);
+        this.vehicles = new VehicleManager(this);
         this.player.account = this.account;
         this.player.inventory = this.inventory;
-        //this.player.vehicles = this.vehicles;
+        this.player.vehicles = this.vehicles;
         this.player.appearance = this.appearance;
     }
     get authState() {
@@ -66,7 +66,7 @@ class Player extends EventEmitter {
         }, 5000);
     }
     async spawn() {
-        let spawnPoint = new mp.Vector3(-96.99, -1137.83, 27.92);
+        let spawnPoint = new mp.Vector3(38,-776,32);
         this.player.spawn(spawnPoint);
         this.appearance.load();
         this.inventory.load();
