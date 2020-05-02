@@ -19,31 +19,36 @@ var lastRPM = 0;
 var last_seatbelt = false;
 var c_seatbelt = false;
 var last_update = Date.now();
+var last_tick = Date.now();
 mp.events.add("render", () => {
     // tacho
-    if (mp.cache["hud_ready"]) {
-        if (mp.players.local.isInAnyVehicle(false)) {
-            let speed = (mp.players.local.vehicle.getSpeed() * 3.6);
-            if ((lastSpeed != speed)) {
-                let seatbelt_blink = false;
-                if ((speed > 20) && (c_seatbelt == false)) {
-                    if ((last_update + 500) < Date.now()) {
-                        last_update = Date.now();
-                        last_seatbelt = !last_seatbelt;
-                    }
+    let cur_tick = Date.now();
+    if ((last_tick + 10) < cur_tick) {
+        last_tick = cur_tick;
+        if (mp.cache["hud_ready"]) {
+            if (mp.players.local.isInAnyVehicle(false)) {
+                let speed = (mp.players.local.vehicle.getSpeed() * 3.6);
+                if ((lastSpeed != speed)) {
+                    let seatbelt_blink = false;
+                    if ((speed > 20) && (c_seatbelt == false)) {
+                        if ((last_update + 500) < Date.now()) {
+                            last_update = Date.now();
+                            last_seatbelt = !last_seatbelt;
+                        }
                         seatbelt_blink = last_seatbelt;
-                } else {
-                    seatbelt_blink = false;
+                    } else {
+                        seatbelt_blink = false;
+                    }
+                    CEFHud.call("drawTacho2", speed, mp.players.local.vehicle.getVariable('FUEL_LEVEL'), mp.players.local.vehicle.getHeading(), false, mp.players.local.vehicle.getIsEngineRunning(), seatbelt_blink);
+                    isTachoVisible = true;
+                    lastSpeed = speed;
                 }
-                CEFHud.call("drawTacho2", speed, 45, mp.players.local.vehicle.getHeading(), false, mp.players.local.vehicle.getIsEngineRunning(), seatbelt_blink);
-                isTachoVisible = true;
-                lastSpeed = speed;
-            }
-            //return;
-        } else {
-            if (isTachoVisible) {
-                CEFHud.call("clearTacho");
-                isTachoVisible = false;
+                //return;
+            } else {
+                if (isTachoVisible) {
+                    CEFHud.call("clearTacho");
+                    isTachoVisible = false;
+                }
             }
         }
     }
@@ -69,7 +74,7 @@ mp.events.add("render", () => {
         }
     }
     if (localVeh) {
-        mp.game.graphics.drawText("DIRT" + localVeh.getVariable('dirt_level'), [0.5, 0.75], {
+        mp.game.graphics.drawText("DIRT " + localVeh.getVariable('DIRT_LEVEL'), [0.5, 0.75], {
             font: 4,
             color: [255, 255, 255, 200],
             scale: [0.4, 0.4],
@@ -78,10 +83,8 @@ mp.events.add("render", () => {
     }
 });
 mp.events.addDataHandler("vehicle:seatbelt:status", (entity, value, oldValue) => {
-    //mp.gui.chat.push("Seatbelt  " + seatbelt)
     console.log("seatbelt", value)
     c_seatbelt = value;
-    //Tacho.setSeatbelt(seatbelt);
     mp.players.local.setConfigFlag(32, value ? true : false);
 })
 mp.events.addDataHandler("vehicle:engine:status", (entity, value, oldValue) => {
@@ -103,19 +106,49 @@ mp.events.add('playerEnterVehicle', (vehicle, seat) => {
 // Engine
 //client:vehicle:engine
 mp.keys.bind(0x58, false, () => {
-    //client:vehicle:engine
     if (mp.players.local.vehicle) {
-        mp.events.callRemote("client:vehicle:engine");
-        //mp.players.local.vehicle
+        mp.events.callRemote("vehicle:engine:toggle");
+        mp.events.callRemote("vehicle:lock:toggle");
     }
 });
-//vehicle:seatbelt:toggle
+//vehicle:seatbelt:toggle 
 mp.keys.bind(0x4C, false, () => {
-    //client:vehicle:engine
     if (mp.players.local.vehicle) {
         mp.events.callRemote("vehicle:seatbelt:toggle");
-        //mp.players.local.vehicle
     }
+});
+//vehicle:light:toggle 
+mp.keys.bind(0x48, false, () => {
+    if (mp.players.local.vehicle) {
+        mp.events.callRemote("vehicle:light:toggle");
+    }
+});
+
+function handleLightForVehicle(vehicle) {
+    if (vehicle == undefined) return;
+    if (vehicle.type != "vehicle") return;
+    let lightData = vehicle.getVariable("vehicle:light:status")
+    console.log("lightdata", lightData,typeof lightData);
+    if (lightData) {
+    if (lightData.lightStatus) {
+        if (lightData.lightStatus == false) {
+            vehicle.setLights(1);
+            vehicle.setLightMultiplier(lightData.lightMul);
+        } else {
+            vehicle.setLightMultiplier(lightData.lightMul);
+            vehicle.setLights(2);
+        }
+    }
+    }
+}
+mp.events.addDataHandler("vehicle:light:status", (entity, value, oldValue) => {
+    console.log("vehicle:light:status", value)
+    if (entity.type != "vehicle") return;
+    handleLightForVehicle(entity)
+});
+mp.events.add('entityStreamIn', (entity) => {
+    if (entity.type != "vehicle") return;
+    handleLightForVehicle(entity)
 });
 var seats = {
     0: "seat_pside_f", // passanger side front
