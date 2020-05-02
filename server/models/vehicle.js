@@ -13,16 +13,6 @@ var WorldVehicles = new class {
     constructor() {
         this._vehicles = [];
     }
-    has(key_id) {
-        return this._vehicles.find(e => {
-            return e.key == key_id;
-        })
-    }
-    add(key_id = null, id = null, data) {
-        let veh = new Vehicle(key_id, id, data);
-        this._vehicles.push(veh)
-        return veh;
-    }
     register(vehicle) {
         this._vehicles.push(vehicle)
     }
@@ -41,13 +31,12 @@ class Vehicle extends EventEmitter {
             ry: 0,
             rz: 0
         };
-        this.kmTravel = 0;
-        this.kmClean = 0;
-        this._tuning = {};
         this.health = 500;
         this.armor = 1000;
         this.vehicle = undefined;
         this.worldType = worldType;
+        this.lightState = false;
+        this.lightMul = 1;
         if (this.db != undefined) {
             this.load();
         } else {
@@ -61,11 +50,11 @@ class Vehicle extends EventEmitter {
     }
     set model(e) {
         if (!this.db) return new Error("No Model for Veh");
-        console.log("SET MODEL ID",e);
+        console.log("SET MODEL ID", e);
         this.db.model_id = e;
     }
     get data() {
-        let f = JSON.parse(JSON.parse(this.db.data));
+        let f = JSON.parse(this.db.data || JSON.stringify({}));
         return f;
     }
     set data(d) {
@@ -87,10 +76,26 @@ class Vehicle extends EventEmitter {
     get key() {
         return this.key_id;
     }
+    get tuning() {
+        if (!this.db) return new Error("No db for Veh");
+        return JSON.parse(this.db.tuning || JSON.stringify({}));
+    }
+    set tuning(e) {
+        if (!this.db) return new Error("No db for Veh");
+        this.db.tuning = JSON.stringify(e);
+    }
+    get fuel() {
+        if (!this.db) return new Error("No db for Veh");
+        return this.data.fuel;
+    }
+    set fuel(e) {
+        if (!this.db) return new Error("No db for Veh");
+        this.data.fuel = e;
+    }
     init() {
-       // this.id = this.db.vid;
-        console.log("this.db.model_id",this.db.model_id);
-       // this.model = this.db.model_id;
+        // this.id = this.db.vid;
+        console.log("this.db.model_id", this.db.model_id);
+        // this.model = this.db.model_id;
         this.park_position = {
             x: this.db.pos_x,
             y: this.db.pos_y,
@@ -99,11 +104,10 @@ class Vehicle extends EventEmitter {
             ry: this.db.rot_ry,
             rz: this.db.rot_rz
         };
-        this._tuning = this.db.data ? JSON.parse(this.db.data) : {};
         //this.player.setVariable("hunger_val", val);
         //this.kmTravel = this.db.kmTravel;
         //this.kmClean = this.db.kmClean;
-        console.log("this._tuning",this._tuning);
+        console.log("this.tuning", this.tuning);
         this.spawn();
     }
     create(data) {
@@ -115,6 +119,7 @@ class Vehicle extends EventEmitter {
             "rot_rx": data.rot_rx,
             "rot_ry": data.rot_ry,
             "rot_rz": data.rot_rz,
+            "tuning": JSON.stringify({}),
             "data": JSON.stringify({})
         }).then((mVeh) => {
             this.id = mVeh.id;
@@ -123,7 +128,7 @@ class Vehicle extends EventEmitter {
         })
     }
     tune(data) {
-        this._tuning = Object.assign(this._tuning, data);
+        this.tuning = Object.assign(this.tuning, data);
     }
     load() {
         if (!this.db) {
@@ -159,11 +164,8 @@ class Vehicle extends EventEmitter {
         this.loadTunes();
         console.log("spawn", this.vehicle.position);
         this.emit("created");
+        this.update(0);
         return this.vehicle;
-    }
-    fuel() {
-        //this._lastKM = 0;
-        //kmTravel
     }
     respawn() {
         this.vehicle.destroy();
@@ -180,11 +182,12 @@ class Vehicle extends EventEmitter {
             ry: parseFloat(this.vehicle.rotation.y),
             rz: parseFloat(this.vehicle.rotation.z)
         };
+        this.db.save();
     }
     loadTunes() {
         if (!this.vehicle) return;
-        Object.keys(this._tuning).forEach((name) => {
-            let tune = this._tuning[name];
+        Object.keys(this.tuning).forEach((name) => {
+            let tune = this.tuning[name];
             console.log("tune", tune);
             console.log("name", name);
             if (name.indexOf("mod") > -1) {
@@ -215,30 +218,60 @@ class Vehicle extends EventEmitter {
         //todo
     }
     save() {
-        this.db.x = this.park_position.x;
-        this.db.y = this.park_position.y;
-        this.db.z = this.park_position.z;
-        this.db.rx = this.park_position.rx;
-        this.db.ry = this.park_position.ry;
-        this.db.rz = this.park_position.rz;
-        this.db.data = JSON.stringify(this._tuning);
+        this.db.pos_x = this.park_position.x;
+        this.db.pos_y = this.park_position.y;
+        this.db.pos_z = this.park_position.z;
+        this.db.rot_rx = this.park_position.rx;
+        this.db.rot_ry = this.park_position.ry;
+        this.db.rot_rz = this.park_position.rz;
+        this.db.tuning = JSON.stringify(this.tuning);
+        this.db.data = JSON.stringify(this.data);
         this.db.save().then(() => {
-            console.log("saved veh");
+            console.log("saved veh", this.db.data);
         }).catch(err => {
             console.log("err saving", err);
         })
         //this._tuning = this.db.data ? JSON.parse(this.db.data) : {};
     }
-    update() {}
+    update(dist = 0) {
+        let data = this.data;
+        if (!data.mTravel) data.mTravel = 0;
+        if (!data.mClean) data.mClean = 0;
+        if (data.fuel == undefined) data.fuel = 90;
+        data.mTravel += dist;
+        data.mClean += dist;
+        let dirt_level = (data.mClean / dirt_mul) > 15 ? 15 : (data.mClean / dirt_mul);
+        this.vehicle.setVariable("DIRT_LEVEL", dirt_level)
+        let fuelConsumptionPerKM = 5.56 / 100;
+        let kmTraveled = dist / 1000;
+        if ((data.fuel - fuelConsumptionPerKM * kmTraveled) > 0) {
+            data.fuel -= fuelConsumptionPerKM * kmTraveled;
+        } else {
+            data.fuel = 0;
+            this.vehicle.engine = false;
+            this.vehicle.setVariable("vehicle:engine:status", this.vehicle.engine)
+            console.log("this.data",data);
+            this.data = data;
+        }
+        this.data = data;
+        this.vehicle.setVariable("FUEL_LEVEL", this.data.fuel)
+        this.save();
+    }
     toggleLock() {
         let newState = !this.vehicle.locked;
         this.vehicle.locked = newState;
     }
     toggleEngine() {
-        let newState = !this.vehicle.engine;
-        this.vehicle.engine = newState;
-        this.vehicle.setVariable("vehicle:engine:status", this.vehicle.engine)
-        //vehicle:engine:status
+        if ((this.data.fuel) > 0) {
+            let newState = !this.vehicle.engine;
+            this.vehicle.engine = newState;
+            this.vehicle.setVariable("vehicle:engine:status", this.vehicle.engine)
+            //vehicle:engine:status
+        } else {
+
+            this.vehicle.engine = false;
+            this.vehicle.setVariable("vehicle:engine:status", this.vehicle.engine)
+        }
     }
 }
 mp.events.add("client:vehicle:update", (player, dist) => {
@@ -246,15 +279,11 @@ mp.events.add("client:vehicle:update", (player, dist) => {
     let pVeh = player.vehicle;
     if (pVeh.interface) {
         console.log("has interface");
-        pVeh.interface.kmTravel += dist;
-        pVeh.interface.kmClean += dist;
-        let dirt_level = (pVeh.interface.kmClean / dirt_mul) > 15 ? 15 : (pVeh.interface.kmClean / dirt_mul);
-        console.log("dirt level", dirt_level);
-        pVeh.setVariable("dirt_level", dirt_level)
+        pVeh.interface.update(dist);
     }
 });
-mp.events.add("client:vehicle:engine", (player) => {
-    console.log("client:vehicle:engine", player.name);
+mp.events.add("vehicle:engine:toggle", (player) => {
+    console.log("vehicle:engine:toggle", player.name);
     // seat player.seat;
     //let veh_index = veh_index[this.id]
     let pVeh = player.vehicle;
@@ -268,9 +297,35 @@ mp.events.add("client:vehicle:engine", (player) => {
         pVeh.setVariable("vehicle:engine:status", pVeh.engine)
     }
 });
+mp.events.add("vehicle:lock:toggle", (player) => {
+    console.log("vehicle:lock:toggle", player.name);
+    // seat player.seat;
+    //let veh_index = veh_index[this.id]
+    let pVeh = player.vehicle;
+    if (pVeh.interface) {
+        console.log("has interface");
+        pVeh.interface.toggleLock();
+    }
+});
 mp.events.add("vehicle:seatbelt:toggle", (player) => {
     console.log("vehicle:seatbelt:toggle", player.name);
     player.setVariable("vehicle:seatbelt:status", !player.getVariable("vehicle:seatbelt:status"))
+});
+mp.events.add("vehicle:light:toggle", (player) => {
+    console.log("vehicle:light:toggle", player.name);
+    let pVeh = player.vehicle;
+    if (pVeh.interface) {
+        pVeh.interface.lightState = !pVeh.interface.lightState;
+        if (pVeh.interface.lightState == false) {
+            pVeh.interface.lightMul = 0;
+        } else {
+            pVeh.interface.lightMul = 5;
+        }
+        player.setVariable("vehicle:light:status", {
+            lightMul: pVeh.interface.lightMul,
+            lightState: pVeh.interface.lightState,
+        })
+    }
 });
 class VehicleManager {
     constructor(parent) {
