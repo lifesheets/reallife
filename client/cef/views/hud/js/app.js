@@ -303,7 +303,7 @@ function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbel
 			let iTickRad = degreesToRadians(180);
 			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
 			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
-			context.fillText('\u0042', x, y);
+			context.fillText('\u0041', x, y);
 			context.closePath();
 		}
 		// Light
@@ -316,7 +316,7 @@ function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbel
 			let iTickRad = degreesToRadians(0);
 			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
 			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
-			context.fillText('\u0044', x, y);
+			context.fillText('\u0043', x, y);
 			context.closePath();
 		}
 		// Seatbelt
@@ -333,7 +333,7 @@ function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbel
 			let iTickRad = degreesToRadians(140);
 			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
 			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
-			context.fillText('\u0042', x, y);
+			context.fillText('\u0044', x, y);
 			context.closePath();
 		}
 	}
@@ -367,7 +367,7 @@ function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbel
 				let iTickRad = degreesToRadians(90);
 				let x = centerX + (radius * 0.6) * Math.cos(iTickRad);
 				let y = centerY + (radius * 0.6) * Math.sin(iTickRad);
-				context.fillText('\u0043', x, y);
+				context.fillText('\u0042', x, y);
 				context.closePath();
 			}
 			// Left E

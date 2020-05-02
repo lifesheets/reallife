@@ -143,7 +143,7 @@ body {
 }
 #player_hud>.cash>span::before {
     font-family: Glyphter;
-    content: "\0041";
+    content: "\0045";
     /* background-image: url(wallet.svg)*/
     top: -2px;
     left: 0;
