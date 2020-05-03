@@ -143,7 +143,7 @@ body {
 }
 #player_hud>.cash>span::before {
     font-family: Glyphter;
-    content: "\0045";
+    content: "\0046";
     /* background-image: url(wallet.svg)*/
     top: -2px;
     left: 0;
@@ -197,7 +197,7 @@ body {
 }
 #player_hud>.hunger::before {
     font-family: Glyphter;
-    content: '\0045';
+    content: '\0044';
     /* background-image: url(wallet.svg)*/
     top: -2px;
     left: 0;

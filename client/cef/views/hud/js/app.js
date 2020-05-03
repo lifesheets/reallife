@@ -333,7 +333,7 @@ function drawTacho2(speed, fuel, heading, light = false, engine = false, seatbel
 			let iTickRad = degreesToRadians(140);
 			let x = centerX + (radius * 0.45) * Math.cos(iTickRad);
 			let y = centerY + (radius * 0.45) * Math.sin(iTickRad);
-			context.fillText('\u0044', x, y);
+			context.fillText('\u0045', x, y);
 			context.closePath();
 		}
 	}
@@ -647,7 +647,7 @@ function init(minimap) {
 	let width = $(window).width();
 	let offset = {
 		top: 0,
-		left: 25
+		left: 50
 	}
 	let cell = 0;
 	console.log("load minimap", minimap);

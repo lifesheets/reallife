@@ -10648,30 +10648,18 @@ mp.nametags.enabled = false;
 mp.gui.chat.colors = true;
 
 
-
 mp.events.add('render', (nametags) => {
     let startPosition = mp.players.local.getBoneCoords(12844, 0, 0, 0);
     if ((mp.players.local.getVariable("spawned") == true) && (mp.players.local.getVariable("death") == false)) {
         mp.players.forEachInStreamRange((player) => {
-            if (player != mp.players.local) {
+           // if (player != mp.players.local) {
                 if (mp.game.system.vdist2(startPosition.x, startPosition.y, startPosition.z, player.position.x, player.position.y, player.position.z) < 400) {
                     if ((player.getVariable("spawned") == true)) {
                         let endPosition = player.getBoneCoords(12844, 0, 0, 0);
                         let hitData = mp.raycasting.testPointToPoint(startPosition, endPosition, mp.players.local, (1 | 16 | 256));
                         if (!hitData) {
-                            let color = [255, 255, 255, 200];
-                            let r = mp.lerp(170, 255, 1 / 100 * player.getHealth())
-                            let g = mp.lerp(30, 255, 1 / 100 * player.getHealth())
-                            let b = mp.lerp(30, 255, 1 / 100 * player.getHealth())
-                            if ((1 / 100 * player.getHealth()) < 0.1) {
-                                color[0] = 170;
-                                color[1] = 30;
-                                color[2] = 30;
-                            } else {
-                                color[0] = r;
-                                color[1] = g;
-                                color[2] = b;
-                            }
+                            let color = [200, 200, 200, 255];
+
                             let lPos = mp.players.local.position;
                             let pos = player.getWorldPositionOfBone(player.getBoneIndexByName("IK_Head"));
                             pos.z += 0.4;
@@ -10687,6 +10675,7 @@ mp.events.add('render', (nametags) => {
                             if (player.getVariable('playerName') != null) {
                                 playerName = player.getVariable('playerName');
                             }
+
                             mp.game.graphics.setDrawOrigin(pos.x, pos.y, pos.z, 0);
                             mp.game.graphics.drawText(playerName, [0, 0], {
                                 font: 4,
@@ -10697,7 +10686,7 @@ mp.events.add('render', (nametags) => {
                             mp.game.graphics.clearDrawOrigin()
                         }
                     }
-                }
+               // }
             }
         })
     }
@@ -10823,8 +10812,26 @@ function getMinimapAnchor() {
     minimap.topY = minimap.bottomY - minimap.height;
     return minimap;
 }
+var vector3_cache = [];
+function vector3_avg(vector, identifier, range = 25) {
+    if (!vector3_cache[identifier]) vector3_cache[identifier] = [];
+    vector3_cache[identifier].push(vector);
+    if (vector3_cache[identifier].length > range) {
+        let vector3_avg = vector3_cache[identifier].reduce((cur,acc) => {
+            acc.x += cur.x;
+            acc.y += cur.y;
+            acc.z += cur.z;
+            return acc;
+        },new mp.Vector3(0,0,0));
+
+        vector3_cache[identifier].splice(0);
+        return new mp.Vector3(vector3_avg.x/range,vector3_avg.y/range,vector3_avg.z/range);
+    }
+    return vector;
+}
 module.exports = {
-    minimap_anchor: getMinimapAnchor
+    minimap_anchor: getMinimapAnchor,
+    vector3_avg: vector3_avg
 }
 },{}],20:[function(require,module,exports){
 mp.Vector3.prototype.findRot = function(rz, dist, rot) {
@@ -10969,6 +10976,7 @@ Array.prototype.shuffle = function() {
 }
 },{}],21:[function(require,module,exports){
 var CEFHud = require("./browser.js").hud;
+var Vector3EMA = require("./utils.js").vector3_ema;
 var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
     //const isInvincible = entity.getVariable('isInvincible');
@@ -10980,7 +10988,7 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 500;
+var updateThreshold = 1000;
 var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
@@ -11201,7 +11209,7 @@ mp.keys.bind(0x47, false, () => {
         }
     }
 });
-},{"./browser.js":5}],22:[function(require,module,exports){
+},{"./browser.js":5,"./utils.js":19}],22:[function(require,module,exports){
 var marker_data = [];
 
 function drawMarker(id) {

@@ -1,4 +1,5 @@
 var CEFHud = require("./browser.js").hud;
+var Vector3EMA = require("./utils.js").vector3_ema;
 var isTachoVisible = false;
 mp.events.add('entityStreamIn', (entity) => {
     //const isInvincible = entity.getVariable('isInvincible');
@@ -10,7 +11,7 @@ mp.events.addDataHandler("dirt_level", (entity, value) => {
     if (entity.type !== 'vehicle') return;
     entity.setDirtLevel(value);
 });
-var updateThreshold = 500;
+var updateThreshold = 1000;
 var last_pos = null;
 var kmCounter = 0;
 var kmTotal = 0;
