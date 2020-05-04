@@ -8,8 +8,8 @@ var mysql = require('mysql');
 var e = require("../libs/utils.js").events;
  
 // pass TMmzs9oo9DL6Y9Fm;
-//const sequelize = new Sequelize("reallife", 'ragemp', 'RGj2sVmBtxLdJ90L', {
-const sequelize = new Sequelize("reallife", 'root', '', {
+const sequelize = new Sequelize("reallife", 'ragemp', 'panzerKnacker', {
+//const sequelize = new Sequelize("reallife", 'root', '', {
 	host: '127.0.0.1',   //or 127.0.0.1
   	dialect: 'mysql',
   	logging: function () {},
@@ -37,9 +37,11 @@ sequelize.authenticate().then(() => {
 		e.emit("DatabaseConnected")
 		console.log('Connection has been established successfully.');
 	}).catch(err => {
+		mp.events.delayInitialization = false;
 		console.error('Failed syncing Database', err);
 	});
 }).catch(err => {
+	mp.events.delayInitialization = false;
 	console.error('Unable to connect to the database:', err);
 });
 module.exports = {
