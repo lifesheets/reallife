@@ -15,7 +15,7 @@ class WorldEntity extends EventEmitter {
         this.logger = new LogManager("WorldEntity", "undefined");
         this.inventory = new ItemManager(this);
         this.vehicles = new VehicleManager(this);
-        console.log("World Entity Constructor")
+        console.log("World Entity Constructor 1")
 
     }
     get id() {
