@@ -33,15 +33,12 @@ var bank_accountDB = require("./schema/bank_account.js")(sequelize,DataTypes);
 var bank_transactionDB = require("./schema/bank_transaction.js")(sequelize,DataTypes);
 sequelize.authenticate().then(() => {
 	sequelize.sync().then(() => {
-		mp.events.delayInitialization = false;
 		e.emit("DatabaseConnected")
 		console.log('Connection has been established successfully.');
 	}).catch(err => {
-		mp.events.delayInitialization = false;
 		console.error('Failed syncing Database', err);
 	});
 }).catch(err => {
-	mp.events.delayInitialization = false;
 	console.error('Unable to connect to the database:', err);
 });
 module.exports = {
