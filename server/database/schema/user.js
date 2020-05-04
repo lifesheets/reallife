@@ -69,7 +69,7 @@ module.exports = function(sequelize, DataTypes) {
         group_rank: {
             type: DataTypes.INTEGER(11),
             allowNull: true,
-            defaultValue: '1'
+            defaultValue: '0'
         },
         life: {
             type: DataTypes.INTEGER(11),

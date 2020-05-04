@@ -248,7 +248,7 @@ class ItemManager extends EventEmitter {
         let ritems = [];
         this.items.forEach(item => {
             if (item.created) {
-                ritems.push(item.parse());
+                ritems.push(item.minify());
             }
         });
         return JSON.stringify(ritems);

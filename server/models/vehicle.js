@@ -37,7 +37,7 @@ class Vehicle extends EventEmitter {
         this.worldType = worldType;
         this.lightState = false;
         this.lightMul = 1;
-        if (this.db != undefined) {
+        if ((this.db != undefined) || (this.db != null)) {
             this.load();
         } else {
             this.create(data);
@@ -123,7 +123,7 @@ class Vehicle extends EventEmitter {
             "data": JSON.stringify({})
         }).then((mVeh) => {
             this.id = mVeh.id;
-            this.db = mVeh.db;
+            this.db = mVeh;
             this.init();
         })
     }
