@@ -123,7 +123,7 @@ mp.events.addCommand("aveh", async (player, fullText, ...args) => {
     })
     veh.on("created", async () => {
         console.log("created veh");
-        await player.interface.inventory.addItem({
+        await player.inventory.addItem({
             type: ITEM.KEY_VEHICLE,
             owner_id: player.interface.id,
             owner_type: player.interface.type,
@@ -134,7 +134,7 @@ mp.events.addCommand("aveh", async (player, fullText, ...args) => {
                 vehicle_id: veh.id
             }
         });
-        player.interface.inventory.sync();
+        player.inventory.sync();
         console.log("sync inventory");
     });
     console.log("create veh");

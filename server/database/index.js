@@ -6,7 +6,7 @@ const {
 var mysql = require('mysql');
 
 var e = require("../libs/utils.js").events;
- 
+ //gitignore
 // pass TMmzs9oo9DL6Y9Fm;
 //const sequelize = new Sequelize("reallife", 'ragemp', 'panzerKnacker', {
 const sequelize = new Sequelize("reallife", 'root', '', {
