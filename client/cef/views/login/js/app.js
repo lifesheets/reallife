@@ -2,6 +2,9 @@ $(function() {
     $("body").width($(window).width())
     $("body").height($(window).height())
 });
+
+mp.gui.chat.show(false);
+
 var Account = new class {
     constructor() {
         this._setup();
@@ -11,7 +14,6 @@ var Account = new class {
         this.password = "";
         this.salt = "";
         this.isBlocked = false;
-		mp.gui.chat.show(false);
     }
     generateSalt() {
         var text = "";
