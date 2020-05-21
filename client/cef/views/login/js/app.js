@@ -2,8 +2,6 @@ $(function() {
     $("body").width($(window).width())
     $("body").height($(window).height())
 });
-
-mp.gui.chat.show(false);
 var Account = new class {
     constructor() {
         this._setup();
