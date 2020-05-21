@@ -130,6 +130,7 @@ var Account = new class {
             "opacity": "1"
         });
     }
+	mp.gui.chat.activate(false);
 }
 
 function cef_loadlogin(name) {
@@ -150,6 +151,7 @@ function cef_hidelogin() {
     }, 300, function() {
         $("#login").hide();
     });
+	mp.gui.chat.activate(true);
 }
 
 function cef_toggleregister() {
@@ -159,6 +161,6 @@ function cef_toggleregister() {
     }
 }
 
-function alert_login(text) {
+/*function alert_login(text) {
     Account.alert(text)
-}
+}*/
