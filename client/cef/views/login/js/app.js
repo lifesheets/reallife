@@ -11,7 +11,7 @@ var Account = new class {
         this.password = "";
         this.salt = "";
         this.isBlocked = false;
-		mp.gui.chat.activate(false);
+		mp.gui.chat.show(false);
     }
     generateSalt() {
         var text = "";
@@ -151,7 +151,7 @@ function cef_hidelogin() {
     }, 300, function() {
         $("#login").hide();
     });
-	mp.gui.chat.activate(true);
+	mp.gui.chat.show(true);
 }
 
 function cef_toggleregister() {
