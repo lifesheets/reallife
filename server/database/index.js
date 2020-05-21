@@ -8,8 +8,9 @@ var mysql = require('mysql');
 var e = require("../libs/utils.js").events;
  //gitignore
 // pass TMmzs9oo9DL6Y9Fm;
+// Pass local Sorgi: //RGj2sVmBtxLdJ90L
 //const sequelize = new Sequelize("reallife", 'ragemp', 'panzerKnacker', {
-const sequelize = new Sequelize("reallife", 'root', '', {
+const sequelize = new Sequelize("reallife", 'ragemp', 'panzerKnacker', {
 	host: '127.0.0.1',   //or 127.0.0.1
   	dialect: 'mysql',
   	logging: function () {},
