@@ -4,7 +4,6 @@ $(function() {
 });
 
 mp.gui.chat.show(false);
-
 var Account = new class {
     constructor() {
         this._setup();
@@ -153,7 +152,7 @@ function cef_hidelogin() {
     }, 300, function() {
         $("#login").hide();
     });
-	mp.gui.chat.show(true);
+	
 }
 
 function cef_toggleregister() {
