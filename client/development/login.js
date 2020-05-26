@@ -21,7 +21,7 @@ mp.keys.bind(0x72, false, function() {
 	}
 });
 mp.gui.chat.activate(false);
-mp.gui.chat.show(true);
+mp.gui.chat.show(false);
 mp.game.ui.displayHud(false);
 mp.game.ui.displayRadar(false);
 
