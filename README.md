@@ -13,7 +13,7 @@ Gamemode for [RageMp](https://rage.mp/)
  
 ### About
 
-Project was put on hold due to time issues
+Project was put on hold due to time issues.
 Most of the Work was strongly influenced by the small community that gathered around the project, therefor special thanks to everyone who was involved, without their inspiration and ideas i would have made some things far worse.
 
 ### Features
