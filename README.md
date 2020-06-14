@@ -33,7 +33,7 @@ all constributors will be credited.
 
 
 ### License
-Please visit [License](https://github.com/Z8pn/RageSurvival/blob/master/LICENSE) for more information.
+Please visit [License](https://github.com/Z8pn/reallife/blob/master/LICENSE) for more information.
 
 
 ### Contact
